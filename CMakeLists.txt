@@ -1,9 +1,34 @@
+# cmake common config
 cmake_minimum_required(VERSION 3.1)
-project(rocket_simulator CXX)
 
+# project config
+project(rocket_simulator CXX)
+set(SIMULATOR sim.exe)
+add_executable(${SIMULATOR} src/main.cpp)
+
+# C++ compile config
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-Wall -O2")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-add_executable(sim.exe src/main.cpp)
+# dependency
+set(DEPS_ROOT        ${PROJECT_BINARY_DIR}/deps)
+set(DEPS_BUILD_DIR   ${DEPS_ROOT}/build)
+set(DEPS_INCLUDE_DIR ${DEPS_ROOT}/include)
+include_directories(${DEPS_INCLUDE_DIR})
+
+include(ExternalProject)
+
+## Eigen
+set(EIGEN_BUILD_DIR ${DEPS_BUILD_DIR}/eigen)
+ExternalProject_Add(
+	eigen
+	URL https://bitbucket.org/eigen/eigen/get/3.3.7.zip
+	PREFIX ${EIGEN_BUILD_DIR}
+	CMAKE_ARGS      -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+	TEST_COMMAND    ""			# no test
+)
+include_directories(${DEPS_INCLUDE_DIR}/eigen3)
+
+add_dependencies(${SIMULATOR} eigen)
