@@ -1,16 +1,16 @@
 # cmake common config
 cmake_minimum_required(VERSION 3.1)
 
+## C++
+set(CMAKE_CXX_STANDARD 17)
+#set(CMAKE_CXX_FLAGS "-Wall -O2")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 # project config
 project(rocket_simulator CXX)
 set(SIMULATOR sim.exe)
 add_executable(${SIMULATOR} src/main.cpp)
-
-# C++ compile config
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-Wall -O2")
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 # dependency
 set(DEPS_ROOT        ${PROJECT_BINARY_DIR}/deps)
