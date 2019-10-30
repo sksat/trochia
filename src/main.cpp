@@ -3,6 +3,8 @@
 
 using math::Float;
 
+Rocket rocket;
+
 auto do_simulation(const Float &dt, const Float &timeout) -> void;
 
 auto main(int argc, char **argv) -> int {
@@ -16,7 +18,6 @@ auto main(int argc, char **argv) -> int {
 
 void do_simulation(const math::Float &dt, const math::Float &timeout){
 	Float time = 0.0;
-	Rocket rocket;
 
 	// init
 	rocket.pos << 0.0, 0.0, 0.0;
