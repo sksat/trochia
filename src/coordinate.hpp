@@ -7,75 +7,68 @@ namespace coordinate {
 	using math::Float;
 
 	namespace earth {
-		// TODO: LLH, ECEF
+		enum class type {
+			LLH,
+			ECEF,
+		};
+
+		template<type t=type::LLH>
+		class frame {};
 	}
 
 	namespace local {
 		enum class type {
-			ENU,
-			NED,
+			ENU,			// x = east,	y = north,	z = altitude
+			NED,			// x = north,	y = east,	z = -1.0 * altitude
 		};
 
-		class base : public math::Vector3 {
+		template<type t>
+		class frame {
 		public:
-			virtual auto altitude(const Float v=math::nan) -> Float = 0;
-			virtual auto north(const Float v=math::nan)    -> Float = 0;
-			virtual auto east(const Float v=math::nan)     -> Float = 0;
+			frame() : vec(0.0, 0.0, 0.0) {}
 
-			auto south(const Float v=math::nan) -> Float {
-				if(!std::isnan(v)) north(-1.0 * v);
-				return -1.0 * north();
+			math::Vector3 vec;
+
+			auto east() -> Float {
+				if constexpr (t == type::ENU)		return vec.x();
+				else if constexpr (t == type::NED)	return vec.y();
 			}
-			auto west(const Float v=math::nan) -> Float {
-				if(!std::isnan(v)) east(-1.0 * v);
-				return -1.0 * west();
-			}
-		};
-
-		template<typename Src, typename Dest>
-		auto convert(const Src &src) -> const Dest {
-			Dest d;
-			d.altitude(src.altitude());
-			d.north(src.north());
-			d.east(src.east());
-			return d;
-		}
-
-		// East North Up
-		class ENU : public base {
-		public:
-			auto east(const Float v=math::nan) -> Float {
-				if(!std::isnan(v)) x() = v;
-				return x();
+			auto east(const Float &e) -> void {
+				if constexpr (t == type::ENU)		vec.x() = e;
+				else if constexpr (t == type::NED)	vec.y() = e;
 			}
 
-			auto north(const Float v=math::nan) -> Float {
-				if(!std::isnan(v)) y() = v;
-				return y();
+			auto north() -> Float {
+				if constexpr (t == type::ENU)		return vec.y();
+				else if constexpr (t == type::NED)	return vec.x();
+			}
+			auto north(const Float &n) -> void {
+				if constexpr (t == type::ENU)		vec.y() = n;
+				else if constexpr (t == type::NED)	vec.x() = n;
+			}
+			
+			auto altitude() -> Float {
+				if constexpr (t == type::ENU)		return vec.z();
+				else if constexpr (t == type::NED)	return vec.z() * -1.0;
+			}
+			auto altitude(const Float &a) -> void {
+				if constexpr (t == type::ENU)		vec.z() = a;
+				else if constexpr (t == type::NED)	vec.z() = a * -1.0;
 			}
 
-			auto altitude(const Float v=math::nan) -> Float {
-				if(!std::isnan(v)) z() = v;
-				return z();
-			}
-		};
+			auto west() -> Float { return -1.0 * east(); }
+			auto west(const Float &w){ east(-1.0 * w); }
 
-		// North East Down
-		class NED : public base {
-		public:
-			auto north(const Float v=math::nan) -> Float {
-				if(!std::isnan(v)) x() = v;
-				return x();
-			}
+			auto south() -> Float { return -1.0 * north(); }
+			auto south(const Float &s) { north(-1.0 * s); }
 
-			auto east(const Float v=math::nan) -> Float {
-				if(!std::isnan(v)) y() = v;
-				return y();
-			}
-
-			auto altitude(const Float v=math::nan) -> Float {
-				if(!std::isnan(v)) z() = -1.0 * v;
-				return -1.0 * z();
+			template<type t2>
+			auto cast() -> frame<t2> {
+				frame<t2> f;
+				f.east(this->east());
+				f.north(this->north());
+				f.altitude(this->altitude());
+				return f;
 			}
 		};
 	}

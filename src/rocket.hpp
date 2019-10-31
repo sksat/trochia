@@ -10,10 +10,18 @@
 
 class Rocket {
 public:
+	using LocalFrame = coordinate::local::frame<coordinate::local::type::ENU>;
+
 	std::string name;
 
-	coordinate::local::ENU pos, vel, acc;
+	LocalFrame pos, vel, acc;
 	math::Quaternion angle;
+
+	// update(euler method)
+	auto update(const math::Float &dt) -> void {
+		vel.vec += acc.vec * dt;
+		pos.vec += vel.vec * dt;
+	}
 };
 
 #endif

@@ -20,15 +20,17 @@ void do_simulation(const math::Float &dt, const math::Float &timeout){
 	Float time = 0.0;
 
 	// init
-	rocket.pos << 0.0, 0.0, 0.0;
-	rocket.vel << 0.0, 0.0, 0.0;
-	rocket.acc << 0.0, 0.0, 0.0;
+	auto &pos = rocket.pos;
+	pos.altitude(0.0);
+	pos.east(0.0);
+	pos.north(0.0);
+	rocket.vel.vec << 0.0, 0.0, 0.0;
+	rocket.acc.vec << 0.0, 0.0, 0.0;
 
 	// main loop
 	for(;time<=timeout;time+=dt){
-		// update(euler method)
-		rocket.vel = rocket.acc * dt;
-		rocket.pos = rocket.vel * dt;
+		// update
+		rocket.update(dt);
 
 		// TODO save to file
 	}
