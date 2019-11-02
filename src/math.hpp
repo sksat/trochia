@@ -11,6 +11,10 @@ namespace math {
 
 	using Vector3	= Eigen::Matrix<Float, 3, 1>;
 	using Quaternion= Eigen::Quaternion<Float>;
+
+	auto lerp(const Float &a, const Float &b, const Float &t) -> const Float {
+		return a + t*(b - a);
+	}
 }
 
 #endif

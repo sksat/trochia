@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "rocket.hpp"
 
 using math::Float;
@@ -8,7 +9,19 @@ Rocket rocket;
 auto do_simulation(const Float &dt, const Float &timeout) -> void;
 
 auto main(int argc, char **argv) -> int {
+	std::string engine_file;
+
 	std::cout << "rocket simulator by sksat" << std::endl;
+
+	std::cout << "engine data file: ";
+	std::cin >> engine_file;
+
+	rocket.engine.load_data(engine_file);
+
+	// thrust test
+	for(double t=0.0;t<10.0;t+=0.1){
+		std::cout << t << "\t" << rocket.engine.thrust(t) << std::endl;
+	}
 
 	std::cout << "start simulation" << std::endl;
 	do_simulation(0.01, 60.0*10);

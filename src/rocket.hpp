@@ -5,6 +5,7 @@
 #include <string>
 #include "math.hpp"
 #include "coordinate.hpp"
+#include "engine.hpp"
 
 // TODO namespace
 
@@ -13,6 +14,7 @@ public:
 	using LocalFrame = coordinate::local::frame<coordinate::local::type::ENU>;
 
 	std::string name;
+	Engine engine;
 
 	LocalFrame pos, vel, acc;
 	math::Quaternion angle;
