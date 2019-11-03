@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "rocket.hpp"
+#include "environment/gravity.hpp"
 
 using math::Float;
 
@@ -18,11 +19,6 @@ auto main(int argc, char **argv) -> int {
 
 	rocket.engine.load_data(engine_file);
 
-	// thrust test
-	for(double t=0.0;t<10.0;t+=0.1){
-		std::cout << t << "\t" << rocket.engine.thrust(t) << std::endl;
-	}
-
 	std::cout << "start simulation" << std::endl;
 	do_simulation(0.01, 60.0*10);
 
@@ -33,6 +29,8 @@ void do_simulation(const math::Float &dt, const math::Float &timeout){
 	Float time = 0.0;
 
 	// init
+	rocket.mass = 10.0;
+
 	auto &pos = rocket.pos;
 	pos.altitude(0.0);
 	pos.east(0.0);
@@ -41,10 +39,24 @@ void do_simulation(const math::Float &dt, const math::Float &timeout){
 	rocket.acc.vec << 0.0, 0.0, 0.0;
 
 	// main loop
-	for(;time<=timeout;time+=dt){
+	for(size_t step=0;time<=timeout;time+=dt,step++){
+		// thrust
+		rocket.acc.altitude(rocket.engine.thrust(time) / rocket.mass);
+
+		// gravity
+		rocket.acc.vec += environment::gravity(rocket.pos).vec;
+
 		// update
 		rocket.update(dt);
 
 		// TODO save to file
+
+		// log
+		if(step % 100 == 0){
+			std::cout << time << " " << rocket.pos.altitude() << std::endl;
+		}
+
+		if(step >= 100 && rocket.pos.altitude() <= 0.0)
+			break;
 	}
 }

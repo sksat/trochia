@@ -16,6 +16,8 @@ public:
 	std::string name;
 	Engine engine;
 
+	math::Float mass;
+
 	LocalFrame pos, vel, acc;
 	math::Quaternion angle;
 
