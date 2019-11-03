@@ -1,0 +1,20 @@
+[simulation]
+dt		= 0.01
+
+[launcher]
+length	= 5
+angle	= 86
+# angle.start = 86
+# angle.end = 89
+
+[rocket]
+name	= "example rocket"
+type	= "hybrid"
+
+[[rocket.stage]]
+engine	= "larkspur_xp_300.resm"
+length	= 1.1540
+diameter= 0.112
+mass	= 5.679
+Cd		= 0.450
+parachute= {condition = "top", delay = 2.5}

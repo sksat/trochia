@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <toml.hpp>
 #include "rocket.hpp"
 #include "environment/gravity.hpp"
 
@@ -10,17 +11,32 @@ Rocket rocket;
 auto do_simulation(const Float &dt, const Float &timeout) -> void;
 
 auto main(int argc, char **argv) -> int {
+	math::Float dt;
 	std::string engine_file;
 
 	std::cout << "rocket simulator by sksat" << std::endl;
 
-	std::cout << "engine data file: ";
-	std::cin >> engine_file;
+	std::cout << "loading config file ...";
+	{
+		using namespace toml;
+		const auto config = parse("config.toml");
+		const auto &simulation = find(config, "simulation");
+		dt = simulation.at("dt").as_floating();
+
+		const auto &rocket = find(config, "rocket");
+		const auto stage = find<std::vector<toml::table>>(rocket, "stage");
+		if(stage.size() != 1){
+			std::cout << "multistage rocket is not implemented now. sorry." << std::endl;
+			return -1;
+		}
+		const auto engine = stage[0].at("engine");
+		engine_file = engine.as_string();
+	}
 
 	rocket.engine.load_data(engine_file);
 
 	std::cout << "start simulation" << std::endl;
-	do_simulation(0.01, 60.0*10);
+	do_simulation(dt, 60.0*10);
 
 	return 0;
 }
