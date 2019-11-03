@@ -29,7 +29,7 @@ namespace coordinate {
 
 			math::Vector3 vec;
 
-			auto east() -> Float {
+			auto east() const -> Float {
 				if constexpr (t == type::ENU)		return vec.x();
 				else if constexpr (t == type::NED)	return vec.y();
 			}
@@ -38,7 +38,7 @@ namespace coordinate {
 				else if constexpr (t == type::NED)	vec.y() = e;
 			}
 
-			auto north() -> Float {
+			auto north() const -> Float {
 				if constexpr (t == type::ENU)		return vec.y();
 				else if constexpr (t == type::NED)	return vec.x();
 			}
@@ -47,7 +47,7 @@ namespace coordinate {
 				else if constexpr (t == type::NED)	vec.x() = n;
 			}
 			
-			auto altitude() -> Float {
+			auto altitude() const -> Float {
 				if constexpr (t == type::ENU)		return vec.z();
 				else if constexpr (t == type::NED)	return vec.z() * -1.0;
 			}
