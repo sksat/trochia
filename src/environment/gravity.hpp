@@ -21,15 +21,13 @@ namespace environment {
 	// other planet
 
 	template<typename T>
-	inline auto gravity(const T &pos) -> const T {
+	inline auto gravity(const T &pos, T &acc) -> void {
 		using namespace constant;
 
 		const auto tmp = re / (re + pos.altitude());
 		const auto g = gn * tmp * tmp;
 
-		T ret;
-		ret.altitude(-1.0 * g);
-		return ret;
+		acc.altitude(acc.altitude() + -1.0 * g);
 	}
 }
 

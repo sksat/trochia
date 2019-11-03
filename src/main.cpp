@@ -44,7 +44,7 @@ void do_simulation(const math::Float &dt, const math::Float &timeout){
 		rocket.acc.altitude(rocket.engine.thrust(time) / rocket.mass);
 
 		// gravity
-		rocket.acc.vec += environment::gravity(rocket.pos).vec;
+		environment::gravity(rocket.pos, rocket.acc);
 
 		// update
 		rocket.update(dt);
