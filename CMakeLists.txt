@@ -24,11 +24,20 @@ include(ExternalProject)
 set(EIGEN_BUILD_DIR ${DEPS_BUILD_DIR}/eigen)
 ExternalProject_Add(
 	eigen
-	URL https://bitbucket.org/eigen/eigen/get/3.3.7.zip
-	PREFIX ${EIGEN_BUILD_DIR}
-	CMAKE_ARGS      -DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-	TEST_COMMAND    ""			# no test
+	URL				https://bitbucket.org/eigen/eigen/get/3.3.7.zip
+	PREFIX			${EIGEN_BUILD_DIR}
+	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
 )
 include_directories(${DEPS_INCLUDE_DIR}/eigen3)
 
 add_dependencies(${SIMULATOR} eigen)
+
+## toml11
+set(TOML11_BUILD_DIR ${DEPS_BUILD_DIR}/toml11)
+ExternalProject_Add(
+	toml11
+	GIT_REPOSITORY	https://github.com/ToruNiina/toml11
+	GIT_TAG			v3.1.0
+	PREFIX			${TOML11_BUILD_DIR}
+	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT} #-Dtoml11_BUILD_TEST=OFF
+)
