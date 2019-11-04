@@ -64,14 +64,24 @@ auto do_simulation(Simulation &sim) -> void {
 	rocket.vel.vec.setZero();
 	rocket.acc.vec.setZero();
 
-	rocket.quat = math::euler2quat(0.0, math::deg2rad(80.0), 0.0);
+	rocket.quat = math::euler2quat(0.0, math::deg2rad(90.0), 0.0);
 
 	// main loop
 	size_t step = 0;
 	while(true){
 		// thrust
 		const auto thrust = rocket.engine.thrust(rocket.time); // first stage only
-		rocket.acc.altitude(thrust / rocket.weight());
+
+		const auto force = coordinate::body::frame(
+				thrust,
+				0.0,
+				0.0
+		);
+
+		auto acc = force;
+		acc.vec /= rocket.weight();
+
+		rocket.acc = acc.cast<Rocket::LocalFrame>(rocket.quat);
 
 		// gravity
 		if(rocket.pos.altitude() > 0.0)

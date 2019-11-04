@@ -5,6 +5,26 @@
 
 namespace coordinate {
 	using math::Float;
+	using math::Vector3, math::Matrix3, math::Quaternion;
+
+	namespace DCM {
+		inline auto ned2body(const Quaternion &q_) -> const Matrix3 {
+			Matrix3 mat;
+			const auto &q = q_.coeffs();
+			const auto q00 = q(0) * q(0);
+			const auto q11 = q(1) * q(1);
+			const auto q22 = q(2) * q(2);
+			const auto q33 = q(3) * q(3);
+			mat <<
+				q00 - q11 - q22 + q33,		2*(q(0)*q(1) + q(2)*q(3)),		2*(q(0)*q(2) - q(1)*q(3)),
+				2*(q(0)*q(1) - q(2)*q(3)),	q11 - q00 - q22 + q33,			2*(q(1)*q(2) + q(0)*q(3)),
+				2*(q(0)*q(2) + q(1)*q(3)),	2*(q(1)*q(2) - q(0)*q(3)),		q22 - q00 - q11 + q33;
+			return mat;
+		}
+		inline auto body2ned(const Quaternion &q) -> const Matrix3 {
+			return ned2body(q).transpose();
+		}
+	}
 
 	namespace earth {
 		enum class type {
@@ -28,6 +48,8 @@ namespace coordinate {
 			frame() : vec(0.0, 0.0, 0.0) {}
 
 			math::Vector3 vec;
+
+			static inline auto get_type() -> type { return t; }
 
 			auto east() const -> Float {
 				if constexpr (t == type::ENU)		return vec.x();
@@ -62,19 +84,50 @@ namespace coordinate {
 			auto south() -> Float { return -1.0 * north(); }
 			auto south(const Float &s) { north(-1.0 * s); }
 
+			auto to_enu() -> frame<type::ENU> { return cast<type::ENU>(); }
+			auto to_ned() -> frame<type::NED> { return cast<type::NED>(); }
+
 			template<type t2>
-			auto cast() -> frame<t2> {
-				frame<t2> f;
+			auto cast() const -> frame<t2> {
+				return cast<frame<t2>>();
+			}
+
+			template<typename LocalFrame>
+			inline auto cast() const -> LocalFrame {
+				LocalFrame f;
 				f.east(this->east());
 				f.north(this->north());
 				f.altitude(this->altitude());
 				return f;
 			}
+
+			template<typename BodyFrame>
+			auto to_body(const Quaternion &q) const -> BodyFrame {
+				BodyFrame b;
+				if constexpr(t == type::NED){
+					b.vec = DCM::ned2body(q) * vec;
+					return b;
+				}
+			}
 		};
 	}
 
 	namespace body {
-		// TODO: body, wind
+		class frame {
+		public:
+			frame() : vec(0.0, 0.0, 0.0) {}
+			frame(const Float &x, const Float &y, const Float &z) : vec(x,y,z) {}
+
+			math::Vector3 vec;
+
+			template<typename LocalFrame>
+			inline auto cast(const math::Quaternion &q) const -> const LocalFrame {
+				local::frame<local::type::NED> ned;
+				ned.vec = DCM::body2ned(q) * this->vec;
+
+				return ned.cast<LocalFrame>();
+			}
+		};
 	}
 }
 

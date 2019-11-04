@@ -11,6 +11,7 @@ namespace math {
 	const Float nan = std::nan("");
 
 	using Vector3	= Eigen::Matrix<Float, 3, 1>;
+	using Matrix3	= Eigen::Matrix<Float, 3, 3>;
 	using Quaternion= Eigen::Quaternion<Float>;
 
 	// constant
