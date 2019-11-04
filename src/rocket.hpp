@@ -11,7 +11,7 @@
 
 class Rocket {
 public:
-	using LocalFrame = coordinate::local::frame<coordinate::local::type::ENU>;
+	using LocalFrame = coordinate::local::frame<coordinate::local::type::NED>;
 
 	std::string name;
 	Engine engine;
