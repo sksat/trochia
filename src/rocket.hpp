@@ -16,15 +16,19 @@ public:
 	std::string name;
 	Engine engine;
 
-	math::Float mass;
-
+	math::Float time;			// from ignition
 	LocalFrame pos, vel, acc;
 	math::Quaternion angle;
+
+	auto weight() const  -> const math::Float {
+		return 10.0 + engine.weight(time);
+	}
 
 	// update(euler method)
 	auto update(const math::Float &dt) -> void {
 		vel.vec += acc.vec * dt;
 		pos.vec += vel.vec * dt;
+		time += dt;
 	}
 };
 

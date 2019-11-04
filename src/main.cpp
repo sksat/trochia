@@ -44,16 +44,13 @@ auto main(int argc, char **argv) -> int {
 }
 
 void do_simulation(const Float &dt, const Float &output_dt, const Float &timeout){
-	Float time = 0.0;
-
 	if(output_dt < dt)
 		return;
 
 	const size_t output_rate = output_dt / dt;
 
 	// init
-	rocket.mass = 10.0;
-
+	rocket.time = 0.0;
 	auto &pos = rocket.pos;
 	pos.altitude(0.0);
 	pos.east(0.0);
@@ -62,9 +59,11 @@ void do_simulation(const Float &dt, const Float &output_dt, const Float &timeout
 	rocket.acc.vec << 0.0, 0.0, 0.0;
 
 	// main loop
-	for(size_t step=0;time<=timeout;time+=dt,step++){
+	size_t step = 0;
+	while(true){
 		// thrust
-		rocket.acc.altitude(rocket.engine.thrust(time) / rocket.mass);
+		const auto thrust = rocket.engine.thrust(rocket.time); // first stage only
+		rocket.acc.altitude(thrust / rocket.weight());
 
 		// gravity
 		if(rocket.pos.altitude() > 0.0)
@@ -72,15 +71,19 @@ void do_simulation(const Float &dt, const Float &output_dt, const Float &timeout
 
 		// update
 		rocket.update(dt);
+		step++;
 
 		// TODO save to file
 
 		// log
 		if(step % output_rate == 0){
-			std::cout << time << " " << rocket.pos.altitude() << std::endl;
+			std::cout << rocket.time << " " << rocket.pos.altitude() << std::endl;
 		}
 
-		if(step >= 100 && rocket.pos.altitude() <= 0.0)
+		if(step > 100 && rocket.pos.altitude() <= 0.0)
+			break;
+
+		if(rocket.time > timeout)
 			break;
 	}
 }
