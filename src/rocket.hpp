@@ -18,7 +18,7 @@ public:
 
 	math::Float time;			// from ignition
 	LocalFrame pos, vel, acc;
-	math::Quaternion angle;
+	math::Quaternion quat;
 
 	auto weight() const  -> const math::Float {
 		return 10.0 + engine.weight(time);

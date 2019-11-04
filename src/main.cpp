@@ -56,12 +56,15 @@ auto do_simulation(Simulation &sim) -> void {
 
 	// init
 	rocket.time = 0.0;
+
 	auto &pos = rocket.pos;
 	pos.altitude(0.0);
 	pos.east(0.0);
 	pos.north(0.0);
-	rocket.vel.vec << 0.0, 0.0, 0.0;
-	rocket.acc.vec << 0.0, 0.0, 0.0;
+	rocket.vel.vec.setZero();
+	rocket.acc.vec.setZero();
+
+	rocket.quat = math::euler2quat(0.0, math::deg2rad(80.0), 0.0);
 
 	// main loop
 	size_t step = 0;
