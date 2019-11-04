@@ -35,7 +35,7 @@ auto main(int argc, char **argv) -> int {
 		engine_file = engine.as_string();
 	}
 
-	rocket.engine.load_data(engine_file);
+	rocket.engine.load_eng(engine_file);
 
 	std::cout << "start simulation" << std::endl;
 	do_simulation(dt, output_dt, 60.0*10);

@@ -17,10 +17,16 @@ public:
 	using thrust_t = std::pair<math::Float, math::Float>;
 	using thrustcurve_t = std::vector<thrust_t>;
 
-	// 推力履歴を読み込む(そのうちRESMに切り替える)
-	auto load_data(const std::string &fname) -> void {
+	// engファイルからデータを読み込む
+	auto load_eng(const std::string &fname) -> void {
 		std::ifstream ifs(fname);
 		if(!ifs) return;
+
+		std::string delays;
+		ifs >> name >> diameter >> length
+			>> delays
+			>> weight_prop >> weight_total
+			>> manufacturer;
 
 		double t, th;
 		thrust_t thrust;
@@ -52,6 +58,12 @@ public:
 
 		time_max = thrust.first;
 		itr = data.cbegin();
+	}
+
+	inline auto weight(const math::Float &time) const -> math::Float {
+		const auto progress = time / time_max;
+		const auto prop = math::lerp(weight_prop, 0, progress);
+		return weight_total - weight_prop + prop;
 	}
 
 	auto thrust(const math::Float &time) -> const math::Float {
@@ -90,6 +102,13 @@ public:
 		return 0.0;
 	}
 private:
+	// info
+	std::string name;
+	math::Float diameter, length;
+	math::Float weight_prop, weight_total;
+	std::string manufacturer;
+
+	// thrustcurve
 	thrustcurve_t data;
 	thrustcurve_t::const_iterator itr;
 	math::Float time_max;
