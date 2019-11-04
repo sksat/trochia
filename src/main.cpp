@@ -1,18 +1,17 @@
 #include <iostream>
 #include <string>
 #include <toml.hpp>
+#include "simulation.hpp"
+
 #include "rocket.hpp"
 #include "environment/gravity.hpp"
 
 using math::Float;
 
-Rocket rocket;
-
-auto do_simulation(const Float &dt, const Float &output_dt, const Float &timeout) -> void;
+auto do_simulation(Simulation &sim) -> void;
 
 auto main(int argc, char **argv) -> int {
-	math::Float dt, output_dt;
-	std::string engine_file;
+	Simulation sim;
 
 	std::cout << "rocket simulator by sksat" << std::endl;
 
@@ -20,34 +19,40 @@ auto main(int argc, char **argv) -> int {
 	{
 		using namespace toml;
 		const auto config = parse("config.toml");
-		const auto &simulation = find(config, "simulation");
-		dt = simulation.at("dt").as_floating();
-		const auto &output = find(simulation, "output");
-		output_dt = output.at("dt").as_floating();
+
+		const auto &cfg_sim = find(config, "simulation");
+		const auto &cfg_output = find(cfg_sim, "output");
+		sim.dt = cfg_sim.at("dt").as_floating();
+		sim.output_dt = cfg_output.at("dt").as_floating();
 
 		const auto &rocket = find(config, "rocket");
 		const auto stage = find<std::vector<toml::table>>(rocket, "stage");
 		if(stage.size() != 1){
-			std::cout << "multistage rocket is not implemented now. sorry." << std::endl;
+			std::cerr
+				<< "multistage rocket is not implemented now. sorry."
+				<< std::endl;
 			return -1;
 		}
+
 		const auto engine = stage[0].at("engine");
-		engine_file = engine.as_string();
+		sim.rocket.engine.load_eng(engine.as_string());
 	}
 
-	rocket.engine.load_eng(engine_file);
-
 	std::cout << "start simulation" << std::endl;
-	do_simulation(dt, output_dt, 60.0*10);
+	do_simulation(sim);
 
 	return 0;
 }
 
-void do_simulation(const Float &dt, const Float &output_dt, const Float &timeout){
+auto do_simulation(Simulation &sim) -> void {
+	const auto &timeout = sim.timeout;
+	const auto &dt = sim.dt;
+	const auto &output_dt = sim.output_dt;
 	if(output_dt < dt)
 		return;
 
-	const size_t output_rate = output_dt / dt;
+	const size_t output_rate = sim.output_dt / sim.dt;
+	auto &rocket = sim.rocket;
 
 	// init
 	rocket.time = 0.0;
