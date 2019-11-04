@@ -8,10 +8,10 @@ using math::Float;
 
 Rocket rocket;
 
-auto do_simulation(const Float &dt, const Float &timeout) -> void;
+auto do_simulation(const Float &dt, const Float &output_dt, const Float &timeout) -> void;
 
 auto main(int argc, char **argv) -> int {
-	math::Float dt;
+	math::Float dt, output_dt;
 	std::string engine_file;
 
 	std::cout << "rocket simulator by sksat" << std::endl;
@@ -22,6 +22,8 @@ auto main(int argc, char **argv) -> int {
 		const auto config = parse("config.toml");
 		const auto &simulation = find(config, "simulation");
 		dt = simulation.at("dt").as_floating();
+		const auto &output = find(simulation, "output");
+		output_dt = output.at("dt").as_floating();
 
 		const auto &rocket = find(config, "rocket");
 		const auto stage = find<std::vector<toml::table>>(rocket, "stage");
@@ -36,13 +38,18 @@ auto main(int argc, char **argv) -> int {
 	rocket.engine.load_data(engine_file);
 
 	std::cout << "start simulation" << std::endl;
-	do_simulation(dt, 60.0*10);
+	do_simulation(dt, output_dt, 60.0*10);
 
 	return 0;
 }
 
-void do_simulation(const math::Float &dt, const math::Float &timeout){
+void do_simulation(const Float &dt, const Float &output_dt, const Float &timeout){
 	Float time = 0.0;
+
+	if(output_dt < dt)
+		return;
+
+	const size_t output_rate = output_dt / dt;
 
 	// init
 	rocket.mass = 10.0;
@@ -60,7 +67,8 @@ void do_simulation(const math::Float &dt, const math::Float &timeout){
 		rocket.acc.altitude(rocket.engine.thrust(time) / rocket.mass);
 
 		// gravity
-		environment::gravity(rocket.pos, rocket.acc);
+		if(rocket.pos.altitude() > 0.0)
+			environment::gravity(rocket.pos, rocket.acc);
 
 		// update
 		rocket.update(dt);
@@ -68,7 +76,7 @@ void do_simulation(const math::Float &dt, const math::Float &timeout){
 		// TODO save to file
 
 		// log
-		if(step % 100 == 0){
+		if(step % output_rate == 0){
 			std::cout << time << " " << rocket.pos.altitude() << std::endl;
 		}
 
