@@ -41,3 +41,5 @@ ExternalProject_Add(
 	PREFIX			${TOML11_BUILD_DIR}
 	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT} #-Dtoml11_BUILD_TEST=OFF
 )
+
+add_dependencies(${SIMULATOR} toml11)
