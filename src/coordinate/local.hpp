@@ -8,35 +8,23 @@ namespace coordinate::local {
 
 		Vector3 vec;
 
-		auto north(const optFloat n=std::nullopt) -> const Float {
-			if(n) vec.x() = n.value();
-			return vec.x();
-		}
+		auto north() const -> const Float { return vec.x(); }
+		auto east()  const -> const Float { return vec.y(); }
+		auto down()  const -> const Float { return vec.z(); }
 
-		auto east(const optFloat e=std::nullopt) -> const Float {
-			if(e) vec.y() = e.value();
-			return vec.y();
-		}
+		auto south() const -> const Float { return -1.0*north(); }
+		auto west()  const -> const Float { return -1.0*east();  }
+		auto up()    const -> const Float { return -1.0*down();  }
 
-		auto down(const optFloat d=std::nullopt) -> const Float {
-			if(d) vec.z() = d.value();
-			return vec.z();
-		}
+		auto altitude() const -> const Float { return up(); }
 
-		auto south(const optFloat s=std::nullopt) -> const Float {
-			if(s) north(-1.0 * s.value());
-			return -1.0*north();
-		}
+		auto north(const Float &n) -> void{ vec.x() = n; }
+		auto east(const Float &e)  -> void{ vec.y() = e; }
+		auto down(const Float &d)  -> void{ vec.z() = d; }
 
-		auto west(const optFloat w=std::nullopt) -> const Float {
-			if(w) east(-1.0*w.value());
-			return -1.0*east();
-		}
-
-		auto up(const optFloat u=std::nullopt) -> const Float {
-			if(u) down(-1.0*u.value());
-			return -1.0*down();
-		}
+		auto south(const Float &s) -> void{ north(-1.0*s); }
+		auto west(const Float &w)  -> void{ east(-1.0*w);  }
+		auto up(const Float &u)    -> void{ down(-1.0*u);  }
 
 		template<typename Frame>
 		operator Frame() {
@@ -54,35 +42,19 @@ namespace coordinate::local {
 
 		Vector3 vec;
 
-		auto east(const optFloat e=std::nullopt) -> const Float {
-			if(e) vec.x() = e.value();
-			return vec.x();
-		}
+		auto east()  const -> const Float { return vec.x(); }
+		auto north() const -> const Float { return vec.y(); }
+		auto up()    const -> const Float { return vec.z(); }
 
-		auto north(const optFloat n=std::nullopt) -> const Float {
-			if(n) vec.y() = n.value();
-			return vec.y();
-		}
+		auto west()  const -> const Float { return -1.0*east();  }
+		auto south() const -> const Float { return -1.0*north(); }
+		auto down()  const -> const Float { return -1.0*up();    }
 
-		auto up(const optFloat u=std::nullopt) -> const Float {
-			if(u) vec.z() = u.value();
-			return vec.z();
-		}
+		auto altitude() const -> const Float { return up(); }
 
-		auto west(const optFloat w=std::nullopt) -> const Float {
-			if(w) east(-1.0 * w.value());
-			return -1.0*east();
-		}
-
-		auto south(const optFloat s=std::nullopt) -> const Float {
-			if(s) north(-1.0*s.value());
-			return -1.0*north();
-		}
-
-		auto down(const optFloat d=std::nullopt) -> const Float {
-			if(d) up(-1.0*d.value());
-			return -1.0*up();
-		}
+		auto east(const Float &e)  -> void{ vec.x() = e; }
+		auto north(const Float &n) -> void{ vec.y() = n; }
+		auto up(const Float &u)    -> void{ vec.z() = u; }
 
 		template<typename Frame>
 		operator Frame() {

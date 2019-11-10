@@ -5,6 +5,7 @@ namespace coordinate::body {
 	class Body {
 	public:
 		Body() : vec(0.0, 0.0, 0.0) {}
+		Body(const Float &x, const Float &y, const Float &z) : vec(x,y,z) {}
 
 		Vector3 vec;
 
