@@ -27,7 +27,7 @@ namespace environment {
 		const auto tmp = re / (re + pos.altitude());
 		const auto g = gn * tmp * tmp;
 
-		acc.altitude(acc.altitude() + -1.0 * g);
+		acc.down(acc.down() + g);
 	}
 }
 
