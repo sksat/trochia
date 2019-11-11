@@ -11,6 +11,7 @@ namespace coordinate {
 	using optFloat = std::optional<Float>;
 
 	namespace earth {
+		class LLH;
 		class ECEF;
 		class ECI;
 	}

@@ -54,6 +54,32 @@ namespace coordinate::earth {
 		constexpr auto GRS80				= ellipsoid(6'378'137,		298.26);
 		constexpr auto WGS84				= ellipsoid(GRS80.a,		298.25722);
 	}
+
+	class LLH {
+	public:
+
+		Float lat, lon, height;
+	};
+
+	class ECEF {
+	public:
+		ECEF(ellipsoid::ellipsoid elp=ellipsoid::WGS84) : elp(elp) {}
+
+		ellipsoid::ellipsoid elp;
+		Vector3 vec;
+	};
+
+	// https://vldb.gsi.go.jp/sokuchi/surveycalc/surveycalc/trans_alg/trans_alg.html
+	auto llh2ecef(const LLH &llh, ECEF &ecef, const Float n_g=0.0) -> void {
+		auto &v = ecef.vec;
+		const auto h = llh.height + n_g;
+		const auto N = ecef.elp.N(llh.lat);
+		const auto tmp_xy = (N + h) * std::cos(llh.lat);
+
+		v.x() = tmp_xy * std::cos(llh.lon);
+		v.y() = tmp_xy * std::sin(llh.lon);
+		v.z() = (N * (1.0 - ecef.elp.e2)) * std::sin(llh.lat);
+	}
 }
 
 #endif
