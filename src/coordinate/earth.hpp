@@ -80,6 +80,23 @@ namespace coordinate::earth {
 		v.y() = tmp_xy * std::sin(llh.lon);
 		v.z() = (N * (1.0 - ecef.elp.e2)) * std::sin(llh.lat);
 	}
+
+	auto ecef2llh(const ECEF &ecef, LLH &llh) -> void {
+		const auto &elp = ecef.elp;
+		const auto &v = ecef.vec;
+		llh.lon = std::atan(v.y() / v.x());
+		const auto P = std::sqrt(v.x()*v.x() + v.y()*v.y());
+		const auto lat_0 = std::atan(v.z() / (P * (1.0 - elp.e2)));
+		Float lat = lat_0;
+		while(true){
+			const auto new_lat = std::atan(v.z() / (P - elp.e2 * elp.N(lat) * std::cos(lat)));
+			const auto diff = std::abs(new_lat - lat);
+			lat = new_lat;
+			if(diff <= 1.0e-12) break;
+		}
+		llh.lat = lat;
+		llh.height = (P / std::cos(lat)) - elp.N(lat);
+	}
 }
 
 #endif
