@@ -26,7 +26,8 @@ namespace environment::earth {
 			}
 
 			constexpr auto W(const Float &lat) const -> const Float {
-				const auto sin2	= std::sin(lat) * std::sin(lat);
+				const auto sin  = math::sin(lat);
+				const auto sin2	= sin*sin;
 				return math::sqrt(1.0 - e2*sin2);
 			}
 

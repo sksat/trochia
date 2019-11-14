@@ -21,17 +21,39 @@ namespace math {
 
 	// func
 	template<typename T>
-	constexpr auto sqrt(const T &s) -> const Float {
+	constexpr auto abs(const T v) -> const T {
+		if(v < T(0.0)) return -v;
+		return v;
+	}
+
+	template<typename T>
+	constexpr auto sqrt(const T &s) -> const T {
 		// babylonian method
 
-		T x = s / 2.0;
-		T last = 0.0;
+		T x = s / T(2.0);
+		T last = T(0.0);
 
 		while(x != last){
 			last = x;
-			x = (x + s/x) / 2.0;
+			x = (x + s/x) / T(2.0);
 		}
 		return x;
+	}
+
+	template<typename T>
+	constexpr auto sin(T x) -> const T {
+		T x_sq = -(x * x);
+		T series = x;
+		T tmp = x;
+		T fact= T(2.0);
+
+		do {
+			tmp *= x_sq / (fact * (fact + T(1.0)));
+			series += tmp;
+			fact += T(2.0);
+		} while(abs(tmp) >= std::numeric_limits<T>::epsilon());
+
+		return series;
 	}
 
 	constexpr auto deg2rad(const Float &deg) -> const Float {
