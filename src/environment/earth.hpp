@@ -7,9 +7,9 @@ namespace environment::earth {
 	namespace ellipsoid {
 		using math::Float;
 
-		class ellipsoid {
+		class Ellipsoid {
 		public:
-			constexpr ellipsoid(Float a, Float f_inv) : a(a), f_inv(f_inv),
+			constexpr Ellipsoid(Float a, Float f_inv) : a(a), f_inv(f_inv),
 				f(0.0), b(0.0), e(0.0), e2(0.0)
 			{
 				calc_parameters();
@@ -45,18 +45,18 @@ namespace environment::earth {
 		};
 
 		// https://www.jmu.edu/cisr/research/sic/standards/ellipsoid.htm
-		constexpr auto Airy_1830			= ellipsoid(6'377'563,		299.33);
-		constexpr auto Everest_1830			= ellipsoid(6'377'276.3,	300.80);
-		constexpr auto Bessel_1841			= ellipsoid(6'377'397.2,	299.15);
-		constexpr auto Clarke_1866			= ellipsoid(6'378'206.4,	294.98);
-		constexpr auto Clarke_1880			= ellipsoid(6'378'249.2,	293.47);
-		constexpr auto International_1924	= ellipsoid(6'378'388,		297);
-		constexpr auto Krasovsky_1924		= ellipsoid(6'378'245,		298.3);
+		constexpr auto Airy_1830			= Ellipsoid(6'377'563,		299.33);
+		constexpr auto Everest_1830			= Ellipsoid(6'377'276.3,	300.80);
+		constexpr auto Bessel_1841			= Ellipsoid(6'377'397.2,	299.15);
+		constexpr auto Clarke_1866			= Ellipsoid(6'378'206.4,	294.98);
+		constexpr auto Clarke_1880			= Ellipsoid(6'378'249.2,	293.47);
+		constexpr auto International_1924	= Ellipsoid(6'378'388,		297);
+		constexpr auto Krasovsky_1924		= Ellipsoid(6'378'245,		298.3);
 		constexpr auto International_Astronomical_Union_1968
-											= ellipsoid(6'378'160,		298.25);
-		constexpr auto WGS72				= ellipsoid(6'378'135,		298.26);
-		constexpr auto GRS80				= ellipsoid(6'378'137,		298.26);
-		constexpr auto WGS84				= ellipsoid(GRS80.a,		298.25722);
+											= Ellipsoid(6'378'160,		298.25);
+		constexpr auto WGS72				= Ellipsoid(6'378'135,		298.26);
+		constexpr auto GRS80				= Ellipsoid(6'378'137,		298.26);
+		constexpr auto WGS84				= Ellipsoid(GRS80.a,		298.25722);
 	}
 }
 

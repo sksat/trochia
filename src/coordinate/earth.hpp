@@ -5,6 +5,7 @@
 
 namespace coordinate::earth {
 	using namespace environment::earth;
+	using ellipsoid::Ellipsoid;
 
 	class LLH {
 	public:
@@ -14,9 +15,9 @@ namespace coordinate::earth {
 
 	class ECEF {
 	public:
-		ECEF(ellipsoid::ellipsoid elp=ellipsoid::WGS84) : elp(elp) {}
+		ECEF(Ellipsoid elp=ellipsoid::WGS84) : elp(elp) {}
 
-		ellipsoid::ellipsoid elp;
+		Ellipsoid elp;
 		Vector3 vec;
 	};
 
