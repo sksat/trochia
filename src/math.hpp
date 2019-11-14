@@ -20,6 +20,20 @@ namespace math {
 	constexpr Float pi = 3.141592653589793238462643383279;
 
 	// func
+	template<typename T>
+	constexpr auto sqrt(const T &s) -> const Float {
+		// babylonian method
+
+		T x = s / 2.0;
+		T last = 0.0;
+
+		while(x != last){
+			last = x;
+			x = (x + s/x) / 2.0;
+		}
+		return x;
+	}
+
 	constexpr auto deg2rad(const Float &deg) -> const Float {
 		return deg * (pi / 180.0);
 	}

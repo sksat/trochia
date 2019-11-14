@@ -21,13 +21,13 @@ namespace environment::earth {
 				b = a * (f_inv - 1.0) / f_inv;
 
 				const auto f_tmp = 2.0 * f_inv - 1.0;
-				e = std::sqrt(f_tmp) / f_inv;
+				e = math::sqrt(f_tmp) / f_inv;
 				e2= f_tmp / (f_inv * f_inv);
 			}
 
 			constexpr auto W(const Float &lat) const -> const Float {
 				const auto sin2	= std::sin(lat) * std::sin(lat);
-				return std::sqrt(1.0 - e2*sin2);
+				return math::sqrt(1.0 - e2*sin2);
 			}
 
 			constexpr auto N(const Float &lat) const -> const Float {
