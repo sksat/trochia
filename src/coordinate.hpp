@@ -10,6 +10,12 @@ namespace coordinate {
 
 	using optFloat = std::optional<Float>;
 
+	namespace earth {
+		class LLH;
+		class ECEF;
+		class ECI;
+	}
+
 	namespace local {
 		class NED;
 		class ENU;
@@ -21,6 +27,7 @@ namespace coordinate {
 }
 
 #include "coordinate/dcm.hpp"
+#include "coordinate/earth.hpp"
 #include "coordinate/local.hpp"
 #include "coordinate/body.hpp"
 
