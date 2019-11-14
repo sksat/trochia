@@ -4,6 +4,7 @@
 #include "simulation.hpp"
 
 #include "rocket.hpp"
+#include "environment/launcher.hpp"
 #include "environment/gravity.hpp"
 
 using math::Float;
@@ -57,6 +58,8 @@ auto do_simulation(Simulation &sim) -> void {
 	// init
 	rocket.time = 0.0;
 
+	const auto launcher = environment::Launcher(5.0, 90.0, 80.0);
+
 	auto &pos = rocket.pos;
 	pos.up(0.0);
 	pos.east(0.0);
@@ -64,7 +67,7 @@ auto do_simulation(Simulation &sim) -> void {
 	rocket.vel.vec.setZero();
 	rocket.acc.vec.setZero();
 
-	rocket.quat = math::euler2quat(0.0, math::deg2rad(90.0), 0.0);
+	rocket.quat = launcher.get_quat();
 
 	// main loop
 	size_t step = 0;

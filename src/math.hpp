@@ -14,6 +14,8 @@ namespace math {
 	using Matrix3	= Eigen::Matrix<Float, 3, 3>;
 	using Quaternion= Eigen::Quaternion<Float>;
 
+	using AngleAxis	= Eigen::AngleAxis<Float>;
+
 	// constant
 	constexpr Float pi = 3.141592653589793238462643383279;
 
@@ -25,6 +27,7 @@ namespace math {
 		return rad * (180.0 / pi);
 	}
 
+	[[deprecated("please use AngleAxis")]]
 	auto euler2quat(const Float &roll, const Float &pitch, const Float &yaw) -> const Quaternion {
 		using Eigen::AngleAxisd;
 
