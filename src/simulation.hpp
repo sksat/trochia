@@ -12,4 +12,6 @@ public:
 	Rocket rocket;
 };
 
+auto do_simulation(Simulation &sim) -> void;
+
 #endif
