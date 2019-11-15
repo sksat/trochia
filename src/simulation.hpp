@@ -9,7 +9,7 @@ public:
 	math::Float timeout = 60.0 * 10;
 	math::Float dt, output_dt;
 
-	Rocket rocket;
+	rocket::Rocket rocket;
 };
 
 auto do_simulation(Simulation &sim) -> void;

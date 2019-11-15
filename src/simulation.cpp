@@ -40,10 +40,7 @@ auto do_simulation(Simulation &sim) -> void {
 			0.0
 		);
 
-		auto acc = force;
-		acc.vec /= rocket.weight();
-
-		rocket.acc = acc.to_local<Rocket::LocalFrame>(rocket.quat);
+		rocket.force(force.to_local<rocket::LocalFrame>(rocket.quat));
 
 		// gravity
 		if(rocket.pos.altitude() > 0.0)

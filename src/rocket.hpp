@@ -7,29 +7,20 @@
 #include "coordinate.hpp"
 #include "engine.hpp"
 
-// TODO namespace
+#include "object.hpp"
 
-class Rocket {
-public:
+namespace rocket {
 	using LocalFrame = coordinate::local::NED;
 
-	std::string name;
-	Engine engine;
+	class Rocket : public object::Object<LocalFrame> {
+	public:
+		std::string name;
+		Engine engine;
 
-	math::Float time;			// from ignition
-	LocalFrame pos, vel, acc;
-	math::Quaternion quat;
-
-	auto weight() const  -> const math::Float {
-		return 10.0 + engine.weight(time);
-	}
-
-	// update(euler method)
-	auto update(const math::Float &dt) -> void {
-		vel += acc * dt;
-		pos += vel * dt;
-		time += dt;
-	}
-};
+		auto weight() const -> const math::Float {
+			return 10.0 + engine.weight(this->time);
+		}
+	};
+}
 
 #endif
