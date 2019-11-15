@@ -22,7 +22,7 @@ namespace coordinate::earth {
 	};
 
 	// https://vldb.gsi.go.jp/sokuchi/surveycalc/surveycalc/trans_alg/trans_alg.html
-	auto llh2ecef(const LLH &llh, ECEF &ecef, const Float n_g=0.0) -> void {
+	inline auto llh2ecef(const LLH &llh, ECEF &ecef, const Float n_g=0.0) -> void {
 		auto &v = ecef.vec;
 		const auto h = llh.height + n_g;
 		const auto N = ecef.elp.N(llh.lat);
@@ -33,7 +33,7 @@ namespace coordinate::earth {
 		v.z() = (N * (1.0 - ecef.elp.e2)) * std::sin(llh.lat);
 	}
 
-	auto ecef2llh(const ECEF &ecef, LLH &llh) -> void {
+	inline auto ecef2llh(const ECEF &ecef, LLH &llh) -> void {
 		const auto &elp = ecef.elp;
 		const auto &v = ecef.vec;
 		llh.lon = std::atan(v.y() / v.x());

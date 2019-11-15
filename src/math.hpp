@@ -64,7 +64,7 @@ namespace math {
 	}
 
 	[[deprecated("please use AngleAxis")]]
-	auto euler2quat(const Float &roll, const Float &pitch, const Float &yaw) -> const Quaternion {
+	inline auto euler2quat(const Float &roll, const Float &pitch, const Float &yaw) -> const Quaternion {
 		using Eigen::AngleAxisd;
 
 		Quaternion q;
@@ -74,11 +74,11 @@ namespace math {
 		return q;
 	}
 
-	auto quat2euler(const Quaternion &q) -> const Vector3 {
+	inline auto quat2euler(const Quaternion &q) -> const Vector3 {
 		return q.toRotationMatrix().eulerAngles(0, 1, 2);
 	}
 
-	auto lerp(const Float &a, const Float &b, const Float &t) -> const Float {
+	inline auto lerp(const Float &a, const Float &b, const Float &t) -> const Float {
 		return a + t*(b - a);
 	}
 }
