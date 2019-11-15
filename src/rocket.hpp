@@ -26,8 +26,8 @@ public:
 
 	// update(euler method)
 	auto update(const math::Float &dt) -> void {
-		vel.vec += acc.vec * dt;
-		pos.vec += vel.vec * dt;
+		vel += acc * dt;
+		pos += vel * dt;
 		time += dt;
 	}
 };
