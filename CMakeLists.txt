@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 # project config
 project(rocket_simulator CXX)
 set(SIMULATOR sim.exe)
-add_executable(${SIMULATOR} src/main.cpp)
+add_executable(${SIMULATOR} src/main.cpp src/io/config.cpp)
 
 # dependency
 set(DEPS_ROOT        ${PROJECT_BINARY_DIR}/deps)

@@ -1,9 +1,11 @@
 #include <iostream>
+#include <vector>
 #include <string>
 #include <toml.hpp>
 #include "simulation.hpp"
 
 #include "rocket.hpp"
+#include "io/config.hpp"
 #include "environment/launcher.hpp"
 #include "environment/gravity.hpp"
 
@@ -12,35 +14,20 @@ using math::Float;
 auto do_simulation(Simulation &sim) -> void;
 
 auto main(int argc, char **argv) -> int {
-	Simulation sim;
+	std::vector<Simulation> sims;
 
 	std::cout << "rocket simulator by sksat" << std::endl;
 
 	std::cout << "loading config file ...";
-	{
-		using namespace toml;
-		const auto config = parse("config.toml");
-
-		const auto &cfg_sim = find(config, "simulation");
-		const auto &cfg_output = find(cfg_sim, "output");
-		sim.dt = cfg_sim.at("dt").as_floating();
-		sim.output_dt = cfg_output.at("dt").as_floating();
-
-		const auto &rocket = find(config, "rocket");
-		const auto stage = find<std::vector<toml::table>>(rocket, "stage");
-		if(stage.size() != 1){
-			std::cerr
-				<< "multistage rocket is not implemented now. sorry."
-				<< std::endl;
-			return -1;
-		}
-
-		const auto engine = stage[0].at("engine");
-		sim.rocket.engine.load_eng(engine.as_string());
-	}
+	io::config::load("config.toml", sims);
+	std::cout << std::endl;
 
 	std::cout << "start simulation" << std::endl;
-	do_simulation(sim);
+
+	std::cout << sims.size() << std::endl;
+	for(auto &s : sims){
+		do_simulation(s);
+	}
 
 	return 0;
 }
