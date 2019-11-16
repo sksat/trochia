@@ -1,6 +1,7 @@
 #include <iostream>
 #include "math.hpp"
 #include "simulation.hpp"
+#include "solver/euler.hpp"
 #include "environment/launcher.hpp"
 #include "environment/gravity.hpp"
 
@@ -47,7 +48,7 @@ auto do_simulation(Simulation &sim) -> void {
 			environment::gravity(rocket.pos, rocket.acc);
 
 		// update
-		rocket.update(dt);
+		solver::euler(rocket, dt);
 		step++;
 
 		// TODO save to file

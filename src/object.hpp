@@ -16,15 +16,9 @@ namespace object {
 
 		virtual auto weight() const -> const math::Float = 0;
 
-		auto force(const Frame &f) -> void {
+		inline auto force(const Frame &f) -> void {
 			this->acc = f;
 			this->acc /= this->weight();
-		}
-
-		auto update(const math::Float &dt) -> void {
-			vel += acc * dt;
-			pos += vel * dt;
-			time += dt;
 		}
 	};
 }
