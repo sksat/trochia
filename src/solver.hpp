@@ -7,57 +7,39 @@
 namespace solver {
 	using math::Float;
 
+	// 変数xと，導関数dx/dt = f(t, x)を使って数値積分するソルバ群
+
+	// f(t, x)の関数の型
 	template<typename T>
-	class func_t {
-	public:
-		using type = auto (*)(const Float &t, const T &x) -> T;
+	using func_t = auto (*)(const Float &t, const T &x) -> const T;
 
-		func_t(const type fn) : fn(fn) {}
-
-		type fn;
-
-		auto operator()(const Float &t, const T &x) const -> T {
-			return this->fn(t, x);
-		}
-	};
-
+	// ソルバのベースクラス
 	template<typename T>
 	class solver {
 	public:
-		solver(T &x, func_t<T> f) : x(x), f(f) {}
+		solver(T &x, func_t<T> f) : t(0.0), x(x), f(f) {}
 
+		T t;
 		std::reference_wrapper<T> x;
 		func_t<T> f;
 
-		virtual auto step(const Float &t, const Float &dt) -> void = 0;
+		// ステップ実行
+		virtual auto step(const Float &dt) -> void = 0;
 	};
 
+	// オイラー法
 	template<typename T>
 	class euler : public solver<T> {
 	public:
-		euler(T &x, func_t<T> f) : solver<T>(x, f) {}
+		euler(T &x, func_t<T> f) : solver<T>(x,f) {}
 
-		auto step(const Float &t, const Float &dt) -> void {
-			const auto &x = this->x.get();
+		auto step(const Float &dt) -> void {
+			const auto &t = this->t;
+			const auto &x = this->x;
 			const auto &f = this->f;
-			this->x.get() = x + dt*f(t, x);
-		}
-	};
 
-	template<typename T>
-	class RK4 : public solver<T> {
-	public:
-		RK4(T &x, func_t<T> f) : solver<T>(x, f) {}
-
-		auto step(const Float &t, const Float &dt) -> void {
-			const auto &x = this->x.get();
-			const auto &f = this->f;
-			const auto dt_2 = 0.5*dt;
-			const auto k1 = f(t,			x);
-			const auto k2 = f(t + dt_2,		x + k1*dt_2);
-			const auto k3 = f(t + dt_2,		x + k2*dt_2);
-			const auto k4 = f(t + dt,		x + k3*dt);
-			this->x.get() = x + dt_2 * (k1 + 2*k2 + 2*k3 + k4);
+			this->x.get() = x + dt * f(t, x);
+			this->t += dt;
 		}
 	};
 }
