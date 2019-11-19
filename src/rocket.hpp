@@ -14,8 +14,15 @@ namespace rocket {
 
 	class Rocket : public object::Object<LocalFrame> {
 	public:
+		Rocket(){}
+		Rocket(const object::Object<LocalFrame> &o) : object::Object<LocalFrame>(o) {}
+
 		std::string name;
 		Engine engine;
+
+		static auto dx(const math::Float &t, const Rocket &r) -> const Rocket {
+			return object::Object<LocalFrame>::dx(t, r);
+		}
 
 		auto weight() const -> const math::Float {
 			return 10.0 + engine.weight(this->time);

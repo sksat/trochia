@@ -1,7 +1,7 @@
 #include <iostream>
 #include "math.hpp"
 #include "simulation.hpp"
-#include "solver/euler.hpp"
+#include "solver.hpp"
 #include "environment/launcher.hpp"
 #include "environment/gravity.hpp"
 
@@ -29,6 +29,8 @@ auto do_simulation(Simulation &sim) -> void {
 
 	rocket.quat = launcher.get_quat();
 
+	auto s = solver::euler(rocket, rocket::Rocket::dx);
+
 	// main loop
 	size_t step = 0;
 	while(true){
@@ -48,7 +50,7 @@ auto do_simulation(Simulation &sim) -> void {
 			environment::gravity(rocket.pos, rocket.acc);
 
 		// update
-		solver::euler(rocket, dt);
+		s.step(dt);
 		step++;
 
 		// TODO save to file

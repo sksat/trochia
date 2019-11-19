@@ -19,7 +19,7 @@ namespace solver {
 	public:
 		solver(T &x, func_t<T> f) : t(0.0), x(x), f(f) {}
 
-		T t;
+		math::Float t;
 		std::reference_wrapper<T> x;
 		func_t<T> f;
 
@@ -35,10 +35,10 @@ namespace solver {
 
 		auto step(const Float &dt) -> void {
 			const auto &t = this->t;
-			const auto &x = this->x;
+			const auto &x = this->x.get();
 			const auto &f = this->f;
 
-			this->x.get() = x + dt * f(t, x);
+			this->x.get() += f(t, x) * dt;
 			this->t += dt;
 		}
 	};
