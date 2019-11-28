@@ -1,6 +1,7 @@
 #include <iostream>
 #include "math.hpp"
 #include "simulation.hpp"
+#include "solver.hpp"
 #include "environment/launcher.hpp"
 #include "environment/gravity.hpp"
 
@@ -28,11 +29,15 @@ auto do_simulation(Simulation &sim) -> void {
 
 	rocket.quat = launcher.get_quat();
 
+	auto s = solver::RK4(rocket, rocket::Rocket::dx);
+
 	// main loop
 	size_t step = 0;
 	while(true){
+		const auto &time = s.t;
+
 		// thrust
-		const auto thrust = rocket.engine.thrust(rocket.time); // first stage only
+		const auto thrust = rocket.engine.thrust(time); // first stage only
 
 		const auto force = coordinate::body::Body(
 			thrust,
@@ -40,30 +45,27 @@ auto do_simulation(Simulation &sim) -> void {
 			0.0
 		);
 
-		auto acc = force;
-		acc.vec /= rocket.weight();
-
-		rocket.acc = acc.to_local<Rocket::LocalFrame>(rocket.quat);
+		rocket.force(force.to_local<rocket::LocalFrame>(rocket.quat));
 
 		// gravity
 		if(rocket.pos.altitude() > 0.0)
 			environment::gravity(rocket.pos, rocket.acc);
 
 		// update
-		rocket.update(dt);
+		s.step(dt);
 		step++;
 
 		// TODO save to file
 
 		// log
 		if(step % output_rate == 0){
-			std::cout << rocket.time << " " << rocket.pos.altitude() << std::endl;
+			std::cout << time << " " << rocket.pos.altitude() << std::endl;
 		}
 
 		if(step > 100 && rocket.pos.altitude() <= 0.0)
 			break;
 
-		if(rocket.time > timeout)
+		if(time > timeout)
 			break;
 	}
 }
