@@ -21,34 +21,6 @@ namespace object {
 			return ret;
 		}
 
-		auto operator*(const math::Float &dt) const -> const Object {
-			Object ret = *this;
-			ret.pos *= dt;
-			ret.vel *= dt;
-			return ret;
-		}
-
-		auto operator/(const math::Float &a) const -> const Object {
-			Object ret = *this;
-			ret.pos /= a;
-			ret.vel /= a;
-			return ret;
-		}
-
-		auto operator+(const Object &o) const -> const Object {
-			Object ret = *this;
-			ret.pos += o.pos;
-			ret.vel += o.vel;
-			return ret;
-		}
-
-		auto operator+=(const Object &o) -> const Object {
-			this->pos += o.pos;
-			this->vel += o.vel;
-			//this->quat+= o.quat;
-			return *this;
-		}
-
 		virtual auto weight() const -> const math::Float {
 			return 0.0;
 		}
@@ -56,6 +28,51 @@ namespace object {
 		inline auto force(const Frame &f) -> void {
 			this->acc = f;
 			this->acc /= this->weight();
+		}
+
+		// operator
+		auto operator+=(const Object &o) -> const Object {
+			this->pos += o.pos;
+			this->vel += o.vel;
+			return *this;
+		}
+		auto operator-=(const Object &o) -> const Object {
+			this->pos -= o.pos;
+			this->vel -= o.vel;
+			return *this;
+		}
+
+		auto operator*=(const math::Float &a) -> const Object {
+			this->pos *= a;
+			this->vel *= a;
+			return *this;
+		}
+		auto operator/=(const math::Float &a) -> const Object {
+			this->pos /= a;
+			this->vel /= a;
+			return *this;
+		}
+
+		auto operator+(const Object &o) const -> const Object {
+			Object ret = *this;
+			ret += o;
+			return ret;
+		}
+		auto operator-(const Object &o) const -> const Object {
+			Object ret = *this;
+			ret -= o;
+			return ret;
+		}
+
+		auto operator*(const math::Float &a) const -> const Object {
+			Object ret = *this;
+			ret *= a;
+			return ret;
+		}
+		auto operator/(const math::Float &a) const -> const Object {
+			Object ret = *this;
+			ret /= a;
+			return ret;
 		}
 	};
 }
