@@ -6,7 +6,7 @@
 
 class Simulation {
 public:
-	math::Float timeout = 60.0 * 10;
+	math::Float timeout = 60.0;
 	math::Float dt, output_dt;
 
 	rocket::Rocket rocket;

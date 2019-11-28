@@ -22,12 +22,24 @@ namespace object {
 		}
 
 		auto operator*(const math::Float &dt) const -> const Object {
-			Object o;
-			o.pos = this->pos;
-			o.vel = this->vel;
-			o.pos *= dt;
-			o.vel *= dt;
-			return o;
+			Object ret = *this;
+			ret.pos *= dt;
+			ret.vel *= dt;
+			return ret;
+		}
+
+		auto operator/(const math::Float &a) const -> const Object {
+			Object ret = *this;
+			ret.pos /= a;
+			ret.vel /= a;
+			return ret;
+		}
+
+		auto operator+(const Object &o) const -> const Object {
+			Object ret = *this;
+			ret.pos += o.pos;
+			ret.vel += o.vel;
+			return ret;
 		}
 
 		auto operator+=(const Object &o) -> const Object {

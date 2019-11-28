@@ -29,7 +29,7 @@ auto do_simulation(Simulation &sim) -> void {
 
 	rocket.quat = launcher.get_quat();
 
-	auto s = solver::euler(rocket, rocket::Rocket::dx);
+	auto s = solver::RK4(rocket, rocket::Rocket::dx);
 
 	// main loop
 	size_t step = 0;
@@ -65,7 +65,7 @@ auto do_simulation(Simulation &sim) -> void {
 		if(step > 100 && rocket.pos.altitude() <= 0.0)
 			break;
 
-		if(rocket.time > timeout)
+		if(time > timeout)
 			break;
 	}
 }
