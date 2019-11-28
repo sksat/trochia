@@ -18,7 +18,11 @@ auto do_simulation(Simulation &sim) -> void {
 	// init
 	rocket.time = 0.0;
 
-	const auto launcher = environment::Launcher(5.0, 90.0, 80.0);
+	auto launcher = environment::Launcher(5.0);	// 5.0mのランチャ
+
+	// TODO: set launcher position
+	launcher.azimuth(90.0);		// 方位角(deg)
+	launcher.elevation(80.0);	// 仰角(deg)
 
 	auto &pos = rocket.pos;
 	pos.up(0.0);
@@ -27,7 +31,7 @@ auto do_simulation(Simulation &sim) -> void {
 	rocket.vel.vec.setZero();
 	rocket.acc.vec.setZero();
 
-	rocket.quat = launcher.get_quat();
+	rocket.quat = launcher.get_angle();
 
 	auto s = solver::RK4(rocket, rocket::Rocket::dx);
 
