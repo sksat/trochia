@@ -18,7 +18,7 @@ auto main(int argc, char **argv) -> int {
 
 	std::cout << "start simulation" << std::endl;
 
-	std::cout << sims.size() << std::endl;
+	std::cout << "sim num: " << sims.size() << std::endl;
 	for(auto &s : sims){
 		do_simulation(s);
 	}
