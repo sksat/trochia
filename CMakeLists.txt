@@ -9,8 +9,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 # project config
 project(rocket_simulator CXX)
-set(SIMULATOR sim.exe)
-add_executable(${SIMULATOR} src/main.cpp src/simulation.cpp src/io/config.cpp)
+set(TROCHIA trochia)
+add_executable(${TROCHIA} src/main.cpp src/simulation.cpp src/io/config.cpp)
 
 # dependency
 set(DEPS_ROOT        ${PROJECT_BINARY_DIR}/deps)
@@ -30,8 +30,6 @@ ExternalProject_Add(
 )
 include_directories(${DEPS_INCLUDE_DIR}/eigen3)
 
-add_dependencies(${SIMULATOR} eigen)
-
 ## toml11
 set(TOML11_BUILD_DIR ${DEPS_BUILD_DIR}/toml11)
 ExternalProject_Add(
@@ -42,4 +40,4 @@ ExternalProject_Add(
 	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT} -Dtoml11_BUILD_TEST=OFF
 )
 
-add_dependencies(${SIMULATOR} toml11)
+add_dependencies(${TROCHIA} eigen toml11)
