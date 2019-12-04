@@ -10,15 +10,15 @@ using math::Float;
 auto main(int argc, char **argv) -> int {
 	std::vector<Simulation> sims;
 
-	std::cout << "rocket simulator by sksat" << std::endl;
+	std::cerr << "rocket simulator by sksat" << std::endl;
 
-	std::cout << "loading config file ...";
+	std::cerr << "loading config file ...";
 	io::config::load("config.toml", sims);
-	std::cout << std::endl;
+	std::cerr << std::endl;
 
-	std::cout << "start simulation" << std::endl;
+	std::cerr << "start simulation" << std::endl;
 
-	std::cout << "sim num: " << sims.size() << std::endl;
+	std::cerr << "sim num: " << sims.size() << std::endl;
 	for(auto &s : sims){
 		do_simulation(s);
 	}
