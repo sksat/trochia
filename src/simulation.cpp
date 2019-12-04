@@ -39,6 +39,7 @@ auto do_simulation(Simulation &sim) -> void {
 	size_t step = 0;
 	while(true){
 		const auto &time = s.t;
+		rocket.time = time;
 
 		// thrust
 		const auto thrust = rocket.engine.thrust(time); // first stage only
@@ -63,7 +64,9 @@ auto do_simulation(Simulation &sim) -> void {
 
 		// log
 		if(step % output_rate == 0){
-			std::cout << time << " " << rocket.pos.altitude() << std::endl;
+			std::cout << time << " "
+				<< rocket.pos.altitude() << " "
+				<< rocket.lcg() << std::endl;
 		}
 
 		if(step > 100 && rocket.pos.altitude() <= 0.0)
