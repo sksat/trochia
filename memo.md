@@ -13,3 +13,21 @@
 	- ピッチ角:	Y軸周りの回転角
 	- ヨー角:	Z軸周りの回転角
 		- ランチャ仰角がピッチ角と対応する
+
+## 大気モデル
+
+### ISA: International Standard Atmosphere
+
+- [ISO規格](https://www.iso.org/standard/7472.html)
+- [JIS(ISOの翻訳)](http://kikakurui.com/w/W0201-1990-01.html)
+
+### USSA1976: U.S. Standard Atmosphere 1976
+
+- -5km〜86km
+- [元論文](https://ntrs.nasa.gov/search.jsp?R=19770009539)
+
+#### 実装例
+
+- [PDAS](https://github.com/jgoppert/pdas/blob/master/atmos/ussa1976.dpr)
+- [1976 Standard Atmosphere Calculator](https://www.digitaldutch.com/atmoscalc/index.htm)
+- [cl-ussa1976](https://github.com/mmullins/cl-ussa1976)
