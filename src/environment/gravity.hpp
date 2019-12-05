@@ -20,14 +20,9 @@ namespace environment {
 	// gravitation model
 	// other planet
 
-	template<typename T>
-	inline auto gravity(const T &pos, T &acc) -> void {
-		using namespace constant;
-
-		const auto tmp = re / (re + pos.altitude());
-		const auto g = gn * tmp * tmp;
-
-		acc.down(acc.down() + g);
+	inline auto gravity(const math::Float &altitude) -> const math::Float {
+		const auto tmp = constant::re / (constant::re + altitude);
+		return constant::gn * tmp * tmp;
 	}
 }
 

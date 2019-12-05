@@ -53,8 +53,10 @@ auto do_simulation(Simulation &sim) -> void {
 		rocket.force(force.to_local<rocket::LocalFrame>(rocket.quat));
 
 		// gravity
-		if(rocket.pos.altitude() > 0.0)
-			environment::gravity(rocket.pos, rocket.acc);
+		if(rocket.pos.altitude() > 0.0){
+			const auto g = environment::gravity(rocket.pos.altitude());
+			rocket.acc.down(rocket.acc.down() + g);
+		}
 
 		// update
 		s.step(dt);
@@ -66,7 +68,7 @@ auto do_simulation(Simulation &sim) -> void {
 		if(step % output_rate == 0){
 			std::cout << time << " "
 				<< rocket.pos.altitude() << " "
-				<< rocket.lcg() << std::endl;
+				<< environment::gravity(rocket.pos.altitude()) << std::endl;
 		}
 
 		if(step > 100 && rocket.pos.altitude() <= 0.0)
