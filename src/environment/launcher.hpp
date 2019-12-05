@@ -3,7 +3,7 @@
 
 #include "../math.hpp"
 
-namespace environment {
+namespace trochia::environment {
 	using math::Float;
 
 	class Launcher {

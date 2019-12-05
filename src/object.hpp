@@ -3,7 +3,7 @@
 
 #include "math.hpp"
 
-namespace object {
+namespace trochia::object {
 	template<typename Frame>
 	class Object {
 	public:

@@ -4,14 +4,16 @@
 #include "math.hpp"
 #include "rocket.hpp"
 
-class Simulation {
-public:
-	math::Float timeout = 60.0;
-	math::Float dt, output_dt;
+namespace trochia {
+	class Simulation {
+	public:
+		math::Float timeout = 60.0;
+		math::Float dt, output_dt;
 
-	rocket::Rocket rocket;
-};
+		rocket::Rocket rocket;
+	};
 
-auto do_simulation(Simulation &sim) -> void;
+	auto do_simulation(Simulation &sim) -> void;
+}
 
 #endif

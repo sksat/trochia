@@ -4,7 +4,7 @@
 #include <functional>
 #include "math.hpp"
 
-namespace solver {
+namespace trochia::solver {
 	using math::Float;
 
 	// 変数xと，導関数dx/dt = f(t, x)を使って数値積分するソルバ群

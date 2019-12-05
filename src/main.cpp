@@ -5,15 +5,13 @@
 #include "simulation.hpp"
 #include "io/config.hpp"
 
-using math::Float;
-
 auto main(int argc, char **argv) -> int {
-	std::vector<Simulation> sims;
+	std::vector<trochia::Simulation> sims;
 
 	std::cerr << "rocket simulator by sksat" << std::endl;
 
 	std::cerr << "loading config file ...";
-	io::config::load("config.toml", sims);
+	trochia::io::config::load("config.toml", sims);
 	std::cerr << std::endl;
 
 	std::cerr << "start simulation" << std::endl;

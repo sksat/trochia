@@ -4,7 +4,7 @@
 #include <optional>
 #include "math.hpp"
 
-namespace coordinate {
+namespace trochia::coordinate {
 	using math::Float;
 	using math::Vector3, math::Matrix3, math::Quaternion;
 

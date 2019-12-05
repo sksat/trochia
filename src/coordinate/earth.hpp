@@ -3,7 +3,7 @@
 
 #include "../environment/earth.hpp"
 
-namespace coordinate::earth {
+namespace trochia::coordinate::earth {
 	using namespace environment::earth;
 	using ellipsoid::Ellipsoid;
 

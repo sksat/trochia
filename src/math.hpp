@@ -4,7 +4,7 @@
 #include <cmath>
 #include <Eigen/Geometry>
 
-namespace math {
+namespace trochia::math {
 	// type
 	using Float = double;
 	

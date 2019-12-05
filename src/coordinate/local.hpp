@@ -1,7 +1,7 @@
 #ifndef COORDINATE_LOCAL_HPP_
 #define COORDINATE_LOCAL_HPP_
 
-namespace coordinate::local {
+namespace trochia::coordinate::local {
 	class Base {
 	public:
 		Base() : vec(0.0, 0.0, 0.0) {}

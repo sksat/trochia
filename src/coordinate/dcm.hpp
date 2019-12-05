@@ -1,7 +1,7 @@
 #ifndef COORDINATE_DCM_HPP_
 #define COORDINATE_DCM_HPP_
 
-namespace coordinate::dcm {
+namespace trochia::coordinate::dcm {
 	inline auto ned2body(const Quaternion &q_) -> const Matrix3 {
 		Matrix3 mat;
 		const auto &q = q_.coeffs();

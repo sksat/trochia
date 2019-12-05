@@ -1,7 +1,7 @@
 #ifndef COORDINATE_BODY_HPP_
 #define COORDINATE_BODY_HPP_
 
-namespace coordinate::body {
+namespace trochia::coordinate::body {
 	class Body {
 	public:
 		Body() : vec(0.0, 0.0, 0.0) {}

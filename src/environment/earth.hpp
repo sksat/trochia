@@ -3,7 +3,7 @@
 
 #include "../math.hpp"
 
-namespace environment::earth {
+namespace trochia::environment::earth {
 	namespace ellipsoid {
 		using math::Float;
 

@@ -3,7 +3,7 @@
 
 #include "../math.hpp"
 
-namespace environment {
+namespace trochia::environment {
 	namespace constant {
 		// 2018 CODATA recommended values
 		constexpr math::Float G		= 6.6743015e-11;

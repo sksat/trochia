@@ -9,7 +9,7 @@
 
 #include "object.hpp"
 
-namespace rocket {
+namespace trochia::rocket {
 	using LocalFrame = coordinate::local::NED;
 
 	class Rocket : public object::Object<LocalFrame> {

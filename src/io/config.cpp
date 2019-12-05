@@ -3,7 +3,7 @@
 #include "../simulation.hpp"
 #include "config.hpp"
 
-namespace io::config {
+namespace trochia::io::config {
 
 auto load(const std::string &fname, std::vector<Simulation> &sims) -> void {
 	using namespace toml;
