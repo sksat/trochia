@@ -26,19 +26,23 @@
 #include "simulation.hpp"
 #include "io/config.hpp"
 
+auto version() -> void {
+	using std::endl;
+	std::cerr
+		<< "Trochia ?.??"
+		<< R"(
+Copyright (C) 2019 sksat <sksat@sksat.net>
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions; see LICENSE for details.
+)"
+		<< endl;
+}
+
 auto main(int argc, char **argv) -> int {
 	std::vector<trochia::Simulation> sims;
 
-	std::cerr << "Trochia: rocket simulator by sksat" << std::endl;
-
-	std::cerr
-		<< R"(
-    Trochia  Copyright (C) 2019  sksat <sksat@sksat.net>
-    This program comes with ABSOLUTELY NO WARRANTY; for details execute 'trochia --version'
-    This is free software, and you are welcome to redistribute it
-    under certain conditions; execute 'trochia --version' for details.
-
-)";
+	version();
 
 	std::cerr << "loading config file ...";
 	trochia::io::config::load("config.toml", sims);
