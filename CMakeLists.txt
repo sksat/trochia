@@ -55,6 +55,8 @@ ExternalProject_Add(
 	URL				https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz
 	PREFIX			${EIGEN_BUILD_DIR}
 	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+	BUILD_COMMAND	""
+	TEST_COMMAND	""
 )
 include_directories(${DEPS_INCLUDE_DIR}/eigen3)
 add_definitions(-DEIGEN_MPL2_ONLY)
