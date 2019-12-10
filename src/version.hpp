@@ -19,29 +19,30 @@
  *
  * ----------------------------------------------------------------------- */
 
+#ifndef TROCHIA_VERSION_HPP_
+#define TROCHIA_VERSION_HPP_
+
+#include <cstddef>
 #include <iostream>
-#include <vector>
-#include <string>
-#include <toml.hpp>
-#include "version.hpp"
-#include "simulation.hpp"
-#include "io/config.hpp"
 
-auto main(int argc, char **argv) -> int {
-	std::vector<trochia::Simulation> sims;
+namespace trochia::version {
+	constexpr size_t major = 0;
+	constexpr size_t minor = 0;
 
-	trochia::version::version();
-
-	std::cerr << "loading config file ...";
-	trochia::io::config::load("config.toml", sims);
-	std::cerr << std::endl;
-
-	std::cerr << "start simulation" << std::endl;
-
-	std::cerr << "sim num: " << sims.size() << std::endl;
-	for(auto &s : sims){
-		do_simulation(s);
+	auto version() -> void {
+		using std::endl;
+		std::cerr
+			<< "Trochia " << major << "." << minor
+			<< " (commit: " << GIT_COMMIT_ID << ")" << endl
+			<< "commit date: " << GIT_COMMIT_DATE << endl
+			<< R"(
+Copyright (C) 2019 sksat <sksat@sksat.net>
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions; see LICENSE for details.
+	)"
+			<< endl;
 	}
-
-	return 0;
 }
+
+#endif
