@@ -19,11 +19,17 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - uses: ilammy/msvc-dev-cmd@v1
-      if: matrix.os == 'windows-latest'
-    - name: configure
+    - name: prepare
       run: |
           cmake --help
           mkdir build
+    - name: configure
+      run: |
+          cd build
+          cmake ..
+    - name: configure for windows
+      if: matrix.os == 'windows-latest'
+      run: |
           cd build
           cmake -G "NMake Makefiles" ..
     - name: build on ${{ matrix.os }}
