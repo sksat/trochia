@@ -1,9 +1,28 @@
 # cmake common config
 cmake_minimum_required(VERSION 3.1)
 
+# Git commit info
+find_package(Git)
+if(GIT_FOUND)
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} log -1 --format='%H'
+		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+		OUTPUT_VARIABLE COMMIT_ID
+		ERROR_QUIET
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} log -1 --format='%ad'
+		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+		OUTPUT_VARIABLE COMMIT_DATE
+		ERROR_QUIET
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+	message(STATUS "commit id: ${COMMIT_ID}")
+	message(STATUS "commit date: ${COMMIT_DATE}")
+endif(GIT_FOUND)
+
 ## C++
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -DEIGEN_MPL2_ONLY")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -DEIGEN_MPL2_ONLY -DGIT_COMMIT_ID=\"${COMMIT_ID}\" -DGIT_COMMIT_DATE=\"${COMMIT_DATE}\"")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
