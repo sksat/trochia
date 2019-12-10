@@ -22,8 +22,9 @@ jobs:
       if: matrix.os == 'windows-latest'
     - name: configure
       run: |
+          cmake --help
           mkdir build
           cd build
-          cmake ..
+          cmake -G "NMake Makefiles" ..
     - name: build on ${{ matrix.os }}
       run: cmake --build build
