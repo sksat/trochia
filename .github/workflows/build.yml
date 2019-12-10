@@ -1,4 +1,4 @@
-name: build
+name: Build
 
 on:
   push:
@@ -10,24 +10,15 @@ on:
       - v*
 
 jobs:
-  build-ubuntu:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
     - uses: actions/checkout@v1
-    - name: build on ubuntu
-      run: |
-        mkdir build
-        cd build
-        cmake ..
-        make
-
-  build-mac:
-    runs-on: macos-latest
-
-    steps:
-    - uses: actions/checkout@v1
-    - name: build on macos
+    - name: build on ${{ matrix.os }}
       run: |
         mkdir build
         cd build
