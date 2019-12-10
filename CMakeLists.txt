@@ -24,7 +24,7 @@ include(ExternalProject)
 set(EIGEN_BUILD_DIR ${DEPS_BUILD_DIR}/eigen)
 ExternalProject_Add(
 	eigen
-	URL				https://github.com/eigenteam/eigen-git-mirror/archive/master.zip # https://bitbucket.org/eigen/eigen/get/3.3.7.zip
+	URL				https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz
 	PREFIX			${EIGEN_BUILD_DIR}
 	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
 )
