@@ -14,23 +14,34 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: configure
+      run: |
+          mkdir build
+          cd build
+          cmake ..
+    - name: build on ${{ matrix.os }}
+      run: make
+
+  build-windows:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
 
     steps:
     - uses: actions/checkout@v1
     - uses: ilammy/msvc-dev-cmd@v1
-    - name: prepare
+    - name: configure
       run: |
           cmake --help
           mkdir build
-    - name: configure
-      run: |
-          cd build
-          cmake ..
-    - name: configure for windows
-      if: matrix.os == 'windows-latest'
-      run: |
           cd build
           cmake -G "NMake Makefiles" ..
     - name: build on ${{ matrix.os }}
-      run: cmake --build build
+      run: |
+          cd build
+          nmake
