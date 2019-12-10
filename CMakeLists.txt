@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.1)
 
 ## C++
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
@@ -33,6 +32,14 @@ if(GIT_FOUND)
 	add_definitions(-DGIT_COMMIT_ID=\"${COMMIT_ID}\")
 	add_definitions(-DGIT_COMMIT_DATE=\"${COMMIT_DATE}\")
 endif(GIT_FOUND)
+
+# compile option
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+elseif(MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+endif()
+
 # dependency
 set(DEPS_ROOT        ${PROJECT_BINARY_DIR}/deps)
 set(DEPS_BUILD_DIR   ${DEPS_ROOT}/build)
