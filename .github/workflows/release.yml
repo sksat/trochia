@@ -3,11 +3,8 @@ name: Release
 on: release
 
 jobs:
-  release:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+  build:
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v1
