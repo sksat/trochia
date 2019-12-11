@@ -6,8 +6,6 @@ on:
       - master
       - develop
       - feature/*
-    tags:
-      - v*
 
 jobs:
   build:
