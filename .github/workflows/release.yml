@@ -17,10 +17,23 @@ jobs:
     - name: build on ubuntu
       run: cmake --build build --parallel
 
+    - name: create COPYING
+      run: |
+          touch COPYING
+          echo "Eigen (C++ template library for linear algebra)" >> COPYING
+          echo "-----------------------------------------------" >> COPYING
+          cat build/deps/build/eigen/src/eigen/COPYING.MPL2 >> COPYING
+          echo "" >> COPYING
+          echo "toml11 (C++11 header-only toml parser/encoder)"
+          echo "-----------------------------------------------" >> COPYING
+          cat build/deps/build/toml11/src/toml11/LICENSE >> COPYING
+
     - name: make archive file
       run: |
           mkdir trochia
           cp README.md trochia/
+          cp LICENSE trochia/
+          cp COPYING trochia/
           cp build/trochia trochia/
           zip -r trochia-linux.zip trochia/
     - name: Release
