@@ -1,0 +1,25 @@
+name: Release
+
+on: release
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: make release file
+      run: |
+          mkdir hoge
+          touch hoge/COPYING
+          mv README.md hoge
+          zip -r hoge.zip hoge/
+    - name: Release
+      uses: JasonEtco/upload-to-release@master
+      with:
+        args: hoge.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

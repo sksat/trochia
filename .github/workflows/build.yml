@@ -1,4 +1,4 @@
-name: CI
+name: Build
 
 on:
   push:
@@ -6,8 +6,6 @@ on:
       - master
       - develop
       - feature/*
-    tags:
-      - v*
 
 jobs:
   build:
@@ -32,12 +30,3 @@ jobs:
           cmake -G "MSYS Makefiles" ..
     - name: build on ${{ matrix.os }}
       run: cmake --build build --parallel
-
-    - name: make release file
-      run: touch hoge
-    - name: Release
-      uses: JasonEtco/upload-to-release@master
-      with:
-        args: hoge
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
