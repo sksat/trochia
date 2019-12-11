@@ -3,20 +3,29 @@ name: Release
 on: release
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v1
-    - name: make release file
+
+    - name: configure
       run: |
-          mkdir hoge
-          touch hoge/COPYING
-          mv README.md hoge
-          zip -r hoge.zip hoge/
+          mkdir build
+          cd build
+          cmake ..
+    - name: build on ubuntu
+      run: cmake --build build --parallel
+
+    - name: make archive file
+      run: |
+          mkdir trochia
+          cp README.md trochia/
+          cp build/trochia trochia/
+          zip -r trochia-linux.zip trochia/
     - name: Release
       uses: JasonEtco/upload-to-release@master
       with:
-        args: "hoge.zip application/zip"
+        args: "trochia-linux.zip application/zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
