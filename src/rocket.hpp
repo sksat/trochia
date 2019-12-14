@@ -41,7 +41,9 @@ namespace trochia::rocket {
 		std::string name;
 		Engine engine;
 
+		math::Float diameter;		// 直径(m)
 		math::Float lcg0, lcgf;		// 重心位置
+		math::Float Cd;				// 抗力係数
 
 		static auto dx(const math::Float &t, const Rocket &r) -> const Rocket {
 			return object::Object<LocalFrame>::dx(t, r);

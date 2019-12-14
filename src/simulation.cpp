@@ -73,11 +73,22 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 		const auto angle_attack		= std::atan(vab.z() / vab.x());
 		const auto angle_side_slip	= std::atan(vab.y() / va);
 
+		// 代表面積
+		const auto S = rocket.diameter * rocket.diameter * math::pi / 4;
+
+		const auto altitude = rocket.pos.altitude();
+		const auto geo_height = environment::earth::geodesy::potential_height(altitude);
+		const auto temperature = environment::air::temperature(geo_height);
+		const auto rho = environment::air::density(temperature);
+
+		// 空気抵抗
+		const auto D = 0.5 * rocket.Cd * rho * va*va*S;
+
 		// thrust
 		const auto thrust = rocket.engine.thrust(time); // first stage only
 
 		const auto force = coordinate::body::Body(
-			thrust,
+			thrust - D,
 			0.0,
 			0.0
 		);

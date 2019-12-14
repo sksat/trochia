@@ -56,8 +56,12 @@ auto load(const std::string &fname, std::vector<Simulation> &sims) -> void {
 		const auto engine = stage[0].at("engine");
 		sim.rocket.engine.load_eng(engine.as_string());
 
+		sim.rocket.diameter = stage[0].at("diameter").as_floating();
+
 		sim.rocket.lcg0 = stage[0].at("lcg0").as_floating();
 		sim.rocket.lcgf = stage[0].at("lcgf").as_floating();
+
+		sim.rocket.Cd = stage[0].at("Cd").as_floating();
 	}
 
 	sims.push_back(sim);
