@@ -22,6 +22,7 @@
 #ifndef ENVIRONMENT_HPP_
 #define ENVIRONMENT_HPP_
 
+#include "environment/physics.hpp"			// fundamental physical constants
 #include "environment/air.hpp"
 #include "environment/earth/ellipsoid.hpp"
 //#include "environment/earth/geodesy.hpp"
