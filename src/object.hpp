@@ -42,7 +42,7 @@ namespace trochia::object {
 			return ret;
 		}
 
-		virtual auto weight() const -> const math::Float {
+		virtual auto weight() const -> math::Float {
 			return 0.0;
 		}
 
@@ -52,45 +52,45 @@ namespace trochia::object {
 		}
 
 		// operator
-		auto operator+=(const Object &o) -> const Object {
+		auto operator+=(const Object &o) -> Object {
 			this->pos += o.pos;
 			this->vel += o.vel;
 			return *this;
 		}
-		auto operator-=(const Object &o) -> const Object {
+		auto operator-=(const Object &o) -> Object {
 			this->pos -= o.pos;
 			this->vel -= o.vel;
 			return *this;
 		}
 
-		auto operator*=(const math::Float &a) -> const Object {
+		auto operator*=(const math::Float &a) -> Object {
 			this->pos *= a;
 			this->vel *= a;
 			return *this;
 		}
-		auto operator/=(const math::Float &a) -> const Object {
+		auto operator/=(const math::Float &a) -> Object {
 			this->pos /= a;
 			this->vel /= a;
 			return *this;
 		}
 
-		auto operator+(const Object &o) const -> const Object {
+		auto operator+(const Object &o) const -> Object {
 			Object ret = *this;
 			ret += o;
 			return ret;
 		}
-		auto operator-(const Object &o) const -> const Object {
+		auto operator-(const Object &o) const -> Object {
 			Object ret = *this;
 			ret -= o;
 			return ret;
 		}
 
-		auto operator*(const math::Float &a) const -> const Object {
+		auto operator*(const math::Float &a) const -> Object {
 			Object ret = *this;
 			ret *= a;
 			return ret;
 		}
-		auto operator/(const math::Float &a) const -> const Object {
+		auto operator/(const math::Float &a) const -> Object {
 			Object ret = *this;
 			ret /= a;
 			return ret;

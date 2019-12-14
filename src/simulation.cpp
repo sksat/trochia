@@ -23,8 +23,7 @@
 #include "math.hpp"
 #include "simulation.hpp"
 #include "solver.hpp"
-#include "environment/launcher.hpp"
-#include "environment/gravity.hpp"
+#include "environment.hpp"
 
 auto trochia::do_simulation(Simulation &sim) -> void {
 	const auto &timeout = sim.timeout;
@@ -62,13 +61,39 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 		const auto &time = s.t;
 		rocket.time = time;
 
+		const coordinate::local::NED vel_ned = rocket.vel;
+		const auto vab_ned = vel_ned.vec;
+
+		// Body座標系での対気速度ベクトル
+		const auto vab = coordinate::dcm::ned2body(rocket.quat) * vab_ned;
+		const auto va = vab.norm();
+
+		// tan(attack) = z/x
+		// arctan(z/x) = attack
+		const auto angle_attack		= (vab.x()!=0.0 ? std::atan(vab.z() / vab.x()) : 0.5*math::pi);
+		const auto angle_side_slip	= (va!=0.0 ? std::atan(vab.y() / va) : 0.5*math::pi);
+
+		// 代表面積
+		const auto S = rocket.diameter * rocket.diameter * math::pi / 4;
+
+		const auto altitude = rocket.pos.altitude();
+		const auto geo_height = environment::earth::geodesy::potential_height(altitude);
+		const auto temperature = environment::air::temperature(geo_height);
+		const auto rho = environment::air::density(temperature);
+
+		// 空気抵抗
+		const auto q = 0.5 * rho * va * va; // 動圧
+		const auto D = rocket.Cd  * q * S;
+		const auto Y = rocket.Cna * q * S * std::sin(angle_side_slip);
+		const auto N = rocket.Cna * q * S * std::sin(angle_attack);
+
 		// thrust
 		const auto thrust = rocket.engine.thrust(time); // first stage only
 
 		const auto force = coordinate::body::Body(
-			thrust,
-			0.0,
-			0.0
+			thrust - D,
+			-1.0 * Y,
+			-1.0 * N
 		);
 
 		rocket.force(force.to_local<rocket::LocalFrame>(rocket.quat));
@@ -87,9 +112,19 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 
 		// log
 		if(step % output_rate == 0){
+			const auto altitude		= rocket.pos.altitude();
+			const auto geo_height	= environment::earth::geodesy::potential_height(altitude);
+			const auto temperature = environment::air::temperature(geo_height);
+
 			std::cout << time << " "
-				<< rocket.pos.altitude() << " "
-				<< environment::gravity(rocket.pos.altitude()) << std::endl;
+				<< altitude << " "
+				<< geo_height << " "
+				<< (math::Float)environment::temperature::celsius(temperature) << " "
+				<< environment::air::pressure(temperature) / 100.0 << " "
+				<< environment::air::density(temperature) << " "
+				<< angle_attack << " "
+				<< Y
+				<< std::endl;
 		}
 
 		if(step > 100 && rocket.pos.altitude() <= 0.0)

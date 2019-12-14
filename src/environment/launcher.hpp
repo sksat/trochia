@@ -36,7 +36,7 @@ namespace trochia::environment {
 		math::Quaternion angle;
 
 	public:
-		auto get_angle() const -> const math::Quaternion { return this->angle; }
+		auto get_angle() const -> math::Quaternion { return this->angle; }
 
 		auto set_angle(const math::Vector3 &euler) -> void {
 			this->set_angle(euler.x(), euler.y(), euler.z());

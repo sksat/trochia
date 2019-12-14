@@ -19,30 +19,14 @@
  *
  * ----------------------------------------------------------------------- */
 
-#ifndef ENVIRONMENT_AIR_HPP_
-#define ENVIRONMENT_AIR_HPP_
+#ifndef ENVIRONMENT_HPP_
+#define ENVIRONMENT_HPP_
 
-#include "../math.hpp"
-#include "temperature.hpp"
-
-namespace trochia::environment::air {
-	// from FROGS (return kelvin)
-	auto temperature(const math::Float &height) -> temperature::kelvin {
-		const auto height_km = height * 0.001;
-		return temperature::celsius(15.0 - 6.5*height_km);
-	}
-
-	// from FROGS (return Pa)
-	auto pressure(const temperature::kelvin &t) -> math::Float {
-		const math::Float t_ = t;
-		return 101325.0 * std::pow((288.15 / t_), -5.256);
-	}
-
-	// from FROGS (Don't use this equation over 11km)
-	auto density(const temperature::kelvin &t) -> math::Float {
-		const math::Float t_ = t;
-		return (0.0034837 * pressure(t)) / t_;
-	}
-}
+#include "environment/physics.hpp"			// fundamental physical constants
+#include "environment/temperature.hpp"
+#include "environment/earth.hpp"
+#include "environment/gravity.hpp"
+#include "environment/air.hpp"
+#include "environment/launcher.hpp"
 
 #endif

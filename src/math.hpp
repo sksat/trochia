@@ -77,15 +77,15 @@ namespace trochia::math {
 		return series;
 	}
 
-	constexpr auto deg2rad(const Float &deg) -> const Float {
+	constexpr auto deg2rad(const Float &deg) -> Float {
 		return deg * (pi / 180.0);
 	}
-	constexpr auto rad2deg(const Float &rad) -> const Float {
+	constexpr auto rad2deg(const Float &rad) -> Float {
 		return rad * (180.0 / pi);
 	}
 
 	[[deprecated("please use AngleAxis")]]
-	inline auto euler2quat(const Float &roll, const Float &pitch, const Float &yaw) -> const Quaternion {
+	inline auto euler2quat(const Float &roll, const Float &pitch, const Float &yaw) -> Quaternion {
 		using Eigen::AngleAxisd;
 
 		Quaternion q;
@@ -95,11 +95,11 @@ namespace trochia::math {
 		return q;
 	}
 
-	inline auto quat2euler(const Quaternion &q) -> const Vector3 {
+	inline auto quat2euler(const Quaternion &q) -> Vector3 {
 		return q.toRotationMatrix().eulerAngles(0, 1, 2);
 	}
 
-	inline auto lerp(const Float &a, const Float &b, const Float &t) -> const Float {
+	inline auto lerp(const Float &a, const Float &b, const Float &t) -> Float {
 		return a + t*(b - a);
 	}
 }
