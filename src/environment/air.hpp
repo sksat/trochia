@@ -34,9 +34,14 @@ namespace trochia::environment::air {
 
 	// from FROGS (return Pa)
 	auto pressure(const temperature::kelvin &t) -> math::Float {
-		math::Float tmp = (math::Float)t;
-		tmp = 288.15 / tmp;
-		return 101325.0 * std::pow(tmp, -5.256);
+		const math::Float t_ = t;
+		return 101325.0 * std::pow((288.15 / t_), -5.256);
+	}
+
+	// from FROGS (Don't use this equation over 11km)
+	auto density(const temperature::kelvin &t) -> math::Float {
+		const math::Float t_ = t;
+		return (0.0034837 * pressure(t)) / t_;
 	}
 }
 

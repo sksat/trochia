@@ -94,7 +94,8 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 				<< altitude << " "
 				<< geo_height << " "
 				<< (math::Float)environment::temperature::celsius(temperature) << " "
-				<< environment::air::pressure(temperature) / 100.0
+				<< environment::air::pressure(temperature) / 100.0 << " "
+				<< environment::air::density(temperature)
 				<< std::endl;
 		}
 
