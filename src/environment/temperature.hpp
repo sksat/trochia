@@ -19,14 +19,34 @@
  *
  * ----------------------------------------------------------------------- */
 
-#ifndef ENVIRONMENT_HPP_
-#define ENVIRONMENT_HPP_
+#ifndef ENVIRONMENT_TEMPERATURE_HPP_
+#define ENVIRONMENT_TEMPERATURE_HPP_
 
-#include "environment/physics.hpp"			// fundamental physical constants
-#include "environment/temperature.hpp"
-#include "environment/earth.hpp"
-#include "environment/gravity.hpp"
-#include "environment/air.hpp"
-#include "environment/launcher.hpp"
+#include "../math.hpp"
+
+namespace trochia::environment::temperature {
+	class thermodynamic {
+	public:
+		constexpr thermodynamic() : t(0.0) {}
+		constexpr thermodynamic(const math::Float &t) : t(t) {}
+
+		virtual operator math::Float() {
+			return t;
+		}
+	protected:
+		math::Float t;
+	};
+
+	using kelvin = thermodynamic;
+
+	class celsius : public thermodynamic {
+		constexpr celsius(const thermodynamic &t) : thermodynamic(t) {}
+		constexpr celsius(const math::Float &t)   : thermodynamic(t + 273.15) {}
+
+		operator math::Float() {
+			return this->t - 273.15;
+		}
+	};
+}
 
 #endif
