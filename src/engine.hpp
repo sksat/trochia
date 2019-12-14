@@ -82,16 +82,16 @@ namespace trochia {
 			itr = data.cbegin();
 		}
 
-		inline auto progress(const math::Float &time) const -> const math::Float {
+		inline auto progress(const math::Float &time) const -> math::Float {
 			return time / time_max;
 		}
 
-		inline auto weight(const math::Float &time) const -> const math::Float {
+		inline auto weight(const math::Float &time) const -> math::Float {
 			const auto prop = math::lerp(weight_prop, 0, this->progress(time));
 			return weight_total - weight_prop + prop;
 		}
 
-		auto thrust(const math::Float &time) -> const math::Float {
+		auto thrust(const math::Float &time) -> math::Float {
 			const auto &next = itr+1;
 			const auto &time_now	= itr->first;
 			const auto &thrust_now	= itr->second;

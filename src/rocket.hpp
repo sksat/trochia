@@ -47,11 +47,11 @@ namespace trochia::rocket {
 			return object::Object<LocalFrame>::dx(t, r);
 		}
 
-		auto lcg() const -> const math::Float {
+		auto lcg() const -> math::Float {
 			return math::lerp(lcg0, lcgf, engine.progress(this->time));
 		}
 
-		auto weight() const -> const math::Float {
+		auto weight() const -> math::Float {
 			return 10.0 + engine.weight(this->time);
 		}
 	};

@@ -46,17 +46,17 @@ namespace trochia::environment::earth {
 				e2= f_tmp / (f_inv * f_inv);
 			}
 
-			constexpr auto W(const Float &lat) const -> const Float {
+			constexpr auto W(const Float &lat) const -> Float {
 				const auto sin  = math::sin(lat);
 				const auto sin2	= sin*sin;
 				return math::sqrt(1.0 - e2*sin2);
 			}
 
-			constexpr auto N(const Float &lat) const -> const Float {
+			constexpr auto N(const Float &lat) const -> Float {
 				return a / W(lat);
 			}
 
-			constexpr auto M(const Float &lat) const -> const Float {
+			constexpr auto M(const Float &lat) const -> Float {
 				const auto w = W(lat);
 				const auto W2= w*w;
 				return N(lat) * (1.0 - e2) / W2;

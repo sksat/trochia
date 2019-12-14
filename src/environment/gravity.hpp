@@ -32,7 +32,7 @@ namespace trochia::environment {
 	// gravitation model
 	// other planet
 
-	inline auto gravity(const math::Float &altitude) -> const math::Float {
+	inline auto gravity(const math::Float &altitude) -> math::Float {
 		const auto tmp = earth::re / (earth::re + altitude);
 		return physics::g0 * tmp * tmp;
 	}
