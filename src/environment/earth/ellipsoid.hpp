@@ -19,10 +19,10 @@
  *
  * ----------------------------------------------------------------------- */
 
-#ifndef ENVIRONMENT_EARTH_HPP_
-#define ENVIRONMENT_EARTH_HPP_
+#ifndef ENVIRONMENT_EARTH_ELLIPSOID_HPP_
+#define ENVIRONMENT_EARTH_ELLIPSOID_HPP_
 
-#include "../math.hpp"
+#include "../../math.hpp"
 
 namespace trochia::environment::earth {
 	namespace ellipsoid {

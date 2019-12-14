@@ -23,8 +23,7 @@
 #include "math.hpp"
 #include "simulation.hpp"
 #include "solver.hpp"
-#include "environment/launcher.hpp"
-#include "environment/gravity.hpp"
+#include "environment.hpp"
 
 auto trochia::do_simulation(Simulation &sim) -> void {
 	const auto &timeout = sim.timeout;

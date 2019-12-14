@@ -22,7 +22,7 @@
 #ifndef COORDINATE_EARTH_HPP_
 #define COORDINATE_EARTH_HPP_
 
-#include "../environment/earth.hpp"
+#include "../environment/earth/ellipsoid.hpp"
 
 namespace trochia::coordinate::earth {
 	using namespace environment::earth;
