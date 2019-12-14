@@ -70,8 +70,8 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 
 		// tan(attack) = z/x
 		// arctan(z/x) = attack
-		const auto angle_attack		= std::atan(vab.z() / vab.x());
-		const auto angle_side_slip	= std::atan(vab.y() / va);
+		const auto angle_attack		= (vab.x()!=0.0 ? std::atan(vab.z() / vab.x()) : 0.5*math::pi);
+		const auto angle_side_slip	= (va!=0.0 ? std::atan(vab.y() / va) : 0.5*math::pi);
 
 		// 代表面積
 		const auto S = rocket.diameter * rocket.diameter * math::pi / 4;
@@ -122,7 +122,8 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 				<< (math::Float)environment::temperature::celsius(temperature) << " "
 				<< environment::air::pressure(temperature) / 100.0 << " "
 				<< environment::air::density(temperature) << " "
-				<< angle_attack
+				<< angle_attack << " "
+				<< Y
 				<< std::endl;
 		}
 
