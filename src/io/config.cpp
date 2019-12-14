@@ -62,6 +62,7 @@ auto load(const std::string &fname, std::vector<Simulation> &sims) -> void {
 		sim.rocket.lcgf = stage[0].at("lcgf").as_floating();
 
 		sim.rocket.Cd = stage[0].at("Cd").as_floating();
+		sim.rocket.Cna= stage[0].at("Cna").as_floating();
 	}
 
 	sims.push_back(sim);

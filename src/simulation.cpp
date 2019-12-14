@@ -82,15 +82,18 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 		const auto rho = environment::air::density(temperature);
 
 		// 空気抵抗
-		const auto D = 0.5 * rocket.Cd * rho * va*va*S;
+		const auto q = 0.5 * rho * va * va; // 動圧
+		const auto D = rocket.Cd  * q * S;
+		const auto Y = rocket.Cna * q * S * std::sin(angle_side_slip);
+		const auto N = rocket.Cna * q * S * std::sin(angle_attack);
 
 		// thrust
 		const auto thrust = rocket.engine.thrust(time); // first stage only
 
 		const auto force = coordinate::body::Body(
 			thrust - D,
-			0.0,
-			0.0
+			-1.0 * Y,
+			-1.0 * N
 		);
 
 		rocket.force(force.to_local<rocket::LocalFrame>(rocket.quat));
