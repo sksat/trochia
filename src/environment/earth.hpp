@@ -25,10 +25,8 @@
 #include "../math.hpp"
 
 namespace trochia::environment::earth {
-	using math::Float;
-
 	// Chronological Scientific Tables 2014
-	constexpr Float re = 6.3781366e6;
+	constexpr math::Float re = 6.3781366e6;
 }
 
 #include "earth/ellipsoid.hpp"
