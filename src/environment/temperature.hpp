@@ -40,6 +40,8 @@ namespace trochia::environment::temperature {
 	using kelvin = thermodynamic;
 
 	class celsius : public thermodynamic {
+	public:
+		constexpr celsius() : thermodynamic(273.15) {}
 		constexpr celsius(const thermodynamic &t) : thermodynamic(t) {}
 		constexpr celsius(const math::Float &t)   : thermodynamic(t + 273.15) {}
 
