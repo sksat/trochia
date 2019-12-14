@@ -61,6 +61,18 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 		const auto &time = s.t;
 		rocket.time = time;
 
+		const coordinate::local::NED vel_ned = rocket.vel;
+		const auto vab_ned = vel_ned.vec;
+
+		// Body座標系での対気速度ベクトル
+		const auto vab = coordinate::dcm::ned2body(rocket.quat) * vab_ned;
+		const auto va = vab.norm();
+
+		// tan(attack) = z/x
+		// arctan(z/x) = attack
+		const auto angle_attack		= std::atan(vab.z() / vab.x());
+		const auto angle_side_slip	= std::atan(vab.y() / va);
+
 		// thrust
 		const auto thrust = rocket.engine.thrust(time); // first stage only
 
@@ -95,7 +107,8 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 				<< geo_height << " "
 				<< (math::Float)environment::temperature::celsius(temperature) << " "
 				<< environment::air::pressure(temperature) / 100.0 << " "
-				<< environment::air::density(temperature)
+				<< environment::air::density(temperature) << " "
+				<< angle_attack
 				<< std::endl;
 		}
 
