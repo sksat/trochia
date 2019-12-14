@@ -23,8 +23,13 @@
 #define ENVIRONMENT_AIR_HPP_
 
 #include "../math.hpp"
+#include "temperature.hpp"
 
-namespace environment::air {
+namespace trochia::environment::air {
+	auto temperature(const math::Float &height) -> temperature::kelvin {
+		const auto height_km = height * 0.001;
+		return environment::temperature::celsius(15.0 - 6.5*height_km);
+	}
 }
 
 #endif

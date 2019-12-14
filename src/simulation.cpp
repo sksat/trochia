@@ -86,9 +86,14 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 
 		// log
 		if(step % output_rate == 0){
+			const auto altitude		= rocket.pos.altitude();
+			const auto geo_height	= environment::earth::geodesy::potential_height(altitude);
+			const auto temperature = environment::air::temperature(geo_height);
+
 			std::cout << time << " "
-				<< rocket.pos.altitude() << " "
-				<< environment::earth::geodesy::potential_height(rocket.pos.altitude())
+				<< altitude << " "
+				<< geo_height << " "
+				<< (math::Float)environment::temperature::celsius(temperature)
 				<< std::endl;
 		}
 
