@@ -30,7 +30,7 @@ namespace trochia::environment::temperature {
 		constexpr thermodynamic() : t(0.0) {}
 		constexpr thermodynamic(const math::Float &t) : t(t) {}
 
-		virtual operator math::Float() {
+		virtual operator math::Float() const {
 			return t;
 		}
 	protected:
@@ -45,7 +45,7 @@ namespace trochia::environment::temperature {
 		constexpr celsius(const thermodynamic &t) : thermodynamic(t) {}
 		constexpr celsius(const math::Float &t)   : thermodynamic(t + 273.15) {}
 
-		operator math::Float() {
+		operator math::Float() const {
 			return this->t - 273.15;
 		}
 	};
