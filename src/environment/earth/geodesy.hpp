@@ -19,29 +19,22 @@
  *
  * ----------------------------------------------------------------------- */
 
-#ifndef ENVIRONMENT_AIR_HPP_
-#define ENVIRONMENT_AIR_HPP_
+#ifndef ENVIRONMENT_EARTH_GEODESY_HPP_
+#define ENVIRONMENT_EARTH_GEODESY_HPP_
 
-#include "../math.hpp"
-#include "temperature.hpp"
+#include "../earth.hpp"
 
-namespace trochia::environment::air {
-	// from FROGS (return kelvin)
-	auto temperature(const math::Float &height) -> temperature::kelvin {
-		const auto height_km = height * 0.001;
-		return temperature::celsius(15.0 - 6.5*height_km);
-	}
+namespace trochia::environment::earth::geodesy {
+	// geopotential height
+	// U.S. Standard Atmosphere, 1976: https://ntrs.nasa.gov/search.jsp?R=19770009539
+	auto potential_height(const math::Float &height) -> math::Float {
+		// the adopted, effective earth's radius, 6356.766km
+		// used for computing g(Z) for 45-degree north latitude,
+		// and used for relating H and Z at that latitude
+		constexpr math::Float r0 = 6356766;
+		constexpr math::Float gamma = 1.0;
 
-	// from FROGS (return Pa)
-	auto pressure(const temperature::kelvin &t) -> math::Float {
-		const math::Float t_ = t;
-		return 101325.0 * std::pow((288.15 / t_), -5.256);
-	}
-
-	// from FROGS (Don't use this equation over 11km)
-	auto density(const temperature::kelvin &t) -> math::Float {
-		const math::Float t_ = t;
-		return (0.0034837 * pressure(t)) / t_;
+		return (r0 * height) / (gamma * r0 - height);
 	}
 }
 

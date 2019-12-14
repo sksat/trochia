@@ -23,8 +23,7 @@
 #include "math.hpp"
 #include "simulation.hpp"
 #include "solver.hpp"
-#include "environment/launcher.hpp"
-#include "environment/gravity.hpp"
+#include "environment.hpp"
 
 auto trochia::do_simulation(Simulation &sim) -> void {
 	const auto &timeout = sim.timeout;
@@ -87,9 +86,17 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 
 		// log
 		if(step % output_rate == 0){
+			const auto altitude		= rocket.pos.altitude();
+			const auto geo_height	= environment::earth::geodesy::potential_height(altitude);
+			const auto temperature = environment::air::temperature(geo_height);
+
 			std::cout << time << " "
-				<< rocket.pos.altitude() << " "
-				<< environment::gravity(rocket.pos.altitude()) << std::endl;
+				<< altitude << " "
+				<< geo_height << " "
+				<< (math::Float)environment::temperature::celsius(temperature) << " "
+				<< environment::air::pressure(temperature) / 100.0 << " "
+				<< environment::air::density(temperature)
+				<< std::endl;
 		}
 
 		if(step > 100 && rocket.pos.altitude() <= 0.0)
