@@ -19,17 +19,23 @@
  *
  * ----------------------------------------------------------------------- */
 
-#ifndef ENVIRONMENT_EARTH_HPP_
-#define ENVIRONMENT_EARTH_HPP_
+#ifndef ENVIRONMENT_EARTH_GEODESY_HPP_
+#define ENVIRONMENT_EARTH_GEODESY_HPP_
 
-#include "../math.hpp"
+#include "../earth.hpp"
 
-namespace trochia::environment::earth {
-	// Chronological Scientific Tables 2014
-	constexpr math::Float re = 6.3781366e6;
+namespace trochia::environment::earth::geodesy {
+	// geopotential height
+	// U.S. Standard Atmosphere, 1976: https://ntrs.nasa.gov/search.jsp?R=19770009539
+	auto potential_height(const math::Float &height) -> math::Float {
+		// the adopted, effective earth's radius, 6356.766km
+		// used for computing g(Z) for 45-degree north latitude,
+		// and used for relating H and Z at that latitude
+		constexpr math::Float r0 = 6356766;
+		constexpr math::Float gamma = 1.0;
+
+		return (r0 * height) / (gamma * r0 - height);
+	}
 }
-
-#include "earth/ellipsoid.hpp"
-#include "earth/geodesy.hpp"
 
 #endif

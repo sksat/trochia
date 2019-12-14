@@ -88,7 +88,8 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 		if(step % output_rate == 0){
 			std::cout << time << " "
 				<< rocket.pos.altitude() << " "
-				<< environment::gravity(rocket.pos.altitude()) << std::endl;
+				<< environment::earth::geodesy::potential_height(rocket.pos.altitude())
+				<< std::endl;
 		}
 
 		if(step > 100 && rocket.pos.altitude() <= 0.0)
