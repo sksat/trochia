@@ -26,9 +26,17 @@
 #include "temperature.hpp"
 
 namespace trochia::environment::air {
+	// from FROGS (return kelvin)
 	auto temperature(const math::Float &height) -> temperature::kelvin {
 		const auto height_km = height * 0.001;
-		return environment::temperature::celsius(15.0 - 6.5*height_km);
+		return temperature::celsius(15.0 - 6.5*height_km);
+	}
+
+	// from FROGS (return Pa)
+	auto pressure(const temperature::kelvin &t) -> math::Float {
+		math::Float tmp = (math::Float)t;
+		tmp = 288.15 / tmp;
+		return 101325.0 * std::pow(tmp, -5.256);
 	}
 }
 
