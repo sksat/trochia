@@ -19,13 +19,18 @@
  *
  * ----------------------------------------------------------------------- */
 
-#ifndef ENVIRONMENT_HPP_
-#define ENVIRONMENT_HPP_
+#ifndef ENVIRONMENT_EARTH_HPP_
+#define ENVIRONMENT_EARTH_HPP_
 
-#include "environment/physics.hpp"			// fundamental physical constants
-#include "environment/earth.hpp"
-#include "environment/gravity.hpp"
-#include "environment/air.hpp"
-#include "environment/launcher.hpp"
+#include "../math.hpp"
+
+namespace trochia::environment::earth {
+	using math::Float;
+
+	// Chronological Scientific Tables 2014
+	constexpr Float re = 6.3781366e6;
+}
+
+#include "earth/ellipsoid.hpp"
 
 #endif

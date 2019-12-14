@@ -22,12 +22,10 @@
 #ifndef ENVIRONMENT_EARTH_ELLIPSOID_HPP_
 #define ENVIRONMENT_EARTH_ELLIPSOID_HPP_
 
-#include "../../math.hpp"
+#include "../earth.hpp"
 
 namespace trochia::environment::earth {
 	namespace ellipsoid {
-		using math::Float;
-
 		class Ellipsoid {
 		public:
 			constexpr Ellipsoid(Float a, Float f_inv) : a(a), f_inv(f_inv),

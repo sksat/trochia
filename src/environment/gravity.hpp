@@ -24,20 +24,16 @@
 
 #include "../math.hpp"
 #include "physics.hpp"
+#include "earth.hpp"
 
 namespace trochia::environment {
-	namespace constant {
-		// Chronological Scientific Tables 2014
-		constexpr math::Float re	= 6.3781366e6;
-	}
-
 	// TODO
 	// latitude model(Helmert equation, WGS-84)
 	// gravitation model
 	// other planet
 
 	inline auto gravity(const math::Float &altitude) -> const math::Float {
-		const auto tmp = constant::re / (constant::re + altitude);
+		const auto tmp = earth::re / (earth::re + altitude);
 		return physics::g0 * tmp * tmp;
 	}
 }
