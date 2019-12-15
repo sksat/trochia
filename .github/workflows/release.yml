@@ -44,6 +44,8 @@ jobs:
       env:
           OS: ${{ runner.os }}
       run: |
+          ls
+          ls build
           mkdir trochia
           cp README.md trochia/
           cp LICENSE trochia/
