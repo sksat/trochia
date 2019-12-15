@@ -62,6 +62,8 @@ jobs:
     - uses: JasonEtco/upload-to-release@master
       with:
         args: "trochia-Linux.zip application/zip"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - uses: actions/download-artifact@v1
       with:
