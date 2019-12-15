@@ -63,7 +63,7 @@ jobs:
       run: mv trochia-Linux/trochia-Linux.zip trochia-linux.zip
     - uses: JasonEtco/upload-to-release@master
       with:
-        args: "trochia-Linux.zip application/zip"
+        args: "trochia-linux.zip application/zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
