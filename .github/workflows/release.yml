@@ -44,13 +44,11 @@ jobs:
       env:
           OS: ${{ runner.os }}
       run: |
-          ls
-          ls build
           mkdir trochia
           cp README.md trochia/
           cp LICENSE trochia/
           cp COPYING trochia/
-          cp build/trochia trochia/
+          cp build/trochia* trochia/
           zip -r trochia-$OS.zip trochia/
 
     - name: Upload archive as artifact
