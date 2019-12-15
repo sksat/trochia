@@ -91,3 +91,14 @@ jobs:
         args: "trochia-mac.zip application/zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: actions/download-artifact@v1
+      with:
+        name: trochia-Windows
+    - name: move archive
+      run: mv trochia-Windows/trochia-Windows.zip trochia-windows.zip
+    - uses: JasonEtco/upload-to-release@master
+      with:
+        args: "trochia-windows.zip application/zip"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
