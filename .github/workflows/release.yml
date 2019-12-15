@@ -59,6 +59,8 @@ jobs:
     - uses: actions/download-artifact@v1
       with:
         name: trochia-Linux
+    - name: move archive
+      run: mv trochia-Linux/trochia-Linux.zip trochia-linux.zip
     - uses: JasonEtco/upload-to-release@master
       with:
         args: "trochia-Linux.zip application/zip"
@@ -68,8 +70,10 @@ jobs:
     - uses: actions/download-artifact@v1
       with:
         name: trochia-macOS
+    - name: move archive
+      run: mv trochia-macOS/trochia-macOS.zip trochia-mac.zip
     - uses: JasonEtco/upload-to-release@master
       with:
-        args: "trochia-macOS.zip application/zip"
+        args: "trochia-mac.zip application/zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
