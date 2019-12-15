@@ -5,7 +5,7 @@ on:
     types: created
 
 jobs:
-  release:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -43,9 +43,31 @@ jobs:
           cp COPYING trochia/
           cp build/trochia trochia/
           zip -r trochia-$OS.zip trochia/
-    - name: Release
-      uses: JasonEtco/upload-to-release@master
+
+    - name: Upload archive as artifact
+      uses: actions/upload-artifact@v1
       with:
-        args: "trochia-${{ runner.os }}.zip application/zip"
+        name: "trochia-${{ runner.os }}"
+        path: "trochia-${{ runner.os }}.zip"
+
+  upload:
+    name: Upload archive file to GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/download-artifact@v1
+      with:
+        name: trochia-Linux
+    - uses: JasonEtco/upload-to-release@master
+      with:
+        args: "trochia-Linux.zip application/zip"
+
+    - uses: actions/download-artifact@v1
+      with:
+        name: trochia-macOS
+    - uses: JasonEtco/upload-to-release@master
+      with:
+        args: "trochia-macOS.zip application/zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
