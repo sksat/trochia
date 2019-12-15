@@ -49,7 +49,6 @@ jobs:
           cp LICENSE trochia/
           cp COPYING trochia/
           cp build/trochia* trochia/
-          zip -r trochia-$OS.zip trochia/
     - name: make archive file
       if: matrix.os != 'windows-latest'
       env:
