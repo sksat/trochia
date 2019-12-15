@@ -6,7 +6,10 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
 
     steps:
     - uses: actions/checkout@v1
@@ -16,7 +19,7 @@ jobs:
           mkdir build
           cd build
           cmake ..
-    - name: build on ubuntu
+    - name: build on ${{ matrix.os }}
       run: cmake --build build --parallel
 
     - name: create COPYING
@@ -31,16 +34,18 @@ jobs:
           cat build/deps/build/toml11/src/toml11/LICENSE >> COPYING
 
     - name: make archive file
+      env:
+          OS: ${{ runner.os }}
       run: |
           mkdir trochia
           cp README.md trochia/
           cp LICENSE trochia/
           cp COPYING trochia/
           cp build/trochia trochia/
-          zip -r trochia-linux.zip trochia/
+          zip -r trochia-$OS.zip trochia/
     - name: Release
       uses: JasonEtco/upload-to-release@master
       with:
-        args: "trochia-linux.zip application/zip"
+        args: "trochia-${{ runner.os }}.zip application/zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
