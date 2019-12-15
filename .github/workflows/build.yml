@@ -16,6 +16,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: install C++17 compiler
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+          apt-add-repository -y ppa/ubuntu-toolchain-r/test
+          apt update
+          apt install -y g++-9
+
     - name: configure
       if: matrix.os != 'windows-latest'
       run: |

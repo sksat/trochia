@@ -22,6 +22,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <filesystem>
 #include <toml.hpp>
 #include "version.hpp"
 #include "simulation.hpp"
