@@ -16,17 +16,32 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: configure
-      if: matrix.os != 'windows-latest'
+    - name: install C++17 compiler
+      if: matrix.os == 'ubuntu-latest'
       run: |
-          mkdir build
+          sudo apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
+          sudo apt update
+          sudo apt install -y g++-9
+
+    - name: make build dir
+      run: mkdir build
+
+    - name: configure on ubuntu
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+          cd build
+          cmake -DCMAKE_CXX_COMPILER=g++-9 ..
+
+    - name: configure on mac
+      if: matrix.os == 'macOS-latest'
+      run: |
           cd build
           cmake ..
+
     - name: configure on windows
       if: matrix.os == 'windows-latest'
       run: |
-          mkdir build
           cd build
-          cmake -G "MSYS Makefiles" ..
+          cmake -G "Visual Studio 16 2019" -A x64 ..
     - name: build on ${{ matrix.os }}
       run: cmake --build build --parallel
