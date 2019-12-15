@@ -9,16 +9,23 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
 
     steps:
     - uses: actions/checkout@v1
 
     - name: configure
+      if: matrix.os != 'windows-latest'
       run: |
           mkdir build
           cd build
           cmake ..
+    - name: configure on windows
+      if: matrix.os == 'windows-latest'
+      run: |
+          mkdir build
+          cd build
+          cmake -G "MSYS Makefiles" ..
     - name: build on ${{ matrix.os }}
       run: cmake --build build --parallel
 
