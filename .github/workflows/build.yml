@@ -19,7 +19,7 @@ jobs:
     - name: install C++17 compiler
       if: matrix.os == 'ubuntu-latest'
       run: |
-          sudo apt-add-repository -y ppa/ubuntu-toolchain-r/test
+          sudo apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
           sudo apt update
           sudo apt install -y g++-9
 
