@@ -26,6 +26,7 @@
 #include <filesystem>
 #include "math.hpp"
 #include "rocket.hpp"
+#include "solver.hpp"
 
 namespace trochia::simulation {
 	class Simulation {
@@ -40,7 +41,8 @@ namespace trochia::simulation {
 	};
 
 	auto exec(Simulation &sim) -> void;
-	auto step(Simulation &sim) -> void;
+	auto do_step(Simulation &sim, solver::solver<rocket::Rocket> &solve) -> void;
+	auto save_data(const math::Float &time, const Simulation &sim) -> void;
 }
 
 #endif
