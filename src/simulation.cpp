@@ -30,17 +30,16 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 	if(sim.output_dt < sim.dt)
 		return;
 
+	std::cout << "execute simulation case" << std::endl
+		<< "\tlauncher: length=" << sim.launcher.length
+		<< ", azimuth=" << sim.launcher.azimuth()
+		<< ", elevation=" << sim.launcher.elevation() << std::endl;
+
 	const size_t output_rate = sim.output_dt / sim.dt;
 	auto &rocket = sim.rocket;
 
 	// init
 	rocket.time = 0.0;
-
-	auto launcher = environment::Launcher(5.0);	// 5.0mのランチャ
-
-	// TODO: set launcher position
-	launcher.azimuth(90.0);		// 方位角(deg)
-	launcher.elevation(sim.launcher_angle);	// 仰角(deg)
 
 	auto &pos = rocket.pos;
 	pos.up(0.0);
@@ -49,7 +48,7 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 	rocket.vel.vec.setZero();
 	rocket.acc.vec.setZero();
 
-	rocket.quat = launcher.get_angle();
+	rocket.quat = sim.launcher.get_angle();
 
 	auto solve = solver::RK4(rocket, rocket::Rocket::dx);
 

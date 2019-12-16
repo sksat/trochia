@@ -93,7 +93,7 @@ auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -
 	}
 
 	for(const auto &a : launcher_elevation){
-		sim.launcher_angle = a;
+		sim.launcher = environment::Launcher(5.0, 90.0, a);
 		sims.push_back(sim);
 	}
 }

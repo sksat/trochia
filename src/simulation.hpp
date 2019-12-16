@@ -26,6 +26,7 @@
 #include <filesystem>
 #include <fstream>
 #include "math.hpp"
+#include "environment/launcher.hpp"
 #include "rocket.hpp"
 #include "solver.hpp"
 
@@ -38,6 +39,7 @@ namespace trochia::simulation {
 		std::string output_dir_fmt;
 		std::filesystem::path output_dir;
 
+		environment::Launcher launcher;
 		math::Float launcher_angle;
 
 		rocket::Rocket rocket;

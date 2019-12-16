@@ -29,9 +29,14 @@ namespace trochia::environment {
 
 	class Launcher {
 	public:
+		explicit Launcher() : length(5.0) {}
 		explicit Launcher(const Float &l) : length(l) {}
+		explicit Launcher(const Float &l, const Float &adeg, const Float &edeg) : length(l) {
+			this->set_angle(0.0, 0.0, 0.0);
+			this->azimuth(adeg);
+			this->elevation(edeg);
+		}
 
-	protected:
 		Float length;
 		math::Quaternion angle;
 
@@ -44,10 +49,16 @@ namespace trochia::environment {
 		auto set_angle(const Float &roll, const Float &pitch, const Float yaw) -> void {
 			using math::Vector3, math::AngleAxis;
 
-			angle =
+			this->angle =
 				AngleAxis(yaw, Vector3::UnitZ())
 				* AngleAxis(pitch, Vector3::UnitY())
 				* AngleAxis(roll, Vector3::UnitX());
+		}
+
+		// get azimuth by deg
+		auto azimuth() -> math::Float {
+			auto euler = math::quat2euler(this->angle);
+			return math::rad2deg(euler.z());
 		}
 
 		// set azimuth by deg
@@ -56,6 +67,12 @@ namespace trochia::environment {
 			auto euler = math::quat2euler(this->angle);
 			euler.z() = yaw;
 			this->set_angle(euler);
+		}
+
+		// get elevation by deg
+		auto elevation() -> math::Float {
+			auto euler = math::quat2euler(this->angle);
+			return math::rad2deg(euler.y());
 		}
 
 		// set elevation by deg
