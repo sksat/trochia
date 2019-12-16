@@ -1,6 +1,7 @@
 [simulation]
 dt			= 0.01
 output.dt	= 0.01
+output.dir	= "output"
 
 [launcher]
 length	= 5

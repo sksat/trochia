@@ -19,15 +19,37 @@
  *
  * ----------------------------------------------------------------------- */
 
-#ifndef IO_CONFIG_HPP_
-#define IO_CONFIG_HPP_
+#ifndef IO_CSV_HPP_
+#define IO_CSV_HPP_
 
 #include <string>
+#include <map>
+#include <array>
 #include <vector>
-#include "../simulation.hpp"
+#include <fstream>
 
-namespace trochia::io::config {
-	auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -> void;
+namespace trochia::io {
+	template<typename T, size_t N=2>
+	class CSV {
+	public:
+		using header_t	= std::array<std::string, N>;
+		using line_t	= std::array<T, N>;
+
+		CSV(const std::fstream &file) : file(file) {}
+		CSV(const std::fstream &file, const header_t &header) : file(file), header(header) {}
+
+		auto operator<<(const line_t &line) -> void {
+			for(const auto &e : line){
+				file << std::to_string(e);
+				if(e != line.cend())
+					file << ", ";
+			}
+			file << std::endl;
+		}
+	private:
+		std::fstream file;
+		header_t header;
+	};
 }
 
 #endif

@@ -27,10 +27,10 @@
 
 namespace trochia::io::config {
 
-auto load(const std::string &fname, std::vector<Simulation> &sims) -> void {
+auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -> void {
 	using namespace toml;
 
-	Simulation sim;
+	simulation::Simulation sim;
 
 	const auto config = parse(fname);
 
@@ -41,6 +41,8 @@ auto load(const std::string &fname, std::vector<Simulation> &sims) -> void {
 
 		const auto output = find(cfg_sim, "output");
 		sim.output_dt = output.at("dt").as_floating();
+
+		sim.output_dir_fmt = output.at("dir").as_string();
 	}
 
 	// rocket info

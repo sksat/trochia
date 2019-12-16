@@ -20,16 +20,14 @@
  * ----------------------------------------------------------------------- */
 
 #include <iostream>
+#include <fstream>
 #include "math.hpp"
 #include "simulation.hpp"
 #include "solver.hpp"
 #include "environment.hpp"
 
-auto trochia::do_simulation(Simulation &sim) -> void {
-	const auto &timeout = sim.timeout;
-	const auto &dt = sim.dt;
-	const auto &output_dt = sim.output_dt;
-	if(output_dt < dt)
+auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
+	if(sim.output_dt < sim.dt)
 		return;
 
 	const size_t output_rate = sim.output_dt / sim.dt;
@@ -53,84 +51,88 @@ auto trochia::do_simulation(Simulation &sim) -> void {
 
 	rocket.quat = launcher.get_angle();
 
-	auto s = solver::RK4(rocket, rocket::Rocket::dx);
+	auto solve = solver::RK4(rocket, rocket::Rocket::dx);
+
+	std::ofstream data_file(sim.output_dir / "out.dat");
 
 	// main loop
 	size_t step = 0;
 	while(true){
-		const auto &time = s.t;
-		rocket.time = time;
-
-		const coordinate::local::NED vel_ned = rocket.vel;
-		const auto vab_ned = vel_ned.vec;
-
-		// Body座標系での対気速度ベクトル
-		const auto vab = coordinate::dcm::ned2body(rocket.quat) * vab_ned;
-		const auto va = vab.norm();
-
-		// tan(attack) = z/x
-		// arctan(z/x) = attack
-		const auto angle_attack		= (vab.x()!=0.0 ? std::atan(vab.z() / vab.x()) : 0.5*math::pi);
-		const auto angle_side_slip	= (va!=0.0 ? std::atan(vab.y() / va) : 0.5*math::pi);
-
-		// 代表面積
-		const auto S = rocket.diameter * rocket.diameter * math::pi / 4;
-
-		const auto altitude = rocket.pos.altitude();
-		const auto geo_height = environment::earth::geodesy::potential_height(altitude);
-		const auto temperature = environment::air::temperature(geo_height);
-		const auto rho = environment::air::density(temperature);
-
-		// 空気抵抗
-		const auto q = 0.5 * rho * va * va; // 動圧
-		const auto D = rocket.Cd  * q * S;
-		const auto Y = rocket.Cna * q * S * std::sin(angle_side_slip);
-		const auto N = rocket.Cna * q * S * std::sin(angle_attack);
-
-		// thrust
-		const auto thrust = rocket.engine.thrust(time); // first stage only
-
-		const auto force = coordinate::body::Body(
-			thrust - D,
-			-1.0 * Y,
-			-1.0 * N
-		);
-
-		rocket.force(force.to_local<rocket::LocalFrame>(rocket.quat));
-
-		// gravity
-		if(rocket.pos.altitude() > 0.0){
-			const auto g = environment::gravity(rocket.pos.altitude());
-			rocket.acc.down(rocket.acc.down() + g);
-		}
-
-		// update
-		s.step(dt);
+		do_step(sim, solve);
 		step++;
 
-		// TODO save to file
+		const auto &t = solve.t;
 
-		// log
-		if(step % output_rate == 0){
-			const auto altitude		= rocket.pos.altitude();
-			const auto geo_height	= environment::earth::geodesy::potential_height(altitude);
-			const auto temperature = environment::air::temperature(geo_height);
+		if(step % output_rate == 0)
+			save_data(t, sim, data_file);
 
-			std::cout << time << " "
-				<< altitude << " "
-				<< geo_height << " "
-				<< (math::Float)environment::temperature::celsius(temperature) << " "
-				<< environment::air::pressure(temperature) / 100.0 << " "
-				<< environment::air::density(temperature) << " "
-				<< angle_attack << " "
-				<< Y
-				<< std::endl;
-		}
-
-		if(step > 100 && rocket.pos.altitude() <= 0.0)
+		// 終了判定
+		if(step > 100 && sim.rocket.pos.altitude() <= 0.0)
 			break;
-
-		if(time > timeout)
+		if(t > sim.timeout)
 			break;
 	}
+}
+
+auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket> &s) -> void {
+	const auto &time = s.t;
+
+	auto &rocket = sim.rocket;
+	rocket.time = time;
+
+	const coordinate::local::NED vel_ned = rocket.vel;
+	const auto vab_ned = vel_ned.vec;
+
+	// Body座標系での対気速度ベクトル
+	const auto vab = coordinate::dcm::ned2body(rocket.quat) * vab_ned;
+	const auto va = vab.norm();
+
+	// tan(attack) = z/x
+	// arctan(z/x) = attack
+	const auto angle_attack		= (vab.x()!=0.0 ? std::atan(vab.z() / vab.x()) : 0.5*math::pi);
+	const auto angle_side_slip	= (va!=0.0 ? std::atan(vab.y() / va) : 0.5*math::pi);
+
+	// 代表面積
+	const auto S = rocket.diameter * rocket.diameter * math::pi / 4;
+
+	const auto altitude = rocket.pos.altitude();
+	const auto geo_height = environment::earth::geodesy::potential_height(altitude);
+	const auto temperature = environment::air::temperature(geo_height);
+	const auto rho = environment::air::density(temperature);
+
+	// 空気抵抗
+	const auto q = 0.5 * rho * va * va; // 動圧
+	const auto D = rocket.Cd  * q * S;
+	const auto Y = rocket.Cna * q * S * std::sin(angle_side_slip);
+	const auto N = rocket.Cna * q * S * std::sin(angle_attack);
+
+	// thrust
+	const auto thrust = rocket.engine.thrust(time); // first stage only
+
+	const auto force = coordinate::body::Body(
+		thrust - D,
+		-1.0 * Y,
+		-1.0 * N
+	);
+
+	rocket.force(force.to_local<rocket::LocalFrame>(rocket.quat));
+
+	// gravity
+	if(rocket.pos.altitude() > 0.0){
+		const auto g = environment::gravity(rocket.pos.altitude());
+		rocket.acc.down(rocket.acc.down() + g);
+	}
+
+	// update
+	s.step(sim.dt);
+}
+
+auto trochia::simulation::save_data(const math::Float &time, const Simulation &sim, std::ofstream &output) -> void {
+	const auto &pos = sim.rocket.pos;
+
+	output << time << " "
+		<< pos.east() << " "
+		<< pos.up() << " "
+		<< pos.north() << " "
+		<< std::endl;
 }
