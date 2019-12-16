@@ -25,7 +25,7 @@ jobs:
       run: |
           mkdir build
           cd build
-          cmake -G "MSYS Makefiles" ..
+          cmake -G "Visual Studio 16 2019" -A x64 -config Release ..
     - name: build on ${{ matrix.os }}
       run: cmake --build build --parallel
 
@@ -48,7 +48,7 @@ jobs:
           cp README.md trochia/
           cp LICENSE trochia/
           cp COPYING trochia/
-          cp build/trochia* trochia/
+          cp build/bin/trochia* trochia/
     - name: make archive file
       if: matrix.os != 'windows-latest'
       env:

@@ -42,6 +42,6 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
           cd build
-          cmake -G "Visual Studio 16 2019" -A x64 ..
+          cmake -G "Visual Studio 16 2019" -A x64 -config Release ..
     - name: build on ${{ matrix.os }}
       run: cmake --build build --parallel
