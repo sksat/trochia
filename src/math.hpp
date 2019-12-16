@@ -96,7 +96,12 @@ namespace trochia::math {
 	}
 
 	inline auto quat2euler(const Quaternion &q) -> Vector3 {
-		return q.toRotationMatrix().eulerAngles(0, 1, 2);
+		const auto m = q.matrix();
+		Vector3 e;
+		e.x() = std::atan2(m(2,1), m(2,2));
+		e.y() = std::atan2(-1.0*m(2,0), std::pow(m(2,1)*m(2,1)+m(2,2)*m(2,2), 0.5));
+		e.z() = std::atan2(m(1,0),m(0,0));
+		return e;
 	}
 
 	inline auto lerp(const Float &a, const Float &b, const Float &t) -> Float {
