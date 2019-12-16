@@ -53,6 +53,8 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 
 	auto solve = solver::RK4(rocket, rocket::Rocket::dx);
 
+	std::ofstream data_file(sim.output_dir / "out.dat");
+
 	// main loop
 	size_t step = 0;
 	while(true){
@@ -62,7 +64,7 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 		const auto &t = solve.t;
 
 		if(step % output_rate == 0)
-			save_data(t, sim);
+			save_data(t, sim, data_file);
 
 		// 終了判定
 		if(step > 100 && sim.rocket.pos.altitude() <= 0.0)
@@ -125,13 +127,13 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	s.step(sim.dt);
 }
 
-auto trochia::simulation::save_data(const math::Float &time, const Simulation &sim) -> void {
+auto trochia::simulation::save_data(const math::Float &time, const Simulation &sim, std::ofstream &output) -> void {
 	// TODO save to file
 	const auto altitude		= sim.rocket.pos.altitude();
 	const auto geo_height	= environment::earth::geodesy::potential_height(altitude);
 	const auto temperature = environment::air::temperature(geo_height);
 
-	std::cout << time << " "
+	output << time << " "
 		<< altitude << " "
 		<< geo_height << " "
 		<< (math::Float)environment::temperature::celsius(temperature) << " "
