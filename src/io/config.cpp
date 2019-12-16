@@ -30,7 +30,7 @@ namespace trochia::io::config {
 auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -> void {
 	using namespace toml;
 
-	std::vector<math::Float> launcher_angle;
+	std::vector<math::Float> launcher_elevation;
 	simulation::Simulation sim;
 
 	const auto config = parse(fname);
@@ -50,23 +50,23 @@ auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -
 	{
 		const auto &cfg_launcher = find(config, "launcher");
 
-		// get angle
-		const auto angle = find(cfg_launcher, "angle");
-		if(angle.is_integer())
-			launcher_angle.push_back(angle.as_integer());
-		else if(angle.is_floating())
-			launcher_angle.push_back(angle.as_floating());
-		else if(angle.is_table()){
-			const auto start = find(angle, "start");
-			const auto end   = find(angle, "end");
+		// get elevation
+		const auto elevation = find(cfg_launcher, "elevation");
+		if(elevation.is_integer())
+			launcher_elevation.push_back(elevation.as_integer());
+		else if(elevation.is_floating())
+			launcher_elevation.push_back(elevation.as_floating());
+		else if(elevation.is_table()){
+			const auto start = find(elevation, "start");
+			const auto end   = find(elevation, "end");
 			if(start.is_integer() && end.is_integer()){
 				for(int a=start.as_integer();a<end.as_integer();a++)
-					launcher_angle.push_back(a);
+					launcher_elevation.push_back(a);
 			}else{
-				std::cerr << "error: angle.start or angle.end are not integer" << std::endl;
+				std::cerr << "error: elevation.start or elevation.end are not integer" << std::endl;
 			}
-		}else if(angle.is_array()){
-			launcher_angle = get<std::vector<double>>(angle);
+		}else if(elevation.is_array()){
+			launcher_elevation = get<std::vector<double>>(elevation);
 		}
 	}
 
@@ -92,7 +92,7 @@ auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -
 		sim.rocket.Cna= stage[0].at("Cna").as_floating();
 	}
 
-	for(const auto &a : launcher_angle){
+	for(const auto &a : launcher_elevation){
 		sim.launcher_angle = a;
 		sims.push_back(sim);
 	}
