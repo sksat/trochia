@@ -26,7 +26,7 @@
 #include "solver.hpp"
 #include "environment.hpp"
 
-auto trochia::do_simulation(Simulation &sim) -> void {
+auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 	const auto &timeout = sim.timeout;
 	const auto &dt = sim.dt;
 	const auto &output_dt = sim.output_dt;

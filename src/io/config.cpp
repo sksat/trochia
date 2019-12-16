@@ -27,10 +27,10 @@
 
 namespace trochia::io::config {
 
-auto load(const std::string &fname, std::vector<Simulation> &sims) -> void {
+auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -> void {
 	using namespace toml;
 
-	Simulation sim;
+	simulation::Simulation sim;
 
 	const auto config = parse(fname);
 

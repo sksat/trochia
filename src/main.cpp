@@ -31,7 +31,7 @@
 namespace fs = std::filesystem;
 
 auto main(int argc, char **argv) -> int {
-	std::vector<trochia::Simulation> sims;
+	std::vector<trochia::simulation::Simulation> sims;
 
 	trochia::version::version();
 
@@ -60,7 +60,7 @@ auto main(int argc, char **argv) -> int {
 				std::cerr << "[failed]";
 			std::cerr << std::endl;
 		}
-		do_simulation(s);
+		trochia::simulation::exec(s);
 	}
 
 	return 0;
