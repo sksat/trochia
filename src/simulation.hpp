@@ -38,6 +38,8 @@ namespace trochia::simulation {
 		std::string output_dir_fmt;
 		std::filesystem::path output_dir;
 
+		math::Float launcher_angle;
+
 		rocket::Rocket rocket;
 	};
 

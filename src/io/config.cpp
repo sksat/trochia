@@ -30,6 +30,7 @@ namespace trochia::io::config {
 auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -> void {
 	using namespace toml;
 
+	std::vector<math::Float> launcher_angle;
 	simulation::Simulation sim;
 
 	const auto config = parse(fname);
@@ -43,6 +44,30 @@ auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -
 		sim.output_dt = output.at("dt").as_floating();
 
 		sim.output_dir_fmt = output.at("dir").as_string();
+	}
+
+	// launcher info
+	{
+		const auto &cfg_launcher = find(config, "launcher");
+
+		// get angle
+		const auto angle = find(cfg_launcher, "angle");
+		if(angle.is_integer())
+			launcher_angle.push_back(angle.as_integer());
+		else if(angle.is_floating())
+			launcher_angle.push_back(angle.as_floating());
+		else if(angle.is_table()){
+			const auto start = find(angle, "start");
+			const auto end   = find(angle, "end");
+			if(start.is_integer() && end.is_integer()){
+				for(int a=start.as_integer();a<end.as_integer();a++)
+					launcher_angle.push_back(a);
+			}else{
+				std::cerr << "error: angle.start or angle.end are not integer" << std::endl;
+			}
+		}else if(angle.is_array()){
+			launcher_angle = get<std::vector<double>>(angle);
+		}
 	}
 
 	// rocket info
@@ -67,7 +92,10 @@ auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -
 		sim.rocket.Cna= stage[0].at("Cna").as_floating();
 	}
 
-	sims.push_back(sim);
+	for(const auto &a : launcher_angle){
+		sim.launcher_angle = a;
+		sims.push_back(sim);
+	}
 }
 
 }

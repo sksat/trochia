@@ -40,7 +40,7 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 
 	// TODO: set launcher position
 	launcher.azimuth(90.0);		// 方位角(deg)
-	launcher.elevation(80.0);	// 仰角(deg)
+	launcher.elevation(sim.launcher_angle);	// 仰角(deg)
 
 	auto &pos = rocket.pos;
 	pos.up(0.0);
