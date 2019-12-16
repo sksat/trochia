@@ -22,13 +22,16 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <filesystem>
 #include <toml.hpp>
 #include "version.hpp"
 #include "simulation.hpp"
 #include "io/config.hpp"
 
+namespace fs = std::filesystem;
+
 auto main(int argc, char **argv) -> int {
-	std::vector<trochia::Simulation> sims;
+	std::vector<trochia::simulation::Simulation> sims;
 
 	trochia::version::version();
 
@@ -40,7 +43,24 @@ auto main(int argc, char **argv) -> int {
 
 	std::cerr << "sim num: " << sims.size() << std::endl;
 	for(auto &s : sims){
-		do_simulation(s);
+		s.output_dir = s.output_dir_fmt;
+
+		if(fs::exists(s.output_dir)){
+			if(! fs::is_directory(s.output_dir)){
+				std::cerr << "error: output dir \"" << s.output_dir << "\""
+					<< " is not directory." << std::endl;
+				return -1;
+			}
+		}else{
+			std::cerr << "output directory does not exists" << std::endl
+				<< "creating \"" << s.output_dir << "\"...";
+			if(fs::create_directory(s.output_dir))
+				std::cerr << "[ok]";
+			else
+				std::cerr << "[failed]";
+			std::cerr << std::endl;
+		}
+		trochia::simulation::exec(s);
 	}
 
 	return 0;

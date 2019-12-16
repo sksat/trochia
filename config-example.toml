@@ -1,12 +1,14 @@
 [simulation]
 dt			= 0.01
 output.dt	= 0.01
+output.dir	= "output"
 
 [launcher]
 length	= 5
-angle	= 85
-# angle.start = 85
-# angle.end = 89
+elevation	= 85
+# elevation.start = 85
+# elevation.end = 89
+# elevation = [ 80.0, 80.1, 80.2, 80.3 ]
 
 [rocket]
 name	= "example rocket"

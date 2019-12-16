@@ -24,11 +24,10 @@
 
 #include <string>
 #include <vector>
-
-class Simulation;
+#include "../simulation.hpp"
 
 namespace trochia::io::config {
-	auto load(const std::string &fname, std::vector<Simulation> &sims) -> void;
+	auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -> void;
 }
 
 #endif

@@ -5,18 +5,43 @@ on:
     types: created
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
 
     steps:
     - uses: actions/checkout@v1
 
-    - name: configure
+    - name: install C++17 compiler for Ubuntu
+      if: matrix.os == 'ubuntu-latest'
       run: |
-          mkdir build
+          sudo apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
+          sudo apt update
+          sudo apt install -y g++-9
+
+    - name: make build dir
+      run: mkdir build
+
+    - name: configure on Ubuntu
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+          cd build
+          cmake -DCMAKE_CXX_COMPILER=g++-9 ..
+
+    - name: configure on Mac
+      if: matrix.os != 'windows-latest'
+      run: |
           cd build
           cmake ..
-    - name: build on ubuntu
+
+    - name: configure on Windows
+      if: matrix.os == 'windows-latest'
+      run: |
+          cd build
+          cmake -G "Visual Studio 16 2019" -A x64 -config Release ..
+    - name: build on ${{ matrix.os }}
       run: cmake --build build --parallel
 
     - name: create COPYING
@@ -30,17 +55,65 @@ jobs:
           echo "-----------------------------------------------" >> COPYING
           cat build/deps/build/toml11/src/toml11/LICENSE >> COPYING
 
-    - name: make archive file
+    - name: make release directory
+      env:
+        OS: ${{ runner.os }}
       run: |
           mkdir trochia
           cp README.md trochia/
           cp LICENSE trochia/
           cp COPYING trochia/
-          cp build/trochia trochia/
-          zip -r trochia-linux.zip trochia/
-    - name: Release
-      uses: JasonEtco/upload-to-release@master
+          cp build/bin/trochia* trochia/
+    - name: make archive file
+      if: matrix.os != 'windows-latest'
+      env:
+        OS: ${{ runner.os }}
+      run: zip -r trochia-$OS.zip trochia/
+    - name: make archive file for Windows
+      if: matrix.os == 'windows-latest'
+      run: 7z a trochia-Windows.zip trochia
+
+    - name: Upload archive as artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: "trochia-${{ runner.os }}"
+        path: "trochia-${{ runner.os }}.zip"
+
+  upload:
+    name: Upload archive file to GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/download-artifact@v1
+      with:
+        name: trochia-Linux
+    - name: move archive
+      run: mv trochia-Linux/trochia-Linux.zip trochia-linux.zip
+    - uses: JasonEtco/upload-to-release@master
       with:
         args: "trochia-linux.zip application/zip"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: actions/download-artifact@v1
+      with:
+        name: trochia-macOS
+    - name: move archive
+      run: mv trochia-macOS/trochia-macOS.zip trochia-mac.zip
+    - uses: JasonEtco/upload-to-release@master
+      with:
+        args: "trochia-mac.zip application/zip"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: actions/download-artifact@v1
+      with:
+        name: trochia-Windows
+    - name: move archive
+      run: mv trochia-Windows/trochia-Windows.zip trochia-windows.zip
+    - uses: JasonEtco/upload-to-release@master
+      with:
+        args: "trochia-windows.zip application/zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

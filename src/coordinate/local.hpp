@@ -93,7 +93,7 @@ namespace trochia::coordinate::local {
 		auto up(const Float &u)    -> void { down(-1.0*u);  }
 
 		template<typename Frame>
-		operator Frame() {
+		operator Frame() const {
 			Frame frame;
 			frame.north(this->north());
 			frame.east(this->east());
@@ -120,8 +120,12 @@ namespace trochia::coordinate::local {
 		auto north(const Float &n) -> void { vec.y() = n; }
 		auto up(const Float &u)    -> void { vec.z() = u; }
 
+		auto west(const Float &w)  -> void { east(-1.0*w); }
+		auto south(const Float &s) -> void { north(-1.0*s);}
+		auto down(const Float &d)  -> void { up(-1.0*d);   }
+
 		template<typename Frame>
-		operator Frame() {
+		operator Frame() const {
 			Frame frame;
 			frame.east(this->east());
 			frame.north(this->north());

@@ -19,30 +19,37 @@
  *
  * ----------------------------------------------------------------------- */
 
-#ifndef TROCHIA_VERSION_HPP_
-#define TROCHIA_VERSION_HPP_
+#ifndef IO_CSV_HPP_
+#define IO_CSV_HPP_
 
-#include <cstddef>
-#include <iostream>
+#include <string>
+#include <map>
+#include <array>
+#include <vector>
+#include <fstream>
 
-namespace trochia::version {
-	constexpr size_t major = 0;
-	constexpr size_t minor = 3;
+namespace trochia::io {
+	template<typename T, size_t N=2>
+	class CSV {
+	public:
+		using header_t	= std::array<std::string, N>;
+		using line_t	= std::array<T, N>;
 
-	auto version() -> void {
-		using std::endl;
-		std::cerr
-			<< "Trochia " << major << "." << minor
-			<< " (commit: " << GIT_COMMIT_ID << ")" << endl
-			<< "commit date: " << GIT_COMMIT_DATE << endl
-			<< R"(
-Copyright (C) 2019 sksat <sksat@sksat.net>
-This program comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it
-under certain conditions; see LICENSE for details.
-	)"
-			<< endl;
-	}
+		CSV(const std::fstream &file) : file(file) {}
+		CSV(const std::fstream &file, const header_t &header) : file(file), header(header) {}
+
+		auto operator<<(const line_t &line) -> void {
+			for(const auto &e : line){
+				file << std::to_string(e);
+				if(e != line.cend())
+					file << ", ";
+			}
+			file << std::endl;
+		}
+	private:
+		std::fstream file;
+		header_t header;
+	};
 }
 
 #endif
