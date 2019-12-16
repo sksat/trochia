@@ -14,16 +14,31 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: configure
+    - name: install C++17 compiler for Ubuntu
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+          sudo apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
+          sudo apt update
+          sudo apt install -y g++-9
+
+    - name: make build dir
+      run: mkdir build
+
+    - name: configure on Ubuntu
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+          cd build
+          cmake -DCMAKE_CXX_COMPILER=g++-9 ..
+
+    - name: configure on Mac
       if: matrix.os != 'windows-latest'
       run: |
-          mkdir build
           cd build
           cmake ..
-    - name: configure on windows
+
+    - name: configure on Windows
       if: matrix.os == 'windows-latest'
       run: |
-          mkdir build
           cd build
           cmake -G "Visual Studio 16 2019" -A x64 -config Release ..
     - name: build on ${{ matrix.os }}
