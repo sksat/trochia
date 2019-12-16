@@ -43,6 +43,8 @@ auto main(int argc, char **argv) -> int {
 
 	std::cerr << "sim num: " << sims.size() << std::endl;
 	for(auto &s : sims){
+		s.output_dir = s.output_dir_fmt;
+
 		if(fs::exists(s.output_dir)){
 			if(! fs::is_directory(s.output_dir)){
 				std::cerr << "error: output dir \"" << s.output_dir << "\""
@@ -52,8 +54,7 @@ auto main(int argc, char **argv) -> int {
 		}else{
 			std::cerr << "output directory does not exists" << std::endl
 				<< "creating \"" << s.output_dir << "\"...";
-			const fs::path dir = s.output_dir;
-			if(fs::create_directory(dir))
+			if(fs::create_directory(s.output_dir))
 				std::cerr << "[ok]";
 			else
 				std::cerr << "[failed]";

@@ -42,7 +42,7 @@ auto load(const std::string &fname, std::vector<Simulation> &sims) -> void {
 		const auto output = find(cfg_sim, "output");
 		sim.output_dt = output.at("dt").as_floating();
 
-		sim.output_dir= output.at("dir").as_string();
+		sim.output_dir_fmt = output.at("dir").as_string();
 	}
 
 	// rocket info

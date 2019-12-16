@@ -20,6 +20,7 @@
  * ----------------------------------------------------------------------- */
 
 #include <iostream>
+#include <fstream>
 #include "math.hpp"
 #include "simulation.hpp"
 #include "solver.hpp"

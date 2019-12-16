@@ -23,6 +23,7 @@
 #define SIMULATION_HPP_
 
 #include <string>
+#include <filesystem>
 #include "math.hpp"
 #include "rocket.hpp"
 
@@ -31,7 +32,9 @@ namespace trochia {
 	public:
 		math::Float timeout = 60.0;
 		math::Float dt, output_dt;
-		std::string output_dir;
+
+		std::string output_dir_fmt;
+		std::filesystem::path output_dir;
 
 		rocket::Rocket rocket;
 	};
