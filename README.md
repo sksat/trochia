@@ -12,7 +12,13 @@ Trochia is a rocket flight simulator written by modern C++.
 
 ## Install
 
-There is compiled binary on [GitHub Release](https://github.com/sk2sat/trochia/releases).
+There are pre-built binaries of latest release for some platform.
+
+- [Linux](https://github.com/sk2sat/trochia/releases/latest/download/trochia-linux.zip)
+- [Mac OS](https://github.com/sk2sat/trochia/releases/latest/download/trochia-mac.zip)
+- [Windows](https://github.com/sk2sat/trochia/releases/latest/download/trochia-windows.zip)
+
+Please see [Release Page](https://github.com/sk2sat/trochia/releases) for details.
 
 ### Build from Source
 
@@ -29,12 +35,15 @@ Trochia is run from the command line.
 Please open your terminal and go to your project directory.
 
 ```sh
-$ trochia > out.dat
+$ vim config.toml # write configuration by TOML
+$ trochia
 ```
 
 ## Author
 
-[sk2sat](https://github.com/sk2sat) ([@sksat\_tty](https://twitter.com/sksat_tty))
+GitHub: [sk2sat](https://github.com/sk2sat)
+
+Twitter: [@sksat\_tty](https://twitter.com/sksat_tty)
 
 ## License
 
