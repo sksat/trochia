@@ -31,36 +31,38 @@
 namespace fs = std::filesystem;
 
 auto main(int argc, char **argv) -> int {
-	std::vector<trochia::simulation::Simulation> sims;
+	trochia::simulation::Simulation sim;
 
 	trochia::version::version();
 
 	std::cerr << "loading config file ...";
-	trochia::io::config::load("config.toml", sims);
+	const auto launcher_elevation = trochia::io::config::load("config.toml", sim);
 	std::cerr << std::endl;
 
 	std::cerr << "start simulation" << std::endl;
 
-	std::cerr << "sim num: " << sims.size() << std::endl;
-	for(auto &s : sims){
-		s.output_dir = s.output_dir_fmt;
+	std::cout << "sim number: " << launcher_elevation.size() << std::endl;
 
-		if(fs::exists(s.output_dir)){
-			if(! fs::is_directory(s.output_dir)){
-				std::cerr << "error: output dir \"" << s.output_dir << "\""
+	for(const auto &e : launcher_elevation){
+		sim.launcher = trochia::environment::Launcher(5.0, 90.0, e);
+
+		sim.output_dir = sim.output_dir_fmt;
+		if(fs::exists(sim.output_dir)){
+			if(! fs::is_directory(sim.output_dir)){
+				std::cerr << "error: output dir \"" << sim.output_dir << "\""
 					<< " is not directory." << std::endl;
 				return -1;
 			}
 		}else{
 			std::cerr << "output directory does not exists" << std::endl
-				<< "creating \"" << s.output_dir << "\"...";
-			if(fs::create_directory(s.output_dir))
+				<< "creating \"" << sim.output_dir << "\"...";
+			if(fs::create_directory(sim.output_dir))
 				std::cerr << "[ok]";
 			else
 				std::cerr << "[failed]";
 			std::cerr << std::endl;
 		}
-		trochia::simulation::exec(s);
+		trochia::simulation::exec(sim);
 	}
 
 	return 0;

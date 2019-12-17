@@ -27,11 +27,10 @@
 
 namespace trochia::io::config {
 
-auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -> void {
+auto load(const std::string &fname, simulation::Simulation &sim) -> std::vector<math::Float> {
 	using namespace toml;
 
 	std::vector<math::Float> launcher_elevation;
-	simulation::Simulation sim;
 
 	const auto config = parse(fname);
 
@@ -60,7 +59,7 @@ auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -
 			const auto start = find(elevation, "start");
 			const auto end   = find(elevation, "end");
 			if(start.is_integer() && end.is_integer()){
-				for(int a=start.as_integer();a<end.as_integer();a++)
+				for(int a=start.as_integer();a<=end.as_integer();a++)
 					launcher_elevation.push_back(a);
 			}else{
 				std::cerr << "error: elevation.start or elevation.end are not integer" << std::endl;
@@ -92,10 +91,7 @@ auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -
 		sim.rocket.Cna= stage[0].at("Cna").as_floating();
 	}
 
-	for(const auto &a : launcher_elevation){
-		sim.launcher = environment::Launcher(5.0, 90.0, a);
-		sims.push_back(sim);
-	}
+	return launcher_elevation;
 }
 
 }

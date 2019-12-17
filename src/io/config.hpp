@@ -27,7 +27,7 @@
 #include "../simulation.hpp"
 
 namespace trochia::io::config {
-	auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -> void;
+	auto load(const std::string &fname, simulation::Simulation &sim) -> std::vector<math::Float>;
 }
 
 #endif
