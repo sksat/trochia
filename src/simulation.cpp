@@ -50,6 +50,8 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 
 	rocket.quat = sim.launcher.get_angle();
 
+	rocket.Cmq = -1.0*rocket.Cna / 2.0 * std::pow((rocket.lcp-rocket.lcg0)/rocket.length, 2.0);
+
 	auto solve = solver::RK4(rocket, rocket::Rocket::dx);
 
 	std::ofstream data_file(sim.output_dir / ("out.dat"));
