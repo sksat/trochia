@@ -83,6 +83,8 @@ namespace trochia {
 		}
 
 		inline auto progress(const math::Float &time) const -> math::Float {
+			if(time >= time_max)
+				return 1.0;
 			return time / time_max;
 		}
 
