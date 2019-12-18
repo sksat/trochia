@@ -22,6 +22,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <string_view>
 #include <filesystem>
 #include <toml.hpp>
 #include "version.hpp"
@@ -30,6 +31,7 @@
 
 namespace fs = std::filesystem;
 
+auto shrink_str(std::string_view sv) -> std::string_view;
 auto make_output_dir(const fs::path &dir) -> bool;
 
 auto main(int argc, char **argv) -> int {
@@ -49,7 +51,9 @@ auto main(int argc, char **argv) -> int {
 		sim.launcher = trochia::environment::Launcher(5.0, 90.0, e);
 
 		sim.output_dir = sim.output_dir_fmt;
-		sim.output_dir = sim.output_dir / ("e" + std::to_string(e));
+
+		const auto e_str = shrink_str(std::to_string(e));
+		sim.output_dir = sim.output_dir / e_str;
 
 		make_output_dir(sim.output_dir);
 
@@ -57,6 +61,15 @@ auto main(int argc, char **argv) -> int {
 	}
 
 	return 0;
+}
+
+auto shrink_str(std::string_view sv) -> std::string_view {
+	const auto &b = sv.back();
+	if(b == '0' || b == '.'){
+		sv.remove_suffix(1);
+		sv = shrink_str(sv);
+	}
+	return sv;
 }
 
 auto make_output_dir(const fs::path &dir) -> bool {
