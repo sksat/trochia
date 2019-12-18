@@ -21,6 +21,7 @@
 
 
 #include <iostream>
+#define TOML11_COLORIZE_ERROR_MESSAGE
 #include <toml.hpp>
 #include "../simulation.hpp"
 #include "config.hpp"
