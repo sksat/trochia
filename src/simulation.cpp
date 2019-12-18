@@ -52,7 +52,7 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 
 	auto solve = solver::RK4(rocket, rocket::Rocket::dx);
 
-	std::ofstream data_file(sim.output_dir / ("out" + std::to_string(sim.launcher.elevation()) + ".dat"));
+	std::ofstream data_file(sim.output_dir / ("out.dat"));
 
 	// main loop
 	size_t step = 0;

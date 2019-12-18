@@ -30,6 +30,8 @@
 
 namespace fs = std::filesystem;
 
+auto make_output_dir(const fs::path &dir) -> bool;
+
 auto main(int argc, char **argv) -> int {
 	trochia::simulation::Simulation sim;
 
@@ -47,23 +49,41 @@ auto main(int argc, char **argv) -> int {
 		sim.launcher = trochia::environment::Launcher(5.0, 90.0, e);
 
 		sim.output_dir = sim.output_dir_fmt;
-		if(fs::exists(sim.output_dir)){
-			if(! fs::is_directory(sim.output_dir)){
-				std::cerr << "error: output dir \"" << sim.output_dir << "\""
-					<< " is not directory." << std::endl;
-				return -1;
-			}
-		}else{
-			std::cerr << "output directory does not exists" << std::endl
-				<< "creating \"" << sim.output_dir << "\"...";
-			if(fs::create_directory(sim.output_dir))
-				std::cerr << "[ok]";
-			else
-				std::cerr << "[failed]";
-			std::cerr << std::endl;
-		}
+		sim.output_dir = sim.output_dir / ("e" + std::to_string(e));
+
+		make_output_dir(sim.output_dir);
+
 		trochia::simulation::exec(sim);
 	}
 
 	return 0;
+}
+
+auto make_output_dir(const fs::path &dir) -> bool {
+	if(fs::exists(dir)){
+		if(fs::is_directory(dir))
+			return true;
+
+		std::cerr << "error: " << dir << " is not directory." << std::endl;
+		return false;
+	}
+
+	if(!fs::exists(dir.parent_path())){
+		const auto p = dir.parent_path();
+		if(!p.empty()){
+			std::cerr << "parent directory " << p
+				<< " does not exist." << std::endl;
+			if(!make_output_dir(p))
+				return false;
+		}
+	}
+
+	std::cerr << "creating directory " << dir << "...";
+	if(!fs::create_directory(dir)){
+		std::cerr << "[failed]" << std::endl;
+		return false;
+	}
+	std::cerr << "[ok]" << std::endl;
+
+	return true;
 }
