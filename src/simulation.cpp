@@ -27,6 +27,8 @@
 #include "environment.hpp"
 
 auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
+	using math::Float;
+
 	if(sim.output_dt < sim.dt)
 		return;
 
@@ -52,6 +54,8 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 
 	rocket.Cmq = -1.0*rocket.Cna / 2.0 * std::pow((rocket.lcp-rocket.lcg0)/rocket.length, 2.0);
 
+	std::pair<Float, Float> altitude_max = { 0.0, 0.0 };
+
 	auto solve = solver::RK4(rocket, rocket::Rocket::dx);
 
 	std::ofstream data_file(sim.output_dir / ("out.dat"));
@@ -63,16 +67,25 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 		step++;
 
 		const auto &t = solve.t;
+		const auto &altitude = sim.rocket.pos.altitude();
+
+		if(altitude_max.second < altitude){
+			altitude_max.first = t;
+			altitude_max.second= altitude;
+		}
 
 		if(step % output_rate == 0)
 			save_data(t, sim, data_file);
 
 		// 終了判定
-		if(step > 100 && sim.rocket.pos.altitude() <= 0.0)
+		if(step > 100 && altitude <= 0.0)
 			break;
 		if(t > sim.timeout)
 			break;
 	}
+
+	std::cerr << "max altitude: " << altitude_max.second
+		<< "(" << altitude_max.first << "sec)" << std::endl;
 }
 
 auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket> &s) -> void {
