@@ -47,7 +47,7 @@ namespace trochia::simulation {
 
 	auto exec(Simulation &sim) -> void;
 	auto do_step(Simulation &sim, solver::solver<rocket::Rocket> &solve) -> void;
-	auto save_data(const math::Float &time, const Simulation &sim, std::ofstream &output) -> void;
+	auto save_data(const math::Float &time, const Simulation &sim, std::vector<std::ofstream> &output) -> void;
 }
 
 #endif

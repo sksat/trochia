@@ -21,10 +21,23 @@
 
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 #include "math.hpp"
 #include "simulation.hpp"
 #include "solver.hpp"
+#include "coordinate.hpp"
 #include "environment.hpp"
+
+namespace fs = std::filesystem;
+
+template<size_t N=0, typename T>
+auto open_file(const fs::path &dir, const T &fname, std::vector<std::ofstream> &file) -> void {
+	if constexpr(N < std::tuple_size<T>::value){
+		const auto &fn = std::get<N>(fname);
+		file.push_back(std::ofstream(dir / fn));
+		open_file<N+1>(dir, fname, file);
+	}
+}
 
 auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 	using math::Float;
@@ -58,7 +71,12 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 
 	auto solve = solver::RK4(rocket, rocket::Rocket::dx);
 
-	std::ofstream data_file(sim.output_dir / ("out.dat"));
+	const auto output_fname = std::make_tuple(
+		"pos.dat",
+		"body.dat"
+	);
+	std::vector<std::ofstream> output_file;
+	open_file(sim.output_dir, output_fname, output_file);
 
 	// main loop
 	size_t step = 0;
@@ -75,7 +93,7 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 		}
 
 		if(step % output_rate == 0)
-			save_data(t, sim, data_file);
+			save_data(t, sim, output_file);
 
 		// 終了判定
 		if(step > 100 && altitude <= 0.0)
@@ -141,12 +159,23 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	s.step(sim.dt);
 }
 
-auto trochia::simulation::save_data(const math::Float &time, const Simulation &sim, std::ofstream &output) -> void {
-	const auto &pos = sim.rocket.pos;
+auto trochia::simulation::save_data(const math::Float &time, const Simulation &sim, std::vector<std::ofstream> &output) -> void {
+	using std::endl;
 
-	output << time << " "
-		<< pos.east() << " "
-		<< pos.up() << " "
-		<< pos.north() << " "
-		<< std::endl;
+	auto &o_pos = output[0];
+	auto &o_body= output[1];
+
+	const auto &rocket = sim.rocket;
+	const auto ned2body= coordinate::dcm::ned2body(rocket.quat);
+
+	const auto &pos = rocket.pos;
+	const auto b_vel= ned2body * rocket.vel.vec;
+	const auto b_acc= ned2body * rocket.acc.vec;
+
+	o_pos << time << " "
+		<< pos.east() << " " << pos.up() << " " << pos.north() << " " << endl;
+
+	o_body << time << " "
+		<< b_vel.x() << " " << b_vel.y() << " " << b_vel.z() << " "
+		<< b_acc.x() << " " << b_acc.y() << " " << b_acc.z() << endl;
 }
