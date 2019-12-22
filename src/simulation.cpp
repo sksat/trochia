@@ -112,17 +112,18 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	auto &rocket = sim.rocket;
 	rocket.time = time;
 
+	// 機体速度ベクトル(NED)
 	const coordinate::local::NED vel_ned = rocket.vel;
-	const auto vab_ned = vel_ned.vec;
 
-	// Body座標系での対気速度ベクトル
-	const auto vab = coordinate::dcm::ned2body(rocket.quat) * vab_ned;
-	const auto va = vab.norm();
+	// 対気速度ベクトル
+	const auto va_ned	= vel_ned.vec;
+	const auto va_body	= coordinate::dcm::ned2body(rocket.quat) * va_ned;
+	const auto va		= va_body.norm();
 
 	// tan(attack) = z/x
-	// arctan(z/x) = attack
-	const auto angle_attack		= (vab.x()!=0.0 ? std::atan(vab.z() / vab.x()) : 0.5*math::pi);
-	const auto angle_side_slip	= (va!=0.0 ? std::atan(vab.y() / va) : 0.5*math::pi);
+	// sin(side_slip) = y/va
+	const auto angle_attack		= (va_body.x()==0.0 ? 0.0 : std::atan(va_body.z() / va_body.x()));
+	const auto angle_side_slip	= (va==0.0 ? 0.0 : std::asin(va_body.y() / va));
 
 	// 代表面積
 	const auto S = rocket.diameter * rocket.diameter * math::pi / 4;
@@ -134,9 +135,9 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 
 	// 空気抵抗
 	const auto q = 0.5 * rho * va * va; // 動圧
-	const auto D = rocket.Cd  * q * S;
-	const auto Y = rocket.Cna * q * S * std::sin(angle_side_slip);
-	const auto N = rocket.Cna * q * S * std::sin(angle_attack);
+	const auto D = q * S * rocket.Cd;
+	const auto Y = q * S * rocket.Cna * angle_side_slip;
+	const auto N = q * S * rocket.Cna * angle_attack;
 
 	// thrust
 	const auto thrust = rocket.engine.thrust(time); // first stage only
