@@ -45,6 +45,7 @@ namespace trochia::rocket {
 		math::Float length;
 		math::Float lcg0, lcgf;		// 重心位置
 		math::Float lcp;			// 空力中心位置
+		math::Float I0, If;			// 慣性モーメント
 		math::Float Cd;				// 抗力係数
 		math::Float Cna;
 
@@ -56,6 +57,10 @@ namespace trochia::rocket {
 
 		auto lcg() const -> math::Float {
 			return math::lerp(lcg0, lcgf, engine.progress(this->time));
+		}
+
+		auto inertia() const -> math::Float {
+			return math::lerp(I0, If, engine.progress(this->time));
 		}
 
 		auto weight() const -> math::Float {

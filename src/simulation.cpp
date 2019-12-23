@@ -134,10 +134,10 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	const auto rho = environment::air::density(temperature);
 
 	// 空気抵抗
-	const auto q = 0.5 * rho * va * va; // 動圧
-	const auto D = q * S * rocket.Cd;
-	const auto Y = q * S * rocket.Cna * angle_side_slip;
-	const auto N = q * S * rocket.Cna * angle_attack;
+	const auto q = 0.5 * rho * va * va;						// 動圧
+	const auto D = q * S * rocket.Cd;						// 軸力
+	const auto N = q * S * rocket.Cna * angle_attack;		// 法線力
+	const auto Y = q * S * rocket.Cna * angle_side_slip;	// Y軸上の法線力
 
 	// thrust
 	const auto thrust = rocket.engine.thrust(time); // first stage only
@@ -155,6 +155,21 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 		const auto g = environment::gravity(rocket.pos.altitude());
 		rocket.acc.down(rocket.acc.down() + g);
 	}
+
+	// 回転
+	const auto lcg_lcp = rocket.lcg() - rocket.lcp;	// 重心から空力中心までの距離
+	const auto ma_y = Y * lcg_lcp;					// Y軸周りの空力モーメント
+	const auto ma_z = N * lcg_lcp;					// Z軸周りの空力モーメント
+
+	const auto I = rocket.inertia();				// 慣性モーメント
+
+	// 角加速度
+	const auto domg_y = ma_y / I;
+	const auto domg_z = ma_z / I;
+
+	// 角速度の更新
+	rocket.omega.y() += domg_y * sim.dt;
+	rocket.omega.z() += domg_z * sim.dt;
 
 	// update
 	s.step(sim.dt);

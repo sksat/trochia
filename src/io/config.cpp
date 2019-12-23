@@ -91,6 +91,9 @@ auto load(const std::string &fname, simulation::Simulation &sim) -> std::vector<
 
 		sim.rocket.lcp	= stage[0].at("lcp").as_floating();
 
+		sim.rocket.I0	= stage[0].at("I0").as_floating();
+		sim.rocket.If	= stage[0].at("If").as_floating();
+
 		sim.rocket.Cd = stage[0].at("Cd").as_floating();
 		sim.rocket.Cna= stage[0].at("Cna").as_floating();
 	}
