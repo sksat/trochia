@@ -86,6 +86,8 @@ auto load(const std::string &fname, simulation::Simulation &sim) -> std::vector<
 		sim.rocket.diameter = stage[0].at("diameter").as_floating();
 		sim.rocket.length	= stage[0].at("length").as_floating();
 
+		sim.rocket.mass		= stage[0].at("mass").as_floating();
+
 		sim.rocket.lcg0 = stage[0].at("lcg0").as_floating();
 		sim.rocket.lcgf = stage[0].at("lcgf").as_floating();
 

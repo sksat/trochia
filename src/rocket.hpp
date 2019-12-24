@@ -43,6 +43,7 @@ namespace trochia::rocket {
 
 		math::Float diameter;		// 直径(m)
 		math::Float length;
+		math::Float mass;			// エンジン抜き質量
 		math::Float lcg0, lcgf;		// 重心位置
 		math::Float lcp;			// 空力中心位置
 		math::Float I0, If;			// 慣性モーメント
@@ -64,7 +65,7 @@ namespace trochia::rocket {
 		}
 
 		auto weight() const -> math::Float {
-			return 10.0 + engine.weight(this->time);
+			return mass + engine.weight(this->time);
 		}
 	};
 }
