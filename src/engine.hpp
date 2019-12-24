@@ -30,7 +30,7 @@
 #include "math.hpp"
 
 // *data.begin()は(0.0, thrust)
-// *data.end()は(time_max, 0.0)となるようにすること
+// *data.end()は(time_end, 0.0)となるようにすること
 
 namespace trochia {
 	class Engine {
@@ -65,6 +65,9 @@ namespace trochia {
 			thrust.first = 0.0;
 			thrust.second= 0.0;
 
+			double thrust_max = 0.0;
+
+			// 推力履歴の読み込み
 			while(ifs){
 				ifs >> t >> th;
 				if(t < thrust.first)			// データがソートされていない
@@ -73,6 +76,11 @@ namespace trochia {
 				if(thrust.first == 0.0){
 					if(t != 0.0)				// tの初期値が0.0でない
 						data.push_back(thrust);
+				}
+
+				if(th > thrust_max){
+					thrust_max = th;
+					time_max = t;
 				}
 
 				thrust.first = t;
@@ -88,14 +96,26 @@ namespace trochia {
 				data.push_back(thrust);
 			}
 
-			time_max = thrust.first;
+			time_end = thrust.first;
 			itr = data.cbegin();
+
+			for(auto i=data.crbegin();i!=data.crend();i++){
+				if(i->second > this->thrust(time_max)*0.01){
+					time_valid = (i-1)->first;
+					break;
+				}
+			}
+
+			std::cerr
+				<< "\t" << "max thrust: " << this->thrust(time_max)
+					<< "(" << time_max << "s)" << std::endl
+				<< "\t" << "valid time: " << time_valid << std::endl;
 		}
 
 		inline auto progress(const math::Float &time) const -> math::Float {
-			if(time >= time_max)
+			if(time >= time_valid)
 				return 1.0;
-			return time / time_max;
+			return time / time_end;
 		}
 
 		inline auto weight(const math::Float &time) const -> math::Float {
@@ -110,7 +130,7 @@ namespace trochia {
 			const auto &time_next	= next->first;
 			const auto &thrust_next	= next->second;
 
-			if(time >= time_max)		// 燃焼終了
+			if(time >= time_end)		// 推力履歴データ終了
 				return 0.0;
 
 			// 補間が必要ないやつ
@@ -148,7 +168,7 @@ namespace trochia {
 		// thrustcurve
 		thrustcurve_t data;
 		thrustcurve_t::const_iterator itr;
-		math::Float time_max;
+		math::Float time_max, time_valid, time_end;
 	};
 }
 
