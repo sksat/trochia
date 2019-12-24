@@ -160,10 +160,15 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 		rocket.acc.down(rocket.acc.down() + g);
 	}
 
+	// 空気力による減衰モーメント係数
+	const auto Ka_div = 2.0 * va * rocket.Cmq;
+	const auto Ka = (Ka_div==0.0 ? 0.0 :
+			q * S * rocket.length * rocket.length / Ka_div);
+
 	// 回転
 	const auto lcg_lcp = rocket.lcg() - rocket.lcp;	// 重心から空力中心までの距離
-	const auto ma_y = -1.0*Y * lcg_lcp;				// Y軸周りの空力モーメント
-	const auto ma_z = N * lcg_lcp;					// Z軸周りの空力モーメント
+	const auto ma_y = -1.0*lcg_lcp*Y + Ka*rocket.omega.y();	// Y軸周りの空力モーメント
+	const auto ma_z =      lcg_lcp*N + Ka*rocket.omega.z();	// Z軸周りの空力モーメント
 
 	const auto I = rocket.inertia();				// 慣性モーメント
 
