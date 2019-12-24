@@ -22,6 +22,7 @@
 #ifndef ENGINE_HPP_
 #define ENGINE_HPP_
 
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <vector>
@@ -50,6 +51,15 @@ namespace trochia {
 				>> weight_prop >> weight_total
 				>> manufacturer;
 
+			std::cerr << std::endl
+				<< "engine data" << std::endl
+				<< "\tname: " << name << std::endl
+				<< "\tdiameter: " << diameter << std::endl
+				<< "\tlength: " << length << std::endl
+				<< "\tprop weight: " << weight_prop << std::endl
+				<< "\ttotal weight: " << weight_total << std::endl
+				<< "\tmanufacturer: " << manufacturer << std::endl;
+
 			double t, th;
 			thrust_t thrust;
 			thrust.first = 0.0;
@@ -57,7 +67,7 @@ namespace trochia {
 
 			while(ifs){
 				ifs >> t >> th;
-				if(t <= thrust.first)			// データがソートされていない
+				if(t < thrust.first)			// データがソートされていない
 					break;
 
 				if(thrust.first == 0.0){
