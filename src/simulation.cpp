@@ -165,10 +165,19 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	const auto Ka = (Ka_div==0.0 ? 0.0 :
 			q * S * rocket.length * rocket.length / Ka_div);
 
+	// ジェットダンピング係数
+	const auto mm0		= 2.476;	// 点火時エンジン質量 TODO: engine.weight(0.0)
+	const auto Ip0		= (rocket.lcgp-rocket.lcg0)*(rocket.lcgp-rocket.lcg0)*mm0;
+	const auto mp0		= rocket.engine.weight(0.0) - rocket.engine.weight(rocket.engine.time_end);
+	const auto lcg_lcgp	= rocket.lcg() - rocket.lcgp;
+	const auto l_lcg	= rocket.length - rocket.lcg();
+	const auto mdot		= rocket.engine.weight(time) - rocket.engine.weight(time+sim.dt);
+	const auto Kj = -(Ip0/mp0 + lcg_lcgp*lcg_lcgp - l_lcg*l_lcg)*mdot;
+
 	// 回転
 	const auto lcg_lcp = rocket.lcg() - rocket.lcp;	// 重心から空力中心までの距離
-	const auto ma_y = -1.0*lcg_lcp*Y + Ka*rocket.omega.y();	// Y軸周りの空力モーメント
-	const auto ma_z =      lcg_lcp*N + Ka*rocket.omega.z();	// Z軸周りの空力モーメント
+	const auto ma_y = -1.0*lcg_lcp*Y + (Ka+Kj)*rocket.omega.y();	// Y軸周りの空力モーメント
+	const auto ma_z =      lcg_lcp*N + (Ka+Kj)*rocket.omega.z();	// Z軸周りの空力モーメント
 
 	const auto I = rocket.inertia();				// 慣性モーメント
 

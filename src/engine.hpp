@@ -168,6 +168,7 @@ namespace trochia {
 		// thrustcurve
 		thrustcurve_t data;
 		thrustcurve_t::const_iterator itr;
+	public:
 		math::Float time_max, time_valid, time_end;
 	};
 }
