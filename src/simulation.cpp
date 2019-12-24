@@ -125,6 +125,10 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	const auto angle_attack		= (va_body.x()==0.0 ? 0.0 : std::atan(va_body.z() / va_body.x()));
 	const auto angle_side_slip	= (va==0.0 ? 0.0 : std::asin(va_body.y() / va));
 
+	//std::cout << time << " "
+	//	<< math::rad2deg(angle_attack) << " "
+	//	<< math::rad2deg(angle_side_slip) << std::endl;
+
 	// 代表面積
 	const auto S = rocket.diameter * rocket.diameter * math::pi / 4;
 
@@ -158,7 +162,7 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 
 	// 回転
 	const auto lcg_lcp = rocket.lcg() - rocket.lcp;	// 重心から空力中心までの距離
-	const auto ma_y = Y * lcg_lcp;					// Y軸周りの空力モーメント
+	const auto ma_y = -1.0*Y * lcg_lcp;				// Y軸周りの空力モーメント
 	const auto ma_z = N * lcg_lcp;					// Z軸周りの空力モーメント
 
 	const auto I = rocket.inertia();				// 慣性モーメント
