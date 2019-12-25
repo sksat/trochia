@@ -27,7 +27,7 @@
 
 namespace trochia::version {
 	constexpr size_t major = 0;
-	constexpr size_t minor = 3;
+	constexpr size_t minor = 4;
 
 	auto version() -> void {
 		using std::endl;
