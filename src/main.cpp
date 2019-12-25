@@ -35,13 +35,13 @@ auto shrink_str(std::string_view sv) -> std::string_view;
 auto make_output_dir(const fs::path &dir) -> bool;
 
 auto main(int argc, char **argv) -> int {
-	trochia::simulation::Simulation sim;
+	trochia::simulation::Simulation sim_base;
 
 	trochia::version::version();
 
 	std::cerr << "loading config file ...";
 	const auto [elevation, wind_speed, wind_dir]
-		= trochia::io::config::load("config.toml", sim);
+		= trochia::io::config::load("config.toml", sim_base);
 	std::cerr << std::endl;
 
 	std::cerr << "start simulation" << std::endl;
@@ -50,24 +50,26 @@ auto main(int argc, char **argv) -> int {
 		<< elevation.size()*wind_speed.size()*wind_dir.size() << std::endl;
 
 	for(const auto &e : elevation){
-		sim.launcher = trochia::environment::Launcher(5.0, 90.0, e);
+		const auto launcher = trochia::environment::Launcher(5.0, 90.0, e);
 		const auto e_str = shrink_str(std::to_string(e));
 
 		for(const auto &ws : wind_speed){
-			std::cout << "wind speed: " << ws << std::endl;
-
 			const auto ws_str = shrink_str(std::to_string(ws));
-			sim.wind_speed = ws;
 
 			for(const auto &wd  : wind_dir){
 				std::cout << "wind dir: " << wd << std::endl;
 
 				const auto wd_str = shrink_str(std::to_string(wd));
-				sim.wind_dir = wd;
 
-				sim.output_dir = sim.output_dir_fmt;
-				sim.output_dir = sim.output_dir / e_str / ws_str / wd_str;
-				make_output_dir(sim.output_dir);
+				const auto output_dir = fs::path(sim_base.output_dir_fmt)
+					/ e_str / ws_str / wd_str;
+
+				make_output_dir(output_dir);
+
+				auto sim = sim_base;
+				sim.launcher = launcher;
+				sim.wind_speed = ws;
+				sim.wind_dir = wd;
 
 				trochia::simulation::exec(sim);
 			}
