@@ -70,6 +70,23 @@ auto load(const std::string &fname, simulation::Simulation &sim) -> std::vector<
 		}
 	}
 
+	// wind info
+	{
+		const auto &cfg_wind = find(config, "wind");
+
+		// get model
+		const auto model = cfg_wind.at("model").as_string();
+		if(model == "power"){
+			// get ground wind
+			const auto ground = find(cfg_wind, "ground");
+
+			std::cout << "wind dir: " << ground.at("dir").as_floating() << std::endl
+				<< "wind speed: " << ground.at("speed").as_floating() << std::endl;
+		}else{
+			std::cerr << "error: wind model \"" << model << "\" is not implemented." << std::endl;
+		}
+	}
+
 	// rocket info
 	{
 		const auto &cfg_rkt = find(config, "rocket");
