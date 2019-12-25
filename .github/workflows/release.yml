@@ -74,7 +74,7 @@ jobs:
     - name: make archive file for Windows
       if: matrix.os == 'windows-latest'
       run: |
-          cp build/bin/trochia.exe trochia
+          cp build/bin/Debug/trochia.exe trochia
           7z a trochia-Windows.zip trochia
 
     - name: Upload archive as artifact
