@@ -60,8 +60,6 @@ auto main(int argc, char **argv) -> int {
 				const auto output_dir = fs::path(sim_base.output_dir_fmt)
 					/ e_str / ws_str / wd_str;
 
-				std::cout << "output dir: " << output_dir << std::endl;
-
 				make_output_dir(output_dir);
 
 				auto sim = sim_base;

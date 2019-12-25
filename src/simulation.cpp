@@ -49,7 +49,7 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 		<< "\tlauncher: length=" << sim.launcher.length
 			<< ", azimuth=" << sim.launcher.azimuth()
 			<< ", elevation=" << sim.launcher.elevation() << std::endl
-		<< "\t wind: dir=" << sim.wind_dir
+		<< "\twind: dir=" << sim.wind_dir
 			<< ", speed=" << sim.wind_speed << std::endl;
 
 	const size_t output_rate = sim.output_dt / sim.dt;
@@ -104,8 +104,8 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 			break;
 	}
 
-	std::cerr << "max altitude: " << altitude_max.second
-		<< "(" << altitude_max.first << "sec)" << std::endl;
+	std::cout << "\tmax altitude: " << altitude_max.second
+		<< "(" << altitude_max.first << "s)" << std::endl;
 }
 
 auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket> &s) -> void {
