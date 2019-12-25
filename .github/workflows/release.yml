@@ -42,7 +42,9 @@ jobs:
           cd build
           cmake -G "Visual Studio 16 2019" -A x64 -config Release ..
     - name: build on ${{ matrix.os }}
-      run: cmake --build build --parallel
+      run: |
+          cmake --build build --parallel
+          ls build/bin
 
     - name: create COPYING
       run: |
@@ -71,7 +73,9 @@ jobs:
       run: zip -r trochia-$OS.zip trochia/
     - name: make archive file for Windows
       if: matrix.os == 'windows-latest'
-      run: 7z a trochia-Windows.zip trochia
+      run: |
+          cp build/bin/Debug/trochia.exe trochia
+          7z a trochia-Windows.zip trochia
 
     - name: Upload archive as artifact
       uses: actions/upload-artifact@v1
