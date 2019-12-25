@@ -34,11 +34,26 @@ namespace trochia::object {
 		math::Float time;
 		Frame pos, vel, acc;
 		math::Quaternion quat;
+		math::Vector3 omega;
 
 		static auto dx(const math::Float &t, const Object &x) -> const Object {
 			Object ret;
 			ret.pos = x.vel;
 			ret.vel = x.acc;
+
+			// http://www.mss.co.jp/technology/report/pdf/18-07.pdf 4.3.2
+			const auto &omg = x.omega;
+			math::Matrix4 mat;
+			mat <<
+				0.0,			omg(2),			-1.0*omg(1),	omg(0),
+				-1.0*omg(2),	0.0,			omg(0),			omg(1),
+				omg(1),			-1.0*omg(0),	0.0,			omg(2),
+				-1.0*omg(0),	-1.0*omg(1),	-1.0*omg(2),	0.0;
+
+			math::Vector4 dq = mat * math::quat2vec(x.quat);
+
+			ret.quat = math::vec2quat(dq);
+
 			return ret;
 		}
 
@@ -55,22 +70,47 @@ namespace trochia::object {
 		auto operator+=(const Object &o) -> Object {
 			this->pos += o.pos;
 			this->vel += o.vel;
+
+			auto q  = math::quat2vec(this->quat);
+			auto oq = math::quat2vec(o.quat);
+
+			q += oq;
+			this->quat = math::vec2quat(q);
+
 			return *this;
 		}
 		auto operator-=(const Object &o) -> Object {
 			this->pos -= o.pos;
 			this->vel -= o.vel;
+
+			auto q  = math::quat2vec(this->quat);
+			auto oq = math::quat2vec(o.quat);
+
+			q -= oq;
+
+			this->quat = math::vec2quat(q);
+
 			return *this;
 		}
 
 		auto operator*=(const math::Float &a) -> Object {
 			this->pos *= a;
 			this->vel *= a;
+
+			auto q = math::quat2vec(this->quat);
+			q *= a;
+			this->quat = math::vec2quat(q);
+
 			return *this;
 		}
 		auto operator/=(const math::Float &a) -> Object {
 			this->pos /= a;
 			this->vel /= a;
+
+			auto q = math::quat2vec(this->quat);
+			q /= a;
+			this->quat = math::vec2quat(q);
+
 			return *this;
 		}
 

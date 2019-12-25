@@ -28,5 +28,6 @@
 #include "environment/gravity.hpp"
 #include "environment/air.hpp"
 #include "environment/launcher.hpp"
+#include "environment/wind.hpp"
 
 #endif

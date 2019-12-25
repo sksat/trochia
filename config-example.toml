@@ -8,19 +8,29 @@ length	= 5
 elevation	= 85
 # elevation.start = 85
 # elevation.end = 89
-# elevation = [ 80.0, 80.1, 80.2, 80.3 ]
+# elevation = [ 30.0, 60.0, 90.0 ]
+
+[wind]
+model = "power"
+ground.dir	= -90.0
+ground.speed= 3.0
+#ground.speed = [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 ]
 
 [rocket]
 name	= "example rocket"
 type	= "hybrid"
 
 [[rocket.stage]]
-engine	= "K240.eng"
+engine	= "20191020_01.eng"
 length	= 1.1540
 diameter= 0.112
-mass	= 5.679
-Cd		= 0.440
-Cna		= 7.840
+mass	= 5.035
+I0		= 1.254
+If		= 1.251
 lcg0	= 0.913
 lcgf	= 0.905
+lcgp	= 1.076
+lcp		= 1.141
+Cd		= 0.440
+Cna		= 7.840
 parachute= {condition = "top", delay = 2.5}

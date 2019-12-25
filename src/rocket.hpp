@@ -41,10 +41,16 @@ namespace trochia::rocket {
 		std::string name;
 		Engine engine;
 
-		math::Float diameter;		// 直径(m)
-		math::Float lcg0, lcgf;		// 重心位置
-		math::Float Cd;				// 抗力係数
+		math::Float diameter;			// 直径(m)
+		math::Float length;
+		math::Float mass;				// エンジン抜き質量
+		math::Float lcg0, lcgf, lcgp;	// 重心位置
+		math::Float lcp;				// 空力中心位置
+		math::Float I0, If;				// 慣性モーメント
+		math::Float Cd;					// 抗力係数
 		math::Float Cna;
+
+		math::Float Cmq;
 
 		static auto dx(const math::Float &t, const Rocket &r) -> const Rocket {
 			return object::Object<LocalFrame>::dx(t, r);
@@ -54,8 +60,12 @@ namespace trochia::rocket {
 			return math::lerp(lcg0, lcgf, engine.progress(this->time));
 		}
 
+		auto inertia() const -> math::Float {
+			return math::lerp(I0, If, engine.progress(this->time));
+		}
+
 		auto weight() const -> math::Float {
-			return 10.0 + engine.weight(this->time);
+			return mass + engine.weight(this->time);
 		}
 	};
 }

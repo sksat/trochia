@@ -21,17 +21,19 @@
 
 
 #include <iostream>
+#define TOML11_COLORIZE_ERROR_MESSAGE
 #include <toml.hpp>
 #include "../simulation.hpp"
 #include "config.hpp"
 
 namespace trochia::io::config {
 
-auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -> void {
+auto load(const std::string &fname, simulation::Simulation &sim) -> Conditions {
 	using namespace toml;
 
-	std::vector<math::Float> launcher_elevation;
-	simulation::Simulation sim;
+	cond_elevation	launcher_elevation;
+	cond_wspeed		wind_speed;
+	cond_wdir		wind_dir;
 
 	const auto config = parse(fname);
 
@@ -60,13 +62,40 @@ auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -
 			const auto start = find(elevation, "start");
 			const auto end   = find(elevation, "end");
 			if(start.is_integer() && end.is_integer()){
-				for(int a=start.as_integer();a<end.as_integer();a++)
+				for(int a=start.as_integer();a<=end.as_integer();a++)
 					launcher_elevation.push_back(a);
 			}else{
 				std::cerr << "error: elevation.start or elevation.end are not integer" << std::endl;
 			}
 		}else if(elevation.is_array()){
 			launcher_elevation = get<std::vector<double>>(elevation);
+		}
+	}
+
+	// wind info
+	{
+		const auto &cfg_wind = find(config, "wind");
+
+		// get model
+		const auto model = cfg_wind.at("model").as_string();
+		if(model == "power"){
+			// get ground wind
+			const auto ground = find(cfg_wind, "ground");
+
+			const auto ws	= find(ground, "speed");
+			const auto wd	= find(ground, "dir");
+
+			if(ws.is_floating())
+				wind_speed.push_back(ws.as_floating());
+			else if(ws.is_array())
+				wind_speed = get<std::vector<double>>(ws);
+
+			if(wd.is_floating())
+				wind_dir.push_back(wd.as_floating());
+			else if(wd.is_array())
+				wind_dir = get<std::vector<double>>(wd);
+		}else{
+			std::cerr << "error: wind model \"" << model << "\" is not implemented." << std::endl;
 		}
 	}
 
@@ -84,18 +113,24 @@ auto load(const std::string &fname, std::vector<simulation::Simulation> &sims) -
 		sim.rocket.engine.load_eng(engine.as_string());
 
 		sim.rocket.diameter = stage[0].at("diameter").as_floating();
+		sim.rocket.length	= stage[0].at("length").as_floating();
+
+		sim.rocket.mass		= stage[0].at("mass").as_floating();
 
 		sim.rocket.lcg0 = stage[0].at("lcg0").as_floating();
 		sim.rocket.lcgf = stage[0].at("lcgf").as_floating();
+		sim.rocket.lcgp = stage[0].at("lcgp").as_floating();
+
+		sim.rocket.lcp	= stage[0].at("lcp").as_floating();
+
+		sim.rocket.I0	= stage[0].at("I0").as_floating();
+		sim.rocket.If	= stage[0].at("If").as_floating();
 
 		sim.rocket.Cd = stage[0].at("Cd").as_floating();
 		sim.rocket.Cna= stage[0].at("Cna").as_floating();
 	}
 
-	for(const auto &a : launcher_elevation){
-		sim.launcher = environment::Launcher(5.0, 90.0, a);
-		sims.push_back(sim);
-	}
+	return {launcher_elevation, wind_speed, wind_dir};
 }
 
 }

@@ -32,7 +32,9 @@ namespace trochia::math {
 	const Float nan = std::nan("");
 
 	using Vector3	= Eigen::Matrix<Float, 3, 1>;
+	using Vector4	= Eigen::Matrix<Float, 4, 1>;
 	using Matrix3	= Eigen::Matrix<Float, 3, 3>;
+	using Matrix4	= Eigen::Matrix<Float, 4, 4>;
 	using Quaternion= Eigen::Quaternion<Float>;
 
 	using AngleAxis	= Eigen::AngleAxis<Float>;
@@ -82,6 +84,24 @@ namespace trochia::math {
 	}
 	constexpr auto rad2deg(const Float &rad) -> Float {
 		return rad * (180.0 / pi);
+	}
+
+	inline auto vec2quat(const Vector4 &v) -> Quaternion {
+		Quaternion q;
+		q.w() = v(0);
+		q.x() = v(1);
+		q.y() = v(2);
+		q.z() = v(3);
+		return q;
+	}
+
+	inline auto quat2vec(const Quaternion &q) -> Vector4 {
+		Vector4 v;
+		v(0) = q.w();
+		v(1) = q.x();
+		v(2) = q.y();
+		v(3) = q.z();
+		return v;
 	}
 
 	[[deprecated("please use AngleAxis")]]

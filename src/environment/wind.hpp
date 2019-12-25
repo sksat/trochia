@@ -19,29 +19,17 @@
  *
  * ----------------------------------------------------------------------- */
 
-#ifndef TROCHIA_VERSION_HPP_
-#define TROCHIA_VERSION_HPP_
+#ifndef ENVIRONMENT_WIND_HPP_
+#define ENVIRONMENT_WIND_HPP_
 
-#include <cstddef>
-#include <iostream>
+#include "../math.hpp"
 
-namespace trochia::version {
-	constexpr size_t major = 0;
-	constexpr size_t minor = 4;
-
-	auto version() -> void {
-		using std::endl;
-		std::cerr
-			<< "Trochia " << major << "." << minor
-			<< " (commit: " << GIT_COMMIT_ID << ")" << endl
-			<< "commit date: " << GIT_COMMIT_DATE << endl
-			<< R"(
-Copyright (C) 2019 sksat <sksat@sksat.net>
-This program comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it
-under certain conditions; see LICENSE for details.
-	)"
-			<< endl;
+namespace trochia::environment::wind {
+	using math::Float;
+	// 上空風速(べき法則)
+	inline auto speed(const Float n, const Float &z_r, const Float v_r, const Float altitude) -> math::Float {
+		const auto tmp = altitude / z_r;
+		return v_r * std::pow(tmp, Float(1.0) / n);
 	}
 }
 
