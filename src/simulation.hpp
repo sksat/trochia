@@ -42,6 +42,8 @@ namespace trochia::simulation {
 		environment::Launcher launcher;
 		math::Float launcher_angle;
 
+		math::Float wind_speed, wind_dir;
+
 		rocket::Rocket rocket;
 	};
 

@@ -40,14 +40,16 @@ auto main(int argc, char **argv) -> int {
 	trochia::version::version();
 
 	std::cerr << "loading config file ...";
-	const auto launcher_elevation = trochia::io::config::load("config.toml", sim);
+	const auto [elevation, wind_speed, wind_dir]
+		= trochia::io::config::load("config.toml", sim);
 	std::cerr << std::endl;
 
 	std::cerr << "start simulation" << std::endl;
 
-	std::cout << "sim number: " << launcher_elevation.size() << std::endl;
+	std::cout << "sim number: "
+		<< elevation.size()*wind_speed.size()*wind_dir.size() << std::endl;
 
-	for(const auto &e : launcher_elevation){
+	for(const auto &e : elevation){
 		sim.launcher = trochia::environment::Launcher(5.0, 90.0, e);
 
 		sim.output_dir = sim.output_dir_fmt;
@@ -57,7 +59,17 @@ auto main(int argc, char **argv) -> int {
 
 		make_output_dir(sim.output_dir);
 
-		trochia::simulation::exec(sim);
+		for(const auto &ws : wind_speed){
+			std::cout << "wind speed: " << ws << std::endl;
+			sim.wind_speed = ws;
+
+			for(const auto &wd  : wind_dir){
+				std::cout << "wind dir: " << wd << std::endl;
+				sim.wind_dir = wd;
+
+				trochia::simulation::exec(sim);
+			}
+		}
 	}
 
 	return 0;
