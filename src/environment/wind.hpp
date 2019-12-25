@@ -19,15 +19,18 @@
  *
  * ----------------------------------------------------------------------- */
 
-#ifndef ENVIRONMENT_HPP_
-#define ENVIRONMENT_HPP_
+#ifndef ENVIRONMENT_WIND_HPP_
+#define ENVIRONMENT_WIND_HPP_
 
-#include "environment/physics.hpp"			// fundamental physical constants
-#include "environment/temperature.hpp"
-#include "environment/earth.hpp"
-#include "environment/gravity.hpp"
-#include "environment/air.hpp"
-#include "environment/launcher.hpp"
-#include "environment/wind.hpp"
+#include "../math.hpp"
+
+namespace trochia::environment::wind {
+	using math::Float;
+	// 上空風速(べき法則)
+	inline auto speed(const Float n, const Float &z_r, const Float v_r, const Float altitude) -> math::Float {
+		const auto tmp = altitude / z_r;
+		return v_r * std::pow(tmp, Float(1.0) / n);
+	}
+}
 
 #endif

@@ -28,10 +28,12 @@
 
 namespace trochia::io::config {
 
-auto load(const std::string &fname, simulation::Simulation &sim) -> std::vector<math::Float> {
+auto load(const std::string &fname, simulation::Simulation &sim) -> Conditions {
 	using namespace toml;
 
-	std::vector<math::Float> launcher_elevation;
+	cond_elevation	launcher_elevation;
+	cond_wspeed		wind_speed;
+	cond_wdir		wind_dir;
 
 	const auto config = parse(fname);
 
@@ -70,6 +72,33 @@ auto load(const std::string &fname, simulation::Simulation &sim) -> std::vector<
 		}
 	}
 
+	// wind info
+	{
+		const auto &cfg_wind = find(config, "wind");
+
+		// get model
+		const auto model = cfg_wind.at("model").as_string();
+		if(model == "power"){
+			// get ground wind
+			const auto ground = find(cfg_wind, "ground");
+
+			const auto ws	= find(ground, "speed");
+			const auto wd	= find(ground, "dir");
+
+			if(ws.is_floating())
+				wind_speed.push_back(ws.as_floating());
+			else if(ws.is_array())
+				wind_speed = get<std::vector<double>>(ws);
+
+			if(wd.is_floating())
+				wind_dir.push_back(wd.as_floating());
+			else if(wd.is_array())
+				wind_dir = get<std::vector<double>>(wd);
+		}else{
+			std::cerr << "error: wind model \"" << model << "\" is not implemented." << std::endl;
+		}
+	}
+
 	// rocket info
 	{
 		const auto &cfg_rkt = find(config, "rocket");
@@ -101,7 +130,7 @@ auto load(const std::string &fname, simulation::Simulation &sim) -> std::vector<
 		sim.rocket.Cna= stage[0].at("Cna").as_floating();
 	}
 
-	return launcher_elevation;
+	return {launcher_elevation, wind_speed, wind_dir};
 }
 
 }

@@ -35,29 +35,44 @@ auto shrink_str(std::string_view sv) -> std::string_view;
 auto make_output_dir(const fs::path &dir) -> bool;
 
 auto main(int argc, char **argv) -> int {
-	trochia::simulation::Simulation sim;
+	trochia::simulation::Simulation sim_base;
 
 	trochia::version::version();
 
 	std::cerr << "loading config file ...";
-	const auto launcher_elevation = trochia::io::config::load("config.toml", sim);
+	const auto [elevation, wind_speed, wind_dir]
+		= trochia::io::config::load("config.toml", sim_base);
 	std::cerr << std::endl;
 
 	std::cerr << "start simulation" << std::endl;
 
-	std::cout << "sim number: " << launcher_elevation.size() << std::endl;
+	std::cout << "sim number: "
+		<< elevation.size()*wind_speed.size()*wind_dir.size() << std::endl;
 
-	for(const auto &e : launcher_elevation){
-		sim.launcher = trochia::environment::Launcher(5.0, 90.0, e);
+	for(const auto &e : elevation){
+		const auto launcher = trochia::environment::Launcher(5.0, 90.0, e);
+		for(const auto &ws : wind_speed){
+			for(const auto &wd  : wind_dir){
+				const auto e_str = shrink_str(std::to_string(e));
+				const auto ws_str = shrink_str(std::to_string(ws));
+				const auto wd_str = shrink_str(std::to_string(wd));
 
-		sim.output_dir = sim.output_dir_fmt;
+				const auto output_dir = fs::path(sim_base.output_dir_fmt)
+					/ e_str / ws_str / wd_str;
 
-		const auto e_str = shrink_str(std::to_string(e));
-		sim.output_dir = sim.output_dir / e_str;
+				std::cout << "output dir: " << output_dir << std::endl;
 
-		make_output_dir(sim.output_dir);
+				make_output_dir(output_dir);
 
-		trochia::simulation::exec(sim);
+				auto sim = sim_base;
+				sim.output_dir	= output_dir;
+				sim.launcher	= launcher;
+				sim.wind_speed	= ws;
+				sim.wind_dir	= wd;
+
+				trochia::simulation::exec(sim);
+			}
+		}
 	}
 
 	return 0;
@@ -67,7 +82,9 @@ auto shrink_str(std::string_view sv) -> std::string_view {
 	const auto &b = sv.back();
 	if(b == '0' || b == '.'){
 		sv.remove_suffix(1);
-		sv = shrink_str(sv);
+
+		if(b != '.')
+			sv = shrink_str(sv);
 	}
 	return sv;
 }

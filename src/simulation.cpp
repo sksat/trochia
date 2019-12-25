@@ -47,8 +47,10 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 
 	std::cout << "execute simulation case" << std::endl
 		<< "\tlauncher: length=" << sim.launcher.length
-		<< ", azimuth=" << sim.launcher.azimuth()
-		<< ", elevation=" << sim.launcher.elevation() << std::endl;
+			<< ", azimuth=" << sim.launcher.azimuth()
+			<< ", elevation=" << sim.launcher.elevation() << std::endl
+		<< "\t wind: dir=" << sim.wind_dir
+			<< ", speed=" << sim.wind_speed << std::endl;
 
 	const size_t output_rate = sim.output_dt / sim.dt;
 	auto &rocket = sim.rocket;
@@ -115,8 +117,16 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	// 機体速度ベクトル(NED)
 	const coordinate::local::NED vel_ned = rocket.vel;
 
+	// 風ベクトル(NED)
+	const auto wind_vel	= environment::wind::speed(6.0, 2.0, sim.wind_speed, rocket.pos.altitude());
+	const auto wind_dir_rad = math::deg2rad(sim.wind_dir);
+	const auto wind_ned = math::Vector3(
+			wind_vel * std::cos(wind_dir_rad),
+			wind_vel * std::sin(wind_dir_rad),
+			0.0);
+
 	// 対気速度ベクトル
-	const auto va_ned	= vel_ned.vec;
+	const auto va_ned	= vel_ned.vec - wind_ned;
 	const auto va_body	= coordinate::dcm::ned2body(rocket.quat) * va_ned;
 	const auto va		= va_body.norm();
 
