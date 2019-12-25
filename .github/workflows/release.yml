@@ -58,6 +58,7 @@ jobs:
     - name: make release directory
       env:
         OS: ${{ runner.os }}
+      shell: bash
       run: |
           mkdir trochia
           cp README.md trochia/
