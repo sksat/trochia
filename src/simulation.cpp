@@ -47,8 +47,10 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 
 	std::cout << "execute simulation case" << std::endl
 		<< "\tlauncher: length=" << sim.launcher.length
-		<< ", azimuth=" << sim.launcher.azimuth()
-		<< ", elevation=" << sim.launcher.elevation() << std::endl;
+			<< ", azimuth=" << sim.launcher.azimuth()
+			<< ", elevation=" << sim.launcher.elevation() << std::endl
+		<< "\t wind: dir=" << sim.wind_dir
+			<< ", speed=" << sim.wind_speed << std::endl;
 
 	const size_t output_rate = sim.output_dt / sim.dt;
 	auto &rocket = sim.rocket;

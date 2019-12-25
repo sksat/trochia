@@ -57,8 +57,6 @@ auto main(int argc, char **argv) -> int {
 			const auto ws_str = shrink_str(std::to_string(ws));
 
 			for(const auto &wd  : wind_dir){
-				std::cout << "wind dir: " << wd << std::endl;
-
 				const auto wd_str = shrink_str(std::to_string(wd));
 
 				const auto output_dir = fs::path(sim_base.output_dir_fmt)
@@ -67,9 +65,10 @@ auto main(int argc, char **argv) -> int {
 				make_output_dir(output_dir);
 
 				auto sim = sim_base;
-				sim.launcher = launcher;
-				sim.wind_speed = ws;
-				sim.wind_dir = wd;
+				sim.output_dir	= output_dir;
+				sim.launcher	= launcher;
+				sim.wind_speed	= ws;
+				sim.wind_dir	= wd;
 
 				trochia::simulation::exec(sim);
 			}

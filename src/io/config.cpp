@@ -91,7 +91,7 @@ auto load(const std::string &fname, simulation::Simulation &sim) -> Conditions {
 				wind_speed = get<std::vector<double>>(ws);
 
 			if(wd.is_floating())
-				wind_dir.push_back(wd.is_floating());
+				wind_dir.push_back(wd.as_floating());
 			else if(wd.is_array())
 				wind_dir = get<std::vector<double>>(wd);
 		}else{
