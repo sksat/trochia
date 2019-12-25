@@ -51,21 +51,23 @@ auto main(int argc, char **argv) -> int {
 
 	for(const auto &e : elevation){
 		sim.launcher = trochia::environment::Launcher(5.0, 90.0, e);
-
-		sim.output_dir = sim.output_dir_fmt;
-
 		const auto e_str = shrink_str(std::to_string(e));
-		sim.output_dir = sim.output_dir / e_str;
-
-		make_output_dir(sim.output_dir);
 
 		for(const auto &ws : wind_speed){
 			std::cout << "wind speed: " << ws << std::endl;
+
+			const auto ws_str = shrink_str(std::to_string(ws));
 			sim.wind_speed = ws;
 
 			for(const auto &wd  : wind_dir){
 				std::cout << "wind dir: " << wd << std::endl;
+
+				const auto wd_str = shrink_str(std::to_string(wd));
 				sim.wind_dir = wd;
+
+				sim.output_dir = sim.output_dir_fmt;
+				sim.output_dir = sim.output_dir / e_str / ws_str / wd_str;
+				make_output_dir(sim.output_dir);
 
 				trochia::simulation::exec(sim);
 			}
