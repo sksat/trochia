@@ -82,7 +82,9 @@ auto shrink_str(std::string_view sv) -> std::string_view {
 	const auto &b = sv.back();
 	if(b == '0' || b == '.'){
 		sv.remove_suffix(1);
-		sv = shrink_str(sv);
+
+		if(b != '.')
+			sv = shrink_str(sv);
 	}
 	return sv;
 }
