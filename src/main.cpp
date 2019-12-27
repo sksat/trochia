@@ -33,7 +33,7 @@
 
 #ifdef _WIN32
 	using string		= std::wstring;
-	using string		= std::wstring_view;
+	using string_view	= std::wstring_view;
 
 	template<typename T>
 	auto to_string(T val) -> string { return std::to_wstring(val); }
