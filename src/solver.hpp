@@ -28,13 +28,14 @@
 namespace trochia::solver {
 	using math::Float;
 
-	// 変数xと，導関数dx/dt = f(t, x)を使って数値積分するソルバ群
+	// numerical integration solvers
+	// use x & dx/dt = f(t, x)
 
-	// f(t, x)の関数の型
+	// type of f(t, x)
 	template<typename T>
 	using func_t = auto (*)(const Float &t, const T &x) -> const T;
 
-	// ソルバのベースクラス
+	// base class of solver
 	template<typename T>
 	class solver {
 	public:
@@ -44,11 +45,10 @@ namespace trochia::solver {
 		std::reference_wrapper<T> x;
 		func_t<T> f;
 
-		// ステップ実行
 		virtual auto step(const Float &dt) -> void = 0;
 	};
 
-	// オイラー法
+	// Euler method
 	template<typename T>
 	class euler : public solver<T> {
 	public:

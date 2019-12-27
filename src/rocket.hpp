@@ -41,13 +41,13 @@ namespace trochia::rocket {
 		std::string name;
 		Engine engine;
 
-		math::Float diameter;			// 直径(m)
+		math::Float diameter;
 		math::Float length;
-		math::Float mass;				// エンジン抜き質量
-		math::Float lcg0, lcgf, lcgp;	// 重心位置
-		math::Float lcp;				// 空力中心位置
-		math::Float I0, If;				// 慣性モーメント
-		math::Float Cd;					// 抗力係数
+		math::Float mass;				// without engine
+		math::Float lcg0, lcgf, lcgp;	// Center of Gravity
+		math::Float lcp;				// Center of Pressure
+		math::Float I0, If;				// Moment of inertia
+		math::Float Cd;					// Coefficient of Drag
 		math::Float Cna;
 
 		math::Float Cmq;

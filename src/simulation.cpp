@@ -97,7 +97,7 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 		if(step % output_rate == 0)
 			save_data(t, sim, output_file);
 
-		// 終了判定
+		// end simulation
 		if(step > 100 && altitude <= 0.0)
 			break;
 		if(t > sim.timeout)
@@ -114,10 +114,10 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	auto &rocket = sim.rocket;
 	rocket.time = time;
 
-	// 機体速度ベクトル(NED)
+	// rocket speed vector(NED)
 	const coordinate::local::NED vel_ned = rocket.vel;
 
-	// 風ベクトル(NED)
+	// wind speed vector(NED)
 	const auto wind_vel	= environment::wind::speed(6.0, 2.0, sim.wind_speed, rocket.pos.altitude());
 	const auto wind_dir_rad = math::deg2rad(sim.wind_dir);
 	const auto wind_ned = math::Vector3(
@@ -125,7 +125,7 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 			wind_vel * std::sin(wind_dir_rad),
 			0.0);
 
-	// 対気速度ベクトル
+	// airspeed vector(NED, body)
 	const auto va_ned	= vel_ned.vec - wind_ned;
 	const auto va_body	= coordinate::dcm::ned2body(rocket.quat) * va_ned;
 	const auto va		= va_body.norm();
@@ -135,11 +135,6 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	const auto angle_attack		= (va_body.x()==0.0 ? 0.0 : std::atan(va_body.z() / va_body.x()));
 	const auto angle_side_slip	= (va==0.0 ? 0.0 : std::asin(va_body.y() / va));
 
-	//std::cout << time << " "
-	//	<< math::rad2deg(angle_attack) << " "
-	//	<< math::rad2deg(angle_side_slip) << std::endl;
-
-	// 代表面積
 	const auto S = rocket.diameter * rocket.diameter * math::pi / 4;
 
 	const auto altitude = rocket.pos.altitude();
@@ -147,11 +142,11 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	const auto temperature = environment::air::temperature(geo_height);
 	const auto rho = environment::air::density(temperature);
 
-	// 空気抵抗
-	const auto q = 0.5 * rho * va * va;						// 動圧
-	const auto D = q * S * rocket.Cd;						// 軸力
-	const auto N = q * S * rocket.Cna * angle_attack;		// 法線力
-	const auto Y = q * S * rocket.Cna * angle_side_slip;	// Y軸上の法線力
+	// Air resistance
+	const auto q = 0.5 * rho * va * va;						// dynamic pressure
+	const auto D = q * S * rocket.Cd;						// Drag Force
+	const auto N = q * S * rocket.Cna * angle_attack;		// Normal Force
+	const auto Y = q * S * rocket.Cna * angle_side_slip;	// Normal Force on Y-axis
 
 	// thrust
 	const auto thrust = rocket.engine.thrust(time); // first stage only
@@ -170,13 +165,13 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 		rocket.acc.down(rocket.acc.down() + g);
 	}
 
-	// 空気力による減衰モーメント係数
+	// Coefficient of Damping moment by air force
 	const auto Ka_div = 2.0 * va * rocket.Cmq;
 	const auto Ka = (Ka_div==0.0 ? 0.0 :
 			q * S * rocket.length * rocket.length / Ka_div);
 
-	// ジェットダンピング係数
-	const auto mm0		= 2.476;	// 点火時エンジン質量 TODO: engine.weight(0.0)
+	// Coefficient of Jet damping
+	const auto mm0		= 2.476;	// TODO: engine.weight(0.0)
 	const auto Ip0		= (rocket.lcgp-rocket.lcg0)*(rocket.lcgp-rocket.lcg0)*mm0;
 	const auto mp0		= rocket.engine.weight(0.0) - rocket.engine.weight(rocket.engine.time_end);
 	const auto lcg_lcgp	= rocket.lcg() - rocket.lcgp;
@@ -184,18 +179,18 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	const auto mdot		= rocket.engine.weight(time) - rocket.engine.weight(time+sim.dt);
 	const auto Kj = -(Ip0/mp0 + lcg_lcgp*lcg_lcgp - l_lcg*l_lcg)*mdot;
 
-	// 回転
-	const auto lcg_lcp = rocket.lcg() - rocket.lcp;	// 重心から空力中心までの距離
-	const auto ma_y = -1.0*lcg_lcp*Y + (Ka+Kj)*rocket.omega.y();	// Y軸周りの空力モーメント
-	const auto ma_z =      lcg_lcp*N + (Ka+Kj)*rocket.omega.z();	// Z軸周りの空力モーメント
+	// rotation
+	const auto lcg_lcp = rocket.lcg() - rocket.lcp;					// length of CG~CP
+	const auto ma_y = -1.0*lcg_lcp*Y + (Ka+Kj)*rocket.omega.y();	// Aerodynamic moment around Y axis
+	const auto ma_z =      lcg_lcp*N + (Ka+Kj)*rocket.omega.z();	// Aerodynamic moment around Z axis
 
-	const auto I = rocket.inertia();				// 慣性モーメント
+	const auto I = rocket.inertia();				// Moment of Inertia
 
-	// 角加速度
+	// Angular Acceleration
 	const auto domg_y = ma_y / I;
 	const auto domg_z = ma_z / I;
 
-	// 角速度の更新
+	// update omega
 	rocket.omega.y() += domg_y * sim.dt;
 	rocket.omega.z() += domg_z * sim.dt;
 
