@@ -75,7 +75,8 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 
 	const auto output_fname = std::make_tuple(
 		"pos.dat",
-		"body.dat"
+		"body.dat",
+		"angle.dat"
 	);
 	std::vector<std::ofstream> output_file;
 	open_file(sim.output_dir, output_fname, output_file);
@@ -132,8 +133,8 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 
 	// tan(attack) = z/x
 	// sin(side_slip) = y/va
-	const auto angle_attack		= (va_body.x()==0.0 ? 0.0 : std::atan(va_body.z() / va_body.x()));
-	const auto angle_side_slip	= (va==0.0 ? 0.0 : std::asin(va_body.y() / va));
+	rocket.angle_attack		= (va_body.x()==0.0 ? 0.0 : std::atan(va_body.z() / va_body.x()));
+	rocket.angle_side_slip	= (va==0.0 ? 0.0 : std::asin(va_body.y() / va));
 
 	const auto S = rocket.diameter * rocket.diameter * math::pi / 4;
 
@@ -143,10 +144,10 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	const auto rho = environment::air::density(temperature);
 
 	// Air resistance
-	const auto q = 0.5 * rho * va * va;						// dynamic pressure
-	const auto D = q * S * rocket.Cd;						// Drag Force
-	const auto N = q * S * rocket.Cna * angle_attack;		// Normal Force
-	const auto Y = q * S * rocket.Cna * angle_side_slip;	// Normal Force on Y-axis
+	const auto q = 0.5 * rho * va * va;							// dynamic pressure
+	const auto D = q * S * rocket.Cd;							// Drag Force
+	const auto N = q * S * rocket.Cna * rocket.angle_attack;	// Normal Force
+	const auto Y = q * S * rocket.Cna * rocket.angle_side_slip;	// Normal Force on Y-axis
 
 	// thrust
 	const auto thrust = rocket.engine.thrust(time); // first stage only
@@ -201,8 +202,9 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 auto trochia::simulation::save_data(const math::Float &time, const Simulation &sim, std::vector<std::ofstream> &output) -> void {
 	using std::endl;
 
-	auto &o_pos = output[0];
-	auto &o_body= output[1];
+	auto &o_pos		= output[0];
+	auto &o_body	= output[1];
+	auto &o_angle	= output[2];
 
 	const auto &rocket = sim.rocket;
 	const auto ned2body= coordinate::dcm::ned2body(rocket.quat);
@@ -217,4 +219,7 @@ auto trochia::simulation::save_data(const math::Float &time, const Simulation &s
 	o_body << time << " "
 		<< b_vel.x() << " " << b_vel.y() << " " << b_vel.z() << " "
 		<< b_acc.x() << " " << b_acc.y() << " " << b_acc.z() << endl;
+
+	o_angle << time << " "
+		<< rocket.angle_attack << " " << rocket.angle_side_slip << endl;
 }
