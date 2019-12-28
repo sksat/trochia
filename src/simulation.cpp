@@ -105,8 +105,10 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 			break;
 	}
 
-	std::cout << "\tmax altitude: " << altitude_max.second
-		<< "(" << altitude_max.first << "s)" << std::endl;
+	std::cout
+		<< "\tmax altitude: " << altitude_max.second
+			<< "(" << altitude_max.first << "s)" << std::endl
+		<< "\tGHP: (" << sim.rocket.pos.east() << ", " << sim.rocket.pos.north() << ")" << std::endl;
 }
 
 auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket> &s) -> void {
