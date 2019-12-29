@@ -109,9 +109,9 @@ namespace trochia::math {
 		using Eigen::AngleAxisd;
 
 		Quaternion q;
-		q = AngleAxisd(roll, Vector3::UnitX())
-			* AngleAxisd(pitch, Vector3::UnitY())
-			* AngleAxisd(yaw, Vector3::UnitZ());
+		q = AngleAxis(roll, Vector3::UnitX())
+			* AngleAxis(pitch, Vector3::UnitY())
+			* AngleAxis(yaw, Vector3::UnitZ());
 		return q;
 	}
 

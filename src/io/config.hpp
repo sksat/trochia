@@ -27,9 +27,9 @@
 #include "../simulation.hpp"
 
 namespace trochia::io::config {
-	using cond_elevation= std::vector<math::Float>;
-	using cond_wspeed	= std::vector<math::Float>;
-	using cond_wdir		= std::vector<math::Float>;
+	using cond_elevation= std::vector<double>;
+	using cond_wspeed	= std::vector<double>;
+	using cond_wdir		= std::vector<double>;
 	using Conditions	= std::tuple<cond_elevation, cond_wspeed, cond_wdir>;
 
 	auto load(const std::string &fname, simulation::Simulation &sim) -> Conditions;
