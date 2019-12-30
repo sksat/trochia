@@ -39,8 +39,9 @@ auto open_file(const fs::path &dir, const T &fname, std::vector<std::ofstream> &
 	}
 }
 
-auto is_launch_clear(const trochia::environment::Launcher &launcher, const trochia::coordinate::local::NED &ned) -> bool {
-	return ned.vec.norm() > launcher.length;
+auto is_launch_clear(const trochia::environment::Launcher &launcher, const trochia::rocket::Rocket &rocket) -> bool {
+	const trochia::coordinate::local::NED pos_ned = rocket.pos;
+	return pos_ned.vec.norm() > launcher.length;
 }
 
 auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
@@ -99,7 +100,7 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 		const auto &altitude = pos_ned.altitude();
 
 		if(sim.launch_clear.first == 0.0){
-			if(is_launch_clear(sim.launcher, pos_ned)){
+			if(is_launch_clear(sim.launcher, sim.rocket)){
 				sim.launch_clear.first	= t;
 				sim.launch_clear.second	= sim.rocket.vel.vec.norm();
 			}
@@ -114,7 +115,7 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 			save_data(t, sim, output_file);
 
 		// end simulation
-		if(is_launch_clear(sim.launcher, sim.rocket.pos) && altitude <= 0.0)
+		if(is_launch_clear(sim.launcher, sim.rocket) && altitude <= 0.0)
 			break;
 		if(t > sim.timeout)
 			break;
@@ -211,8 +212,12 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	const auto domg_z = ma_z / I;
 
 	// update omega
-	rocket.omega.y() += domg_y * sim.dt;
-	rocket.omega.z() += domg_z * sim.dt;
+	if(is_launch_clear(sim.launcher, sim.rocket)){
+		rocket.omega.y() += domg_y * sim.dt;
+		rocket.omega.z() += domg_z * sim.dt;
+	}else{
+		rocket.omega.setZero();
+	}
 
 	// update
 	s.step(sim.dt);
