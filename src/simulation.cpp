@@ -39,6 +39,10 @@ auto open_file(const fs::path &dir, const T &fname, std::vector<std::ofstream> &
 	}
 }
 
+auto is_launch_clear(const trochia::environment::Launcher &launcher, const trochia::coordinate::local::NED &ned) -> bool {
+	return ned.vec.norm() > launcher.length;
+}
+
 auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 	using math::Float;
 
@@ -70,6 +74,7 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 	rocket.Cmq = -1.0*rocket.Cna / 2.0 * std::pow((rocket.lcp-rocket.lcg0)/rocket.length, 2.0);
 
 	std::pair<Float, Float> altitude_max = { 0.0, 0.0 };
+	sim.launch_clear = { 0.0, 0.0 };
 
 	auto solve = solver::RK4(rocket, rocket::Rocket::dx);
 
@@ -89,7 +94,16 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 		step++;
 
 		const auto &t = solve.t;
-		const auto &altitude = sim.rocket.pos.altitude();
+
+		const coordinate::local::NED pos_ned = sim.rocket.pos;
+		const auto &altitude = pos_ned.altitude();
+
+		if(sim.launch_clear.first == 0.0){
+			if(is_launch_clear(sim.launcher, pos_ned)){
+				sim.launch_clear.first	= t;
+				sim.launch_clear.second	= sim.rocket.vel.vec.norm();
+			}
+		}
 
 		if(altitude_max.second < altitude){
 			altitude_max.first = t;
@@ -100,15 +114,17 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 			save_data(t, sim, output_file);
 
 		// end simulation
-		if(step > 100 && altitude <= 0.0)
+		if(is_launch_clear(sim.launcher, sim.rocket.pos) && altitude <= 0.0)
 			break;
 		if(t > sim.timeout)
 			break;
 	}
 
 	std::cout
-		<< "\tmax altitude: " << altitude_max.second
-			<< "(" << altitude_max.first << "s)" << std::endl
+		<< "\tlaunch clear: " << sim.launch_clear.second << "m/s"
+			<< " (" << sim.launch_clear.first << "s)" << std::endl
+		<< "\tmax altitude: " << altitude_max.second << "m"
+			<< " (" << altitude_max.first << "s)" << std::endl
 		<< "\tGHP: (" << sim.rocket.pos.east() << ", " << sim.rocket.pos.north() << ")" << std::endl;
 }
 
