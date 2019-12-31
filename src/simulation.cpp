@@ -83,7 +83,8 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 		"pos.dat",
 		"body.dat",
 		"angle.dat",
-		"force.dat"
+		"force.dat",
+		"env.dat"
 	);
 	std::vector<std::ofstream> output_file;
 	open_file(sim.output_dir, output_fname, output_file);
@@ -159,12 +160,12 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	const auto S = rocket.diameter * rocket.diameter * math::pi / 4;
 
 	const auto altitude = rocket.pos.altitude();
-	const auto geo_height = environment::earth::geodesy::potential_height(altitude);
-	const auto temperature = environment::air::temperature(geo_height);
-	const auto rho = environment::air::density(temperature);
+	sim.geo_height = environment::earth::geodesy::potential_height(altitude);
+	sim.temperature = environment::air::temperature(sim.geo_height);
+	sim.rho = environment::air::density(sim.temperature);
 
 	// Air resistance
-	const auto q = 0.5 * rho * va * va;							// dynamic pressure
+	const auto q = 0.5 * sim.rho * va * va;					// dynamic pressure
 	rocket.D = q * S * rocket.Cd;							// Drag Force
 	rocket.N = q * S * rocket.Cna * rocket.angle_attack;	// Normal Force
 	rocket.Y = q * S * rocket.Cna * rocket.angle_side_slip;	// Normal Force on Y-axis
@@ -224,12 +225,14 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 }
 
 auto trochia::simulation::save_data(const math::Float &time, const Simulation &sim, std::vector<std::ofstream> &output) -> void {
+	using math::rad2deg;
 	using std::endl;
 
 	auto &o_pos		= output[0];
 	auto &o_body	= output[1];
 	auto &o_angle	= output[2];
 	auto &o_force	= output[3];
+	auto &o_env		= output[4];
 
 	const auto &rocket = sim.rocket;
 	const auto ned2body= coordinate::dcm::ned2body(rocket.quat);
@@ -246,8 +249,13 @@ auto trochia::simulation::save_data(const math::Float &time, const Simulation &s
 		<< b_acc.x() << " " << b_acc.y() << " " << b_acc.z() << endl;
 
 	o_angle << time << " "
-		<< rocket.angle_attack << " " << rocket.angle_side_slip << endl;
+		<< rad2deg(rocket.angle_attack) << " " << rad2deg(rocket.angle_side_slip) << endl;
 
 	o_force << time << " "
 		<< rocket.D << " " << rocket.N << " " << rocket.Y << endl;
+
+	o_env << time << " "
+		<< pos.altitude() << " " << sim.geo_height << " "
+		<< sim.temperature << " " << sim.rho << " "
+		<< environment::wind::speed(6.0, 2.0, sim.wind_speed, pos.altitude()) << endl;
 }

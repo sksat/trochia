@@ -53,6 +53,9 @@ namespace trochia::simulation {
 
 		// output value
 		std::pair<Float,Float> launch_clear;
+		Float geo_height;
+		Float temperature;
+		Float rho;
 	};
 
 	auto exec(Simulation &sim) -> void;
