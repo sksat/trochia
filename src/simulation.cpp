@@ -127,6 +127,8 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 			<< " (" << sim.launch_clear.first << "s)" << std::endl
 		<< "\tmax altitude: " << altitude_max.second << "m"
 			<< " (" << altitude_max.first << "s)" << std::endl
+		<< "\tmax Va: " << rocket.va_max << "m/s" << std::endl
+		<< "\tmax N: " << rocket.N_max << "N" << std::endl
 		<< "\tGHP: (" << sim.rocket.pos.east() << ", " << sim.rocket.pos.north() << ")" << std::endl;
 }
 
@@ -151,6 +153,8 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	const auto va_ned	= vel_ned.vec - wind_ned;
 	const auto va_body	= coordinate::dcm::ned2body(rocket.quat) * va_ned;
 	const auto va		= va_body.norm();
+	if(va > rocket.va_max)
+		rocket.va_max	= va;
 
 	// tan(attack) = z/x
 	// sin(side_slip) = y/va
@@ -169,6 +173,9 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	rocket.D = q * S * rocket.Cd;							// Drag Force
 	rocket.N = q * S * rocket.Cna * rocket.angle_attack;	// Normal Force
 	rocket.Y = q * S * rocket.Cna * rocket.angle_side_slip;	// Normal Force on Y-axis
+
+	if(rocket.N > rocket.N_max)
+		rocket.N_max	= rocket.N;
 
 	// thrust
 	const auto thrust = rocket.engine.thrust(time); // first stage only

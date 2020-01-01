@@ -55,6 +55,8 @@ namespace trochia::rocket {
 		math::Float angle_attack, angle_side_slip;
 		math::Float D, N, Y;
 
+		math::Float va_max, N_max;
+
 		static auto dx(const math::Float &t, const Rocket &r) -> const Rocket {
 			return object::Object<LocalFrame>::dx(t, r);
 		}
