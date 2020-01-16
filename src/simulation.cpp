@@ -122,6 +122,8 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 			break;
 	}
 
+	sim.ghp_local = std::make_pair(sim.rocket.pos.east(), sim.rocket.pos.north());
+
 	std::cout
 		<< "\tlaunch clear: " << sim.launch_clear.second << "m/s"
 			<< " (" << sim.launch_clear.first << "s)" << std::endl

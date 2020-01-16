@@ -56,6 +56,7 @@ namespace trochia::simulation {
 		Float geo_height;
 		Float temperature;
 		Float rho;
+		std::pair<Float,Float> ghp_local;
 	};
 
 	auto exec(Simulation &sim) -> void;
