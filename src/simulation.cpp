@@ -202,7 +202,7 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 			q * S * rocket.length * rocket.length / Ka_div);
 
 	// Coefficient of Jet damping
-	const auto mm0		= 2.476;	// TODO: engine.weight(0.0)
+	const auto mm0		= 6.787;	// TODO: engine.weight(0.0)
 	const auto Ip0		= (rocket.lcgp-rocket.lcg0)*(rocket.lcgp-rocket.lcg0)*mm0;
 	const auto mp0		= rocket.engine.weight(0.0) - rocket.engine.weight(rocket.engine.time_end);
 	const auto lcg_lcgp	= rocket.lcg() - rocket.lcgp;
