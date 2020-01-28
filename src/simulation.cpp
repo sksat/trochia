@@ -160,7 +160,7 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 
 	// tan(attack) = z/x
 	// sin(side_slip) = y/va
-	rocket.angle_attack		= (va_body.x()==0.0 ? 0.0 : std::atan(va_body.z() / va_body.x()));
+	rocket.angle_attack		= atan2l(va_body.z(), va_body.x());
 	rocket.angle_side_slip	= (va==0.0 ? 0.0 : std::asin(va_body.y() / va));
 
 	const auto S = rocket.diameter * rocket.diameter * math::pi / 4;
