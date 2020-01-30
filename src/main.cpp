@@ -73,11 +73,12 @@ auto main(int argc, char **argv) -> int {
 
 		const auto launcher = trochia::environment::Launcher(5.0, 90.0, e);
 
+		std::vector<trochia::simulation::Simulation::GHP> ghp_table;
+
 		for(const auto &ws : wind_speed){
 			const auto ws_str = shrink_str(to_string(ws));
 			const auto ws_dir = e_dir / ws_str;
 		
-			std::vector<std::pair<trochia::math::Float,trochia::math::Float>> ghp_table;
 
 			for(const auto &wd  : wind_dir){
 				const auto wd_str = shrink_str(to_string(wd));
@@ -96,11 +97,15 @@ auto main(int argc, char **argv) -> int {
 				ghp_table.push_back(sim.ghp_local);
 			}
 
-			std::ofstream ghp_file(ws_dir / "ghp.dat");
-			for(const auto &ghp : ghp_table){
-				if(ghp_file)
-					ghp_file << ghp.first << " " << ghp.second << std::endl;
+		}
+		std::ofstream ghp_file(e_dir / "ghp.csv");
+		ghp_file << "wspeed, wdir, ghp_x, ghp_y" << std::endl;
+		for(const auto &ghp : ghp_table){
+			if(ghp_file){
+				ghp_file << ghp.wspeed << ", " << ghp.wdir << ", "
+					<< ghp.e << ", " << ghp.n << std::endl;
 			}
+			// ghp_file << ghp.first << " " << ghp.second << std::endl;
 		}
 	}
 
