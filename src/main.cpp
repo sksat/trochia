@@ -71,7 +71,7 @@ auto main(int argc, char **argv) -> int {
 		const auto e_str = shrink_str(to_string(e));
 		const auto e_dir = output_base_dir / e_str;
 
-		const auto launcher = trochia::environment::Launcher(5.0, 90.0, e);
+		const auto launcher = trochia::environment::Launcher(5.0, 150.0, e);
 
 		std::vector<trochia::simulation::Simulation::GHP> ghp_table;
 

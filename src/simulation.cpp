@@ -230,8 +230,10 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 
 	// update omega
 	if(is_launch_clear(sim.launcher, sim.rocket)){
-		rocket.omega.y() += domg_y * sim.dt;
-		rocket.omega.z() += domg_z * sim.dt;
+		rocket.domega.y() = domg_y;
+		rocket.domega.z() = domg_z;
+		//rocket.omega.y() += domg_y * sim.dt;
+		//rocket.omega.z() += domg_z * sim.dt;
 	}else{
 		rocket.omega.setZero();
 	}

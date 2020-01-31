@@ -34,12 +34,14 @@ namespace trochia::object {
 		math::Float time;
 		Frame pos, vel, acc;
 		math::Quaternion quat;
-		math::Vector3 omega;
+		math::Vector3 omega, domega;
 
 		static auto dx(const math::Float &t, const Object &x) -> const Object {
 			Object ret;
 			ret.pos = x.vel;
 			ret.vel = x.acc;
+
+			ret.omega = x.domega;
 
 			// http://www.mss.co.jp/technology/report/pdf/18-07.pdf 4.3.2
 			const auto &omg = x.omega;
@@ -71,6 +73,8 @@ namespace trochia::object {
 			this->pos += o.pos;
 			this->vel += o.vel;
 
+			this->omega += o.omega;
+
 			auto q  = math::quat2vec(this->quat);
 			auto oq = math::quat2vec(o.quat);
 
@@ -82,6 +86,8 @@ namespace trochia::object {
 		auto operator-=(const Object &o) -> Object {
 			this->pos -= o.pos;
 			this->vel -= o.vel;
+
+			this->omega -= o.omega;
 
 			auto q  = math::quat2vec(this->quat);
 			auto oq = math::quat2vec(o.quat);
@@ -97,6 +103,8 @@ namespace trochia::object {
 			this->pos *= a;
 			this->vel *= a;
 
+			this->omega *= a;
+
 			auto q = math::quat2vec(this->quat);
 			q *= a;
 			this->quat = math::vec2quat(q);
@@ -106,6 +114,8 @@ namespace trochia::object {
 		auto operator/=(const math::Float &a) -> Object {
 			this->pos /= a;
 			this->vel /= a;
+
+			this->omega /= a;
 
 			auto q = math::quat2vec(this->quat);
 			q /= a;
