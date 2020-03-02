@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>GSI Tiles on Leaflet</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+  integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+  crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+  integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+  crossorigin=""></script>
+
+<style>
+  body {padding: 0; margin: 0}
+  html, body, #map {height: 100%; width: 100%;}
+</style>
+</head>
+
+<body>
+<div id="map"></div>
+<script>
+var map = L.map('map');
+L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg', {
+  attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"
+}).addTo(map);
+map.setView([34.661857, 139.454987], 14);
+
+var ok_region_sea = L.circle([34.661857, 139.454987], {
+	radius: 2500,
+	color: 'yellow',
+	fillOpacity: 0.1,
+}).addTo(map);
+
+var ok_region_sea_line = L.polyline([
+	[34.684392, 139.454677],
+	[34.667917, 139.428718]
+],{
+	color: 'yellow',
+	weight: 3.0
+}).addTo(map);
+
+var ok_region_land = L.polygon([
+	[34.735715, 139.420922],
+	[34.731750, 139.421719],
+	[34.733287, 139.424590],
+	[34.736955, 139.426038],
+	[34.738908, 139.423597],
+	[34.740638, 139.420681],
+	[34.741672, 139.417387],
+],{
+	color: 'yellow',
+	fillOpacity: 0.1,
+}
+).addTo(map);
+
+var launch = L.circle([34.679730, 139.438373], {
+	radius: 50,
+	color: 'blue',
+	fillOpacity: 0.5,
+}).addTo(map);
+
+var control = L.circle([34.735390, 139.421377], {
+	radius: 50,
+	color: 'red',
+	fillOpacity: 0.5,
+}).addTo(map);
+
+var human = L.circle([34.731230, 139.423150], {
+	radius: 50,
+	color: 'red',
+	fillOpacity: 0.5,
+}).addTo(map);
+
+var launch_point_sea = L.marker([34.679730, 139.438373]).addTo(map);
+launch_point_sea.bindPopup("<p>海打ち射点</p>");
+
+var launch_point_land = L.marker([34.735972, 139.420944]).addTo(map);
+launch_point_land.bindPopup("<p>陸打ち射点</p>");
+
+var recover_point = L.marker([34.736734, 139.421677]).addTo(map);
+recover_point.bindPopup("<p>回収地点</p>");
+</script>
+<script type="text/javascript" src="ghp-output.js"></script>
+</body>
+</html>
