@@ -128,6 +128,7 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 		.e = sim.rocket.pos.east(),
 		.n = sim.rocket.pos.north(),
 		.u = sim.rocket.pos.up(),
+		.max_altitude = altitude_max.second,
 	};
 	// std::make_pair(sim.rocket.pos.east(), sim.rocket.pos.north());
 
