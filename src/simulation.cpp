@@ -215,7 +215,7 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	const auto mp0		= rocket.engine.weight(0.0) - rocket.engine.weight(rocket.engine.time_end);
 	const auto lcg_lcgp	= rocket.lcg() - rocket.lcgp;
 	const auto l_lcg	= rocket.length - rocket.lcg();
-	const auto mdot		= rocket.engine.weight(time) - rocket.engine.weight(time+sim.dt);
+	const auto mdot		= (rocket.engine.weight(time) - rocket.engine.weight(time+sim.dt)) / sim.dt;
 	const auto Kj = -(Ip0/mp0 + lcg_lcgp*lcg_lcgp - l_lcg*l_lcg)*mdot;
 
 	// rotation
