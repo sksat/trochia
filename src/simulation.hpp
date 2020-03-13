@@ -60,6 +60,7 @@ namespace trochia::simulation {
 		struct GHP {
 			Float wspeed, wdir;
 			Float e, n, u;
+			Float max_altitude;
 		};
 		GHP ghp_local;
 	};

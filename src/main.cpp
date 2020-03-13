@@ -99,13 +99,12 @@ auto main(int argc, char **argv) -> int {
 
 		}
 		std::ofstream ghp_file(e_dir / "ghp.csv");
-		ghp_file << "wspeed, wdir, ghp_x, ghp_y" << std::endl;
+		ghp_file << "wspeed, wdir, ghp_e, ghp_n, max_altitude" << std::endl;
 		for(const auto &ghp : ghp_table){
 			if(ghp_file){
 				ghp_file << ghp.wspeed << ", " << ghp.wdir << ", "
-					<< ghp.e << ", " << ghp.n << std::endl;
+					<< ghp.e << ", " << ghp.n << ", " << ghp.max_altitude << std::endl;
 			}
-			// ghp_file << ghp.first << " " << ghp.second << std::endl;
 		}
 	}
 
