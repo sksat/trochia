@@ -205,9 +205,9 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	}
 
 	// Coefficient of Damping moment by air force
-	const auto Ka_div = 2.0 * va * rocket.Cmq;
+	const auto Ka_div = 2.0 * va;
 	const auto Ka = (Ka_div==0.0 ? 0.0 :
-			q * S * rocket.length * rocket.length / Ka_div);
+			q * S * rocket.length * rocket.length * rocket.Cmq / Ka_div);
 
 	// Coefficient of Jet damping
 	const auto mm0		= 6.787;	// TODO: engine.weight(0.0)
