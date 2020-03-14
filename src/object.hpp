@@ -52,7 +52,7 @@ namespace trochia::object {
 				omg(1),			-1.0*omg(0),	0.0,			omg(2),
 				-1.0*omg(0),	-1.0*omg(1),	-1.0*omg(2),	0.0;
 
-			math::Vector4 dq = mat * math::quat2vec(x.quat);
+			math::Vector4 dq = 0.5 * mat * math::quat2vec(x.quat);
 
 			ret.quat = math::vec2quat(dq);
 
