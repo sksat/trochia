@@ -46,7 +46,9 @@ endif()
 set(DEPS_ROOT        ${PROJECT_BINARY_DIR}/deps)
 set(DEPS_BUILD_DIR   ${DEPS_ROOT}/build)
 set(DEPS_INCLUDE_DIR ${DEPS_ROOT}/include)
+set(DEPS_LIB_DIR	 ${DEPS_ROOT}/lib)
 include_directories(${DEPS_INCLUDE_DIR})
+link_directories(${DEPS_LIB_DIR})
 
 include(ExternalProject)
 
@@ -73,4 +75,17 @@ ExternalProject_Add(
 	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT} -Dtoml11_BUILD_TEST=OFF
 )
 
+## GoogleTest
+find_package(Threads)
+set(GTEST_BUILD_DIR ${DEPS_BUILD_DIR}/googletest)
+ExternalProject_Add(
+	googletest
+	GIT_REPOSITORY	https://github.com/google/googletest.git
+	GIT_TAG			master
+	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
+	TEST_COMMAND	""
+)
+
 add_dependencies(${TROCHIA} eigen toml11)
+
+add_subdirectory(test)
