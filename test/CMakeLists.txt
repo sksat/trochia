@@ -9,8 +9,6 @@ ExternalProject_Add(
 	TEST_COMMAND	""
 )
 
-include_directories(${PROJECT_SOURCE_DIR}/src)
-
 add_executable(test_rocket EXCLUDE_FROM_ALL rocket.cpp)
 target_link_libraries(test_rocket gtest gtest_main Threads::Threads)
 

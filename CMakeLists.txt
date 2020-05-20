@@ -11,6 +11,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 # project config
 project(rocket_simulator CXX)
 set(TROCHIA trochia)
+include_directories(${PROJECT_SOURCE_DIR}/src)
 add_executable(${TROCHIA} src/main.cpp src/simulation.cpp src/io/config.cpp)
 
 # Git commit info
