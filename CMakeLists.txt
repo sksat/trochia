@@ -75,17 +75,6 @@ ExternalProject_Add(
 	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT} -Dtoml11_BUILD_TEST=OFF
 )
 
-## GoogleTest
-find_package(Threads)
-set(GTEST_BUILD_DIR ${DEPS_BUILD_DIR}/googletest)
-ExternalProject_Add(
-	googletest
-	GIT_REPOSITORY	https://github.com/google/googletest.git
-	GIT_TAG			master
-	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
-	TEST_COMMAND	""
-)
-
 add_dependencies(${TROCHIA} eigen toml11)
 
 add_subdirectory(test)

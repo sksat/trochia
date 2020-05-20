@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------- *
  *
- *    Copyright (C) 2019 sksat <sksat@sksat.net>
+ *    Copyright (C) 2019-2020 sksat <sksat@sksat.net>
  *
  *    This file is part of Trochia.
  *
@@ -25,7 +25,8 @@
 namespace trochia::coordinate::local {
 	class Base {
 	public:
-		Base() : vec(0.0, 0.0, 0.0) {}
+		Base() : vec(0.0, 0.0, 0.0){}
+		Base(math::Float x, math::Float y, math::Float z) : vec(x, y, z) {}
 
 		Vector3 vec;
 
@@ -73,6 +74,7 @@ namespace trochia::coordinate::local {
 	class NED : public Base {
 	public:
 		NED() : Base() {}
+		NED(math::Float x, math::Float y, math::Float z) : Base(x,y,z) {}
 
 		auto north() const -> Float { return vec.x(); }
 		auto east()  const -> Float { return vec.y(); }
@@ -105,6 +107,7 @@ namespace trochia::coordinate::local {
 	class ENU : public Base {
 	public:
 		ENU() : Base() {}
+		ENU(math::Float x, math::Float y, math::Float z) : Base(x,y,z) {}
 
 		auto east()  const -> Float { return vec.x(); }
 		auto north() const -> Float { return vec.y(); }
