@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------- *
  *
- *    Copyright (C) 2019 sksat <sksat@sksat.net>
+ *    Copyright (C) 2019-2020 sksat <sksat@sksat.net>
  *
  *    This file is part of Trochia.
  *
@@ -23,13 +23,22 @@
 #define ENVIRONMENT_WIND_HPP_
 
 #include "../math.hpp"
+#include "../coordinate.hpp"
 
 namespace trochia::environment::wind {
 	using math::Float;
 	// 上空風速(べき法則)
 	inline auto speed(const Float n, const Float &z_r, const Float v_r, const Float altitude) -> math::Float {
+		assert(z_r != 0.0);
 		const auto tmp = altitude / z_r;
 		return v_r * std::pow(tmp, Float(1.0) / n);
+	}
+
+	inline auto wind(const Float &vel, const Float &dir_rad) -> coordinate::local::NED {
+		return coordinate::local::NED(
+				vel * std::cos(dir_rad),
+				vel * std::sin(dir_rad),
+				0.0);
 	}
 }
 

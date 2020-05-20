@@ -17,9 +17,13 @@ target_link_libraries(test_rocket gtest gtest_main Threads::Threads)
 add_executable(test_coordinate EXCLUDE_FROM_ALL coordinate.cpp)
 target_link_libraries(test_coordinate gtest gtest_main Threads::Threads)
 
+add_executable(test_environment EXCLUDE_FROM_ALL environment.cpp)
+target_link_libraries(test_environment gtest gtest_main Threads::Threads)
+
 add_custom_target(
 	test
-	DEPENDS googletest test_rocket test_coordinate
+	DEPENDS googletest test_rocket test_coordinate test_environment
 	COMMAND test_rocket
 	COMMAND test_coordinate
+	COMMAND test_environment
 )
