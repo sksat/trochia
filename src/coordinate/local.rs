@@ -5,12 +5,12 @@ use nalgebra::Vector3;
 
 #[derive(Debug, PartialEq)]
 pub struct NED {
-    vec: Vector3<Float>,
+    pub vec: Vector3<Float>,
 }
 
 #[derive(Debug, PartialEq)]
 pub struct ENU {
-    vec: Vector3<Float>,
+    pub vec: Vector3<Float>,
 }
 
 // From impl

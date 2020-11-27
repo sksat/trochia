@@ -1,7 +1,11 @@
+pub mod body;
+pub mod dcm;
 pub mod local;
 
 use crate::types::Float;
 use nalgebra::Vector3;
+
+pub use body::Body;
 
 pub trait Local {
     fn new(e0: Float, e1: Float, e3: Float) -> Self;
