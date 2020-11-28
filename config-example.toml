@@ -1,0 +1,33 @@
+# common simulation info
+[simulation]
+dt			= 0.01
+output.dt	= 0.01
+output.dir	= "output"
+
+[launcher]
+length		= 5.0
+elevation	= [ 70.0, 80.0, 90.0 ]
+
+[wind]
+model		= "power"
+ground.dir	= [ 0.0, 90.0, 180.0, 270.0 ]
+ground.speed= [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 ]
+
+[rocket]
+name		= "example"
+
+[[rocket.stage]]
+type		= "hybrid"
+engine		= "20191020_01.eng"
+diameter	= 0.112
+length		= 1.1540
+weight		= 5.035
+I0			= 1.254
+If			= 1.251
+lcg0		= 0.913
+lcgf		= 0.905
+lcgp		= 1.076
+lcp			= 1.141
+Cd			= 0.440
+Cna			= 7.840
+parachute	= {condition = "top", speed = 5.0, delay = 2.5}

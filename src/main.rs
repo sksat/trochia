@@ -1,3 +1,7 @@
+#[macro_use]
+extern crate serde_derive;
+
+mod config;
 mod coordinate;
 mod environment;
 mod types;

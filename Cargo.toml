@@ -9,3 +9,6 @@ edition = "2018"
 [dependencies]
 lazy_static = "1.4.0"
 nalgebra = "0.23.1"
+serde = "1.0.117"
+serde_derive = "1.0.117"
+toml = "0.5.7"
