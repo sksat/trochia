@@ -7,8 +7,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+dimensioned = "0.7.0"
 lazy_static = "1.4.0"
 nalgebra = "0.23.1"
-serde = "1.0.117"
-serde_derive = "1.0.117"
+rasp = "0.1.0"
+serde = {version = "1.0.117", features = ["derive"]}
 toml = "0.5.7"

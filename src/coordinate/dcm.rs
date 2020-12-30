@@ -3,7 +3,7 @@ use na::{ArrayStorage, Matrix, Quaternion, U3};
 
 use crate::types::Float;
 
-type DCM = Matrix<Float, U3, U3, ArrayStorage<Float, U3, U3>>;
+pub type DCM = Matrix<Float, U3, U3, ArrayStorage<Float, U3, U3>>;
 
 #[rustfmt::skip]
 pub fn ned2body(q: Quaternion<Float>) -> DCM {

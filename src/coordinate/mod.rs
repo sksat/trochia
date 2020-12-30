@@ -8,8 +8,10 @@ use nalgebra::Vector3;
 
 pub use body::Body;
 
+pub trait Cartesian<D: nalgebra::Dim> {}
+
 pub trait Local {
-    fn new(e0: Float, e1: Float, e3: Float) -> Self;
+    //    fn new(e0: Float, e1: Float, e3: Float) -> Self;
 
     fn as_vec(&self) -> Vector3<Float>;
 
@@ -21,3 +23,5 @@ pub trait Local {
     fn up(&self) -> Float;
     fn down(&self) -> Float;
 }
+
+impl Cartesian<nalgebra::U3> for Local {}

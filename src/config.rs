@@ -1,7 +1,11 @@
-extern crate toml;
+extern crate dimensioned as dim;
 
 use std::fs;
 use std::io::{BufReader, Read};
+
+use serde::{Deserialize, Serialize};
+
+use dim::si;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
@@ -55,14 +59,18 @@ struct RocketStage {
     diameter: f64,
     length: f64,
     weight: f64,
-    I0: Option<f64>,
-    If: Option<f64>,
+    #[serde(rename = "I0")]
+    i_0: Option<f64>,
+    #[serde(rename = "If")]
+    i_f: Option<f64>,
     lcg0: Option<f64>,
     lcgf: Option<f64>,
     lcgp: Option<f64>,
     lcp: Option<f64>,
-    Cd: f64,
-    Cna: f64,
+    #[serde(rename = "Cd")]
+    c_d: f64,
+    #[serde(rename = "Cna")]
+    c_na: f64,
     parachute: Option<Parachute>,
 }
 #[derive(Debug, Deserialize)]
@@ -110,7 +118,7 @@ mod tests {
         match fs::File::open("config-example.toml") {
             Ok(mut file) => {
                 let mut content = String::new();
-                file.read_to_string(&mut content);
+                let _ = file.read_to_string(&mut content);
                 let cfg: Config = toml::from_str(&content).unwrap();
                 println!("{:#?}", cfg);
             }

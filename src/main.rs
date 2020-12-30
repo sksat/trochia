@@ -1,9 +1,10 @@
-#[macro_use]
-extern crate serde_derive;
+#![warn(clippy::pedantic)]
 
 mod config;
 mod coordinate;
 mod environment;
+mod object;
+mod rocket;
 mod types;
 
 use coordinate::local;

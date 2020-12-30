@@ -1,3 +1,4 @@
+use super::Cartesian;
 use super::Local;
 
 use crate::types::Float;
@@ -7,6 +8,8 @@ use nalgebra::Vector3;
 pub struct NED {
     pub vec: Vector3<Float>,
 }
+
+impl Cartesian<nalgebra::U3> for NED {}
 
 #[derive(Debug, PartialEq)]
 pub struct ENU {
@@ -53,13 +56,23 @@ mod tests {
 
 // struct impl
 
-impl Local for NED {
-    fn new(n: Float, e: Float, d: Float) -> Self {
+impl NED {
+    pub fn new(n: Float, e: Float, d: Float) -> Self {
         Self {
             vec: Vector3::<Float>::new(n, e, d),
         }
     }
+}
 
+impl ENU {
+    pub fn new(e: Float, n: Float, u: Float) -> Self {
+        Self {
+            vec: Vector3::<Float>::new(e, n, u),
+        }
+    }
+}
+
+impl Local for NED {
     fn as_vec(&self) -> Vector3<Float> {
         self.vec
     }
@@ -86,12 +99,6 @@ impl Local for NED {
 }
 
 impl Local for ENU {
-    fn new(e: Float, n: Float, u: Float) -> Self {
-        Self {
-            vec: Vector3::<Float>::new(e, n, u),
-        }
-    }
-
     fn as_vec(&self) -> Vector3<Float> {
         self.vec
     }
