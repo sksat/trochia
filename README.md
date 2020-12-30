@@ -1,6 +1,7 @@
 # Trochia
 
 [![Build Status on GitHub Actions](https://github.com/sk2sat/rocket_simulator/workflows/build/badge.svg)](https://github.com/sk2sat/rocket_simulator/actions)
+[![Build Status on Drone CI](https://drone.sksat.net/api/badges/trochia/trochia/status.svg?ref=refs/heads/rust)](https://drone.sksat.net/trochia/trochia)
 [![release](https://img.shields.io/github/v/release/sk2sat/trochia?style=flat-square)](https://github.com/sk2sat/trochia/releases)
 [![issues](https://img.shields.io/github/issues/sk2sat/trochia?color=red&style=flat-square)](https://github.com/sk2sat/trochia/issues)
 [![license](https://img.shields.io/github/license/sk2sat/trochia?style=flat-square)](./LICENSE)
