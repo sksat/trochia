@@ -44,11 +44,12 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
           cd build
-          cmake -G "Visual Studio 16 2019" -A x64 -config Release ..
+          cmake -G "Visual Studio 18 2026" -A x64 ..
     - name: build on ${{ matrix.os }}
       run: cmake --build build --parallel
 
     - name: create COPYING
+      shell: bash   # touch/cat are not native to Windows PowerShell
       run: |
           touch COPYING
           echo "Eigen (C++ template library for linear algebra)" >> COPYING
@@ -67,12 +68,13 @@ jobs:
           cp README.md trochia/
           cp LICENSE trochia/
           cp COPYING trochia/
-          cp build/bin/trochia* trochia/
     - name: make archive file
       if: matrix.os != 'windows-latest'
       env:
         OS: ${{ runner.os }}
-      run: zip -r trochia-$OS.zip trochia/
+      run: |
+          cp build/bin/trochia* trochia/
+          zip -r trochia-$OS.zip trochia/
     - name: make archive file for Windows
       if: matrix.os == 'windows-latest'
       run: |
