@@ -1,0 +1,30 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: install dependencies
+      run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ libeigen3-dev libgtest-dev
+
+    - name: configure
+      run: cmake -B build -DTROCHIA_BUILD_TESTS=ON
+
+    # build only the tests (not the main target, to skip the ExternalProject deps)
+    - name: build tests
+      run: cmake --build build --target tests --parallel
+
+    - name: run tests
+      run: ctest --test-dir build --output-on-failure
