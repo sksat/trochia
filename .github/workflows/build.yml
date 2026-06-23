@@ -15,7 +15,7 @@ jobs:
         os: [ubuntu-latest, macOS-latest, windows-latest]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v7
     - name: install C++17 compiler
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -78,7 +78,7 @@ jobs:
           7z a trochia-Windows.zip trochia
 
     - name: Upload archive as artifact
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v7
       with:
         name: "trochia-${{ runner.os }}"
         path: "trochia-${{ runner.os }}.zip"
