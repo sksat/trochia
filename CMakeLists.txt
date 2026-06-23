@@ -56,7 +56,7 @@ include(ExternalProject)
 set(EIGEN_BUILD_DIR ${DEPS_BUILD_DIR}/eigen)
 ExternalProject_Add(
 	eigen
-	URL				https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz
+	URL				https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
 	PREFIX			${EIGEN_BUILD_DIR}
 	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT}
 	BUILD_COMMAND	""
@@ -70,9 +70,9 @@ set(TOML11_BUILD_DIR ${DEPS_BUILD_DIR}/toml11)
 ExternalProject_Add(
 	toml11
 	GIT_REPOSITORY	https://github.com/ToruNiina/toml11
-	GIT_TAG			v3.2.0
+	GIT_TAG			v3.8.1
 	PREFIX			${TOML11_BUILD_DIR}
-	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT} -Dtoml11_BUILD_TEST=OFF
+	CMAKE_ARGS		-DCMAKE_INSTALL_PREFIX=${DEPS_ROOT} -Dtoml11_BUILD_TEST=OFF -DCMAKE_CXX_STANDARD=17
 )
 
 add_dependencies(${TROCHIA} eigen toml11)
