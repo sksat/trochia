@@ -49,7 +49,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
           cd build
-          cmake -A x64 ..
+          cmake -G "Visual Studio 18 2026" -A x64 ..
     - name: build on ${{ matrix.os }}
       run: cmake --build build --parallel
 
