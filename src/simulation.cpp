@@ -39,6 +39,11 @@ auto open_file(const fs::path &dir, const T &fname, std::vector<std::ofstream> &
 	}
 }
 
+auto is_launch_clear(const trochia::environment::Launcher &launcher, const trochia::rocket::Rocket &rocket) -> bool {
+	const trochia::coordinate::local::NED pos_ned = rocket.pos;
+	return pos_ned.vec.norm() > launcher.length;
+}
+
 auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 	using math::Float;
 
@@ -70,12 +75,16 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 	rocket.Cmq = -1.0*rocket.Cna / 2.0 * std::pow((rocket.lcp-rocket.lcg0)/rocket.length, 2.0);
 
 	std::pair<Float, Float> altitude_max = { 0.0, 0.0 };
+	sim.launch_clear = { 0.0, 0.0 };
 
 	auto solve = solver::RK4(rocket, rocket::Rocket::dx);
 
 	const auto output_fname = std::make_tuple(
 		"pos.dat",
-		"body.dat"
+		"body.dat",
+		"angle.dat",
+		"force.dat",
+		"env.dat"
 	);
 	std::vector<std::ofstream> output_file;
 	open_file(sim.output_dir, output_fname, output_file);
@@ -87,7 +96,16 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 		step++;
 
 		const auto &t = solve.t;
-		const auto &altitude = sim.rocket.pos.altitude();
+
+		const coordinate::local::NED pos_ned = sim.rocket.pos;
+		const auto &altitude = pos_ned.altitude();
+
+		if(sim.launch_clear.first == 0.0){
+			if(is_launch_clear(sim.launcher, sim.rocket)){
+				sim.launch_clear.first	= t;
+				sim.launch_clear.second	= sim.rocket.vel.vec.norm();
+			}
+		}
 
 		if(altitude_max.second < altitude){
 			altitude_max.first = t;
@@ -97,15 +115,31 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 		if(step % output_rate == 0)
 			save_data(t, sim, output_file);
 
-		// 終了判定
-		if(step > 100 && altitude <= 0.0)
+		// end simulation
+		if(is_launch_clear(sim.launcher, sim.rocket) && altitude <= 0.0)
 			break;
 		if(t > sim.timeout)
 			break;
 	}
 
-	std::cout << "\tmax altitude: " << altitude_max.second
-		<< "(" << altitude_max.first << "s)" << std::endl;
+	sim.ghp_local = Simulation::GHP {
+		.wspeed = sim.wind_speed,
+		.wdir = sim.wind_dir,
+		.e = sim.rocket.pos.east(),
+		.n = sim.rocket.pos.north(),
+		.u = sim.rocket.pos.up(),
+		.max_altitude = altitude_max.second,
+	};
+	// std::make_pair(sim.rocket.pos.east(), sim.rocket.pos.north());
+
+	std::cout
+		<< "\tlaunch clear: " << sim.launch_clear.second << "m/s"
+			<< " (" << sim.launch_clear.first << "s)" << std::endl
+		<< "\tmax altitude: " << altitude_max.second << "m"
+			<< " (" << altitude_max.first << "s)" << std::endl
+		<< "\tmax Va: " << rocket.va_max << "m/s" << std::endl
+		<< "\tmax N: " << rocket.N_max << "N" << std::endl
+		<< "\tGHP: (" << sim.rocket.pos.east() << ", " << sim.rocket.pos.north() << ")" << std::endl;
 }
 
 auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket> &s) -> void {
@@ -114,10 +148,10 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	auto &rocket = sim.rocket;
 	rocket.time = time;
 
-	// 機体速度ベクトル(NED)
+	// rocket speed vector(NED)
 	const coordinate::local::NED vel_ned = rocket.vel;
 
-	// 風ベクトル(NED)
+	// wind speed vector(NED)
 	const auto wind_vel	= environment::wind::speed(6.0, 2.0, sim.wind_speed, rocket.pos.altitude());
 	const auto wind_dir_rad = math::deg2rad(sim.wind_dir);
 	const auto wind_ned = math::Vector3(
@@ -125,41 +159,41 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 			wind_vel * std::sin(wind_dir_rad),
 			0.0);
 
-	// 対気速度ベクトル
+	// airspeed vector(NED, body)
 	const auto va_ned	= vel_ned.vec - wind_ned;
 	const auto va_body	= coordinate::dcm::ned2body(rocket.quat) * va_ned;
 	const auto va		= va_body.norm();
+	if(va > rocket.va_max)
+		rocket.va_max	= va;
 
 	// tan(attack) = z/x
 	// sin(side_slip) = y/va
-	const auto angle_attack		= (va_body.x()==0.0 ? 0.0 : std::atan(va_body.z() / va_body.x()));
-	const auto angle_side_slip	= (va==0.0 ? 0.0 : std::asin(va_body.y() / va));
+	rocket.angle_attack		= atan2l(va_body.z(), va_body.x());
+	rocket.angle_side_slip	= (va==0.0 ? 0.0 : std::asin(va_body.y() / va));
 
-	//std::cout << time << " "
-	//	<< math::rad2deg(angle_attack) << " "
-	//	<< math::rad2deg(angle_side_slip) << std::endl;
-
-	// 代表面積
 	const auto S = rocket.diameter * rocket.diameter * math::pi / 4;
 
 	const auto altitude = rocket.pos.altitude();
-	const auto geo_height = environment::earth::geodesy::potential_height(altitude);
-	const auto temperature = environment::air::temperature(geo_height);
-	const auto rho = environment::air::density(temperature);
+	sim.geo_height = environment::earth::geodesy::potential_height(altitude);
+	sim.temperature = environment::air::temperature(sim.geo_height);
+	sim.rho = environment::air::density(sim.temperature);
 
-	// 空気抵抗
-	const auto q = 0.5 * rho * va * va;						// 動圧
-	const auto D = q * S * rocket.Cd;						// 軸力
-	const auto N = q * S * rocket.Cna * angle_attack;		// 法線力
-	const auto Y = q * S * rocket.Cna * angle_side_slip;	// Y軸上の法線力
+	// Air resistance
+	const auto q = 0.5 * sim.rho * va * va;					// dynamic pressure
+	rocket.D = q * S * rocket.Cd;							// Drag Force
+	rocket.N = q * S * rocket.Cna * rocket.angle_attack;	// Normal Force
+	rocket.Y = q * S * rocket.Cna * rocket.angle_side_slip;	// Normal Force on Y-axis
+
+	if(rocket.N > rocket.N_max)
+		rocket.N_max	= rocket.N;
 
 	// thrust
 	const auto thrust = rocket.engine.thrust(time); // first stage only
 
 	const auto force = coordinate::body::Body(
-		thrust - D,
-		-1.0 * Y,
-		-1.0 * N
+		thrust - rocket.D,
+		-1.0 * rocket.Y,
+		-1.0 * rocket.N
 	);
 
 	rocket.force(force.to_local<rocket::LocalFrame>(rocket.quat));
@@ -170,44 +204,55 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 		rocket.acc.down(rocket.acc.down() + g);
 	}
 
-	// 空気力による減衰モーメント係数
-	const auto Ka_div = 2.0 * va * rocket.Cmq;
+	// Coefficient of Damping moment by air force
+	const auto Ka_div = 2.0 * va;
 	const auto Ka = (Ka_div==0.0 ? 0.0 :
-			q * S * rocket.length * rocket.length / Ka_div);
+			q * S * rocket.length * rocket.length * rocket.Cmq / Ka_div);
 
-	// ジェットダンピング係数
-	const auto mm0		= 2.476;	// 点火時エンジン質量 TODO: engine.weight(0.0)
+	// Coefficient of Jet damping
+	const auto mm0		= 6.787;	// TODO: engine.weight(0.0)
 	const auto Ip0		= (rocket.lcgp-rocket.lcg0)*(rocket.lcgp-rocket.lcg0)*mm0;
 	const auto mp0		= rocket.engine.weight(0.0) - rocket.engine.weight(rocket.engine.time_end);
 	const auto lcg_lcgp	= rocket.lcg() - rocket.lcgp;
 	const auto l_lcg	= rocket.length - rocket.lcg();
-	const auto mdot		= rocket.engine.weight(time) - rocket.engine.weight(time+sim.dt);
+	const auto mdot		= (rocket.engine.weight(time) - rocket.engine.weight(time+sim.dt)) / sim.dt;
 	const auto Kj = -(Ip0/mp0 + lcg_lcgp*lcg_lcgp - l_lcg*l_lcg)*mdot;
 
-	// 回転
-	const auto lcg_lcp = rocket.lcg() - rocket.lcp;	// 重心から空力中心までの距離
-	const auto ma_y = -1.0*lcg_lcp*Y + (Ka+Kj)*rocket.omega.y();	// Y軸周りの空力モーメント
-	const auto ma_z =      lcg_lcp*N + (Ka+Kj)*rocket.omega.z();	// Z軸周りの空力モーメント
+	// rotation
+	const auto lcp_lcg = rocket.lcp - rocket.lcg();					// length of CG~CP
+	const auto ma_y = lcp_lcg*rocket.N + (Ka+Kj)*rocket.omega.y();	// Aerodynamic moment around Y axis
+	const auto ma_z = lcp_lcg*rocket.Y + (Ka+Kj)*rocket.omega.z();	// Aerodynamic moment around Z axis
 
-	const auto I = rocket.inertia();				// 慣性モーメント
+	const auto I = rocket.inertia();				// Moment of Inertia
 
-	// 角加速度
+	// Angular Acceleration
 	const auto domg_y = ma_y / I;
 	const auto domg_z = ma_z / I;
 
-	// 角速度の更新
-	rocket.omega.y() += domg_y * sim.dt;
-	rocket.omega.z() += domg_z * sim.dt;
+	// update omega
+	if(is_launch_clear(sim.launcher, sim.rocket)){
+		rocket.domega.y() = domg_y;
+		rocket.domega.z() = domg_z;
+		//rocket.omega.y() += domg_y * sim.dt;
+		//rocket.omega.z() += domg_z * sim.dt;
+	}else{
+		rocket.domega.setZero();
+		rocket.omega.setZero();
+	}
 
 	// update
 	s.step(sim.dt);
 }
 
 auto trochia::simulation::save_data(const math::Float &time, const Simulation &sim, std::vector<std::ofstream> &output) -> void {
+	using math::rad2deg;
 	using std::endl;
 
-	auto &o_pos = output[0];
-	auto &o_body= output[1];
+	auto &o_pos		= output[0];
+	auto &o_body	= output[1];
+	auto &o_angle	= output[2];
+	auto &o_force	= output[3];
+	auto &o_env		= output[4];
 
 	const auto &rocket = sim.rocket;
 	const auto ned2body= coordinate::dcm::ned2body(rocket.quat);
@@ -222,4 +267,15 @@ auto trochia::simulation::save_data(const math::Float &time, const Simulation &s
 	o_body << time << " "
 		<< b_vel.x() << " " << b_vel.y() << " " << b_vel.z() << " "
 		<< b_acc.x() << " " << b_acc.y() << " " << b_acc.z() << endl;
+
+	o_angle << time << " "
+		<< rad2deg(rocket.angle_attack) << " " << rad2deg(rocket.angle_side_slip) << endl;
+
+	o_force << time << " "
+		<< rocket.D << " " << rocket.N << " " << rocket.Y << endl;
+
+	o_env << time << " "
+		<< pos.altitude() << " " << sim.geo_height << " "
+		<< sim.temperature << " " << sim.rho << " "
+		<< environment::wind::speed(6.0, 2.0, sim.wind_speed, pos.altitude()) << endl;
 }

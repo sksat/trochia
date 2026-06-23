@@ -22,6 +22,7 @@
 #ifndef SIMULATION_HPP_
 #define SIMULATION_HPP_
 
+#include <utility>
 #include <string>
 #include <filesystem>
 #include <fstream>
@@ -31,20 +32,37 @@
 #include "solver.hpp"
 
 namespace trochia::simulation {
+	using math::Float;
+
 	class Simulation {
 	public:
-		math::Float timeout = 60.0;
-		math::Float dt, output_dt;
+		// simulation config
+		Float timeout = 60.0;
+		Float dt, output_dt;
 
 		std::string output_dir_fmt;
 		std::filesystem::path output_dir;
 
+		// input value
 		environment::Launcher launcher;
-		math::Float launcher_angle;
+		Float launcher_angle;
 
-		math::Float wind_speed, wind_dir;
+		Float wind_speed, wind_dir;
 
 		rocket::Rocket rocket;
+
+		// output value
+		std::pair<Float,Float> launch_clear;
+		Float geo_height;
+		Float temperature;
+		Float rho;
+
+		struct GHP {
+			Float wspeed, wdir;
+			Float e, n, u;
+			Float max_altitude;
+		};
+		GHP ghp_local;
 	};
 
 	auto exec(Simulation &sim) -> void;

@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - master
-      - develop
-      - feature/*
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
@@ -15,7 +16,7 @@ jobs:
         os: [ubuntu-latest, macOS-latest, windows-latest]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v7
     - name: install C++17 compiler
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -45,3 +46,40 @@ jobs:
           cmake -G "Visual Studio 16 2019" -A x64 -config Release ..
     - name: build on ${{ matrix.os }}
       run: cmake --build build --parallel
+
+    - name: create COPYING
+      run: |
+          touch COPYING
+          echo "Eigen (C++ template library for linear algebra)" >> COPYING
+          echo "-----------------------------------------------" >> COPYING
+          cat build/deps/build/eigen/src/eigen/COPYING.MPL2 >> COPYING
+          echo "" >> COPYING
+          echo "toml11 (C++11 header-only toml parser/encoder)"
+          echo "-----------------------------------------------" >> COPYING
+          cat build/deps/build/toml11/src/toml11/LICENSE >> COPYING
+
+    - name: make release directory
+      env:
+        OS: ${{ runner.os }}
+      run: |
+          mkdir trochia
+          cp README.md trochia/
+          cp LICENSE trochia/
+          cp COPYING trochia/
+          cp build/bin/trochia* trochia/
+    - name: make archive file
+      if: matrix.os != 'windows-latest'
+      env:
+        OS: ${{ runner.os }}
+      run: zip -r trochia-$OS.zip trochia/
+    - name: make archive file for Windows
+      if: matrix.os == 'windows-latest'
+      run: |
+          cp build/bin/Debug/trochia.exe trochia
+          7z a trochia-Windows.zip trochia
+
+    - name: Upload archive as artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: "trochia-${{ runner.os }}"
+        path: "trochia-${{ runner.os }}.zip"

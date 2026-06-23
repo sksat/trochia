@@ -29,8 +29,8 @@
 #include <utility>
 #include "math.hpp"
 
-// *data.begin()は(0.0, thrust)
-// *data.end()は(time_end, 0.0)となるようにすること
+// *data.begin() = (0.0,     thrust)
+// *data.end()   = (time_end,   0.0)
 
 namespace trochia {
 	class Engine {
@@ -40,7 +40,7 @@ namespace trochia {
 		using thrust_t = std::pair<math::Float, math::Float>;
 		using thrustcurve_t = std::vector<thrust_t>;
 
-		// engファイルからデータを読み込む
+		// load data from .eng file
 		auto load_eng(const std::string &fname) -> void {
 			std::ifstream ifs(fname);
 			if(!ifs) return;
@@ -67,14 +67,14 @@ namespace trochia {
 
 			double thrust_max = 0.0;
 
-			// 推力履歴の読み込み
+			// load thrust curve
 			while(ifs){
 				ifs >> t >> th;
-				if(t < thrust.first)			// データがソートされていない
+				if(t < thrust.first)			// unsorted data
 					break;
 
 				if(thrust.first == 0.0){
-					if(t != 0.0)				// tの初期値が0.0でない
+					if(t != 0.0)				// first t value is not 0.0
 						data.push_back(thrust);
 				}
 
@@ -88,9 +88,9 @@ namespace trochia {
 				data.push_back(thrust);
 			}
 
-			if(th != 0.0){						// 最終推力が0.0でない
+			if(th != 0.0){						// last thrust is not 0.0
 				const auto &end = data.cend()-1;
-				const auto dt = end->first - (end-1)->first;	// 直前のdtを使う
+				const auto dt = end->first - (end-1)->first;	// use latest dt
 				thrust.first = end->first + dt;
 				thrust.second= 0.0;
 				data.push_back(thrust);
@@ -130,10 +130,10 @@ namespace trochia {
 			const auto &time_next	= next->first;
 			const auto &thrust_next	= next->second;
 
-			if(time >= time_end)		// 推力履歴データ終了
+			if(time >= time_end)		// thrust curve data is end
 				return 0.0;
 
-			// 補間が必要ないやつ
+			// just time
 			if(time == time_now)
 				return thrust_now;
 			if(time == time_next){
@@ -141,7 +141,7 @@ namespace trochia {
 				return itr->second;
 			}
 
-			// 補間
+			// linear interpolation
 			if(time_now < time && time < time_next){
 				const auto range	= time_next - time_now;
 				const auto elepsed	= time - time_now;
@@ -149,7 +149,7 @@ namespace trochia {
 				return math::lerp(thrust_now, thrust_next, progress);
 			}
 
-			// 更新
+			// update
 			if(time > time_next){
 				if(next != data.cend()-1)
 					itr++;

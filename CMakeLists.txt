@@ -1,5 +1,7 @@
 # cmake common config
-cmake_minimum_required(VERSION 3.1)
+# CMake 4.x removed compatibility with minimums below 3.5, so requesting 3.1
+# makes configure fail on modern CMake (e.g. the GitHub Actions runners).
+cmake_minimum_required(VERSION 3.5)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 
