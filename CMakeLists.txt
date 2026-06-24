@@ -76,3 +76,10 @@ ExternalProject_Add(
 )
 
 add_dependencies(${TROCHIA} eigen toml11)
+
+# unit tests (off by default; uses system Eigen + googletest)
+option(TROCHIA_BUILD_TESTS "Build unit tests" OFF)
+if(TROCHIA_BUILD_TESTS)
+	enable_testing()
+	add_subdirectory(test)
+endif()
