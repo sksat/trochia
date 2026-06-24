@@ -1,0 +1,34 @@
+name: Sanitize
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  sanitize:
+    runs-on: ubuntu-latest
+    env:
+      # make UBSan failures abort (and show a stack); ASan aborts by default
+      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+      ASAN_OPTIONS: detect_leaks=0
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: install dependencies
+      run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ libeigen3-dev libgtest-dev
+
+    - name: configure (ASan + UBSan)
+      run: cmake -B build -DTROCHIA_BUILD_TESTS=ON -DTROCHIA_SANITIZE=ON
+
+    # build only the tests (not the main target, to skip the ExternalProject deps)
+    - name: build tests
+      run: cmake --build build --target tests --parallel
+
+    - name: run tests under sanitizers
+      run: ctest --test-dir build --output-on-failure

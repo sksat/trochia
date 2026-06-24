@@ -44,6 +44,14 @@ elseif(MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 endif()
 
+# AddressSanitizer + UndefinedBehaviorSanitizer (applies to all targets,
+# including the tests). Enable with: cmake -DTROCHIA_SANITIZE=ON ..
+option(TROCHIA_SANITIZE "Build with AddressSanitizer + UndefinedBehaviorSanitizer" OFF)
+if(TROCHIA_SANITIZE)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address,undefined -fno-omit-frame-pointer -g")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address,undefined")
+endif()
+
 # dependency
 set(DEPS_ROOT        ${PROJECT_BINARY_DIR}/deps)
 set(DEPS_BUILD_DIR   ${DEPS_ROOT}/build)
