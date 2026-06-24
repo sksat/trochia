@@ -27,6 +27,7 @@
 #include <fstream>
 #include <vector>
 #include <utility>
+#include <algorithm>
 #include "math.hpp"
 
 // *data.begin() = (0.0,     thrust)
@@ -97,7 +98,6 @@ namespace trochia {
 			}
 
 			time_end = thrust.first;
-			itr = data.cbegin();
 
 			for(auto i=data.crbegin();i!=data.crend();i++){
 				if(i->second > this->thrust(time_max)*0.01){
@@ -123,40 +123,32 @@ namespace trochia {
 			return weight_total - weight_prop + prop;
 		}
 
-		auto thrust(const math::Float &time) -> math::Float {
-			const auto &next = itr+1;
-			const auto &time_now	= itr->first;
-			const auto &thrust_now	= itr->second;
-			const auto &time_next	= next->first;
-			const auto &thrust_next	= next->second;
-
+		// Linear-interpolate the thrust at the given time.
+		// Stateless (const) so it does not depend on call order and stays valid
+		// when the Engine is copied (the previous version advanced a member
+		// iterator and, after a Simulation copy, compared iterators from two
+		// different containers -- UB behind issue #37).
+		auto thrust(const math::Float &time) const -> math::Float {
+			if(data.empty())
+				return 0.0;
+			if(time <= data.front().first)
+				return data.front().second;
 			if(time >= time_end)		// thrust curve data is end
 				return 0.0;
 
-			// just time
-			if(time == time_now)
-				return thrust_now;
-			if(time == time_next){
-				itr++;
-				return itr->second;
-			}
+			// data is sorted by time; find the first point after `time`
+			const auto next = std::upper_bound(data.cbegin(), data.cend(), time,
+				[](const math::Float t, const thrust_t &p){ return t < p.first; });
+			if(next == data.cbegin() || next == data.cend())
+				return 0.0;
 
-			// linear interpolation
-			if(time_now < time && time < time_next){
-				const auto range	= time_next - time_now;
-				const auto elepsed	= time - time_now;
-				const auto progress	= elepsed / range;
-				return math::lerp(thrust_now, thrust_next, progress);
-			}
+			const auto &p0 = *(next-1);
+			const auto &p1 = *next;
+			const auto range = p1.first - p0.first;
+			if(range <= 0.0)			// coincident times: avoid divide-by-zero
+				return p0.second;
 
-			// update
-			if(time > time_next){
-				if(next != data.cend()-1)
-					itr++;
-				return thrust(time);
-			}
-
-			return 0.0;
+			return math::lerp(p0.second, p1.second, (time - p0.first) / range);
 		}
 	private:
 		// info
@@ -167,7 +159,6 @@ namespace trochia {
 
 		// thrustcurve
 		thrustcurve_t data;
-		thrustcurve_t::const_iterator itr;
 	public:
 		math::Float time_max, time_valid, time_end;
 	};
