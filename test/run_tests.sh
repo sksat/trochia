@@ -20,8 +20,13 @@ trap 'rm -rf "$out"' EXIT
 fail=0
 for t in test/test_*.cpp; do
 	name=$(basename "$t" .cpp)
+	# tests named test_sim_* exercise the simulation, so compile its source too
+	extra=()
+	if [[ "$name" == test_sim_* ]]; then
+		extra+=(src/simulation.cpp)
+	fi
 	echo "=== building $name ==="
-	if ! "$CXX" "${FLAGS[@]}" "$t" -o "$out/$name" "${GTEST[@]}"; then
+	if ! "$CXX" "${FLAGS[@]}" "$t" "${extra[@]}" -o "$out/$name" "${GTEST[@]}"; then
 		echo "BUILD FAILED: $name"
 		fail=1
 		continue

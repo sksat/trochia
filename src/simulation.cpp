@@ -160,9 +160,12 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 			0.0);
 
 	// airspeed vector(NED, body)
-	const auto va_ned	= vel_ned.vec - wind_ned;
-	const auto va_body	= coordinate::dcm::ned2body(rocket.quat) * va_ned;
-	const auto va		= va_body.norm();
+	// NOTE: assign to concrete types. Binding an Eigen product to `auto` keeps a
+	// lazy expression template that references the temporary matrix returned by
+	// ned2body(); reading it afterwards is a use-after-scope (issue #37).
+	const math::Vector3 va_ned	= vel_ned.vec - wind_ned;
+	const math::Vector3 va_body	= coordinate::dcm::ned2body(rocket.quat) * va_ned;
+	const math::Float   va		= va_body.norm();
 	if(va > rocket.va_max)
 		rocket.va_max	= va;
 
