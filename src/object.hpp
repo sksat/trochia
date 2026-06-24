@@ -31,10 +31,14 @@ namespace trochia::object {
 		Object() {}
 		Object(const Frame pos) : pos(pos) {}
 
-		math::Float time;
+		// NOTE: Eigen's default ctors do not zero-initialise. Without these
+		// in-class initialisers time/quat/omega/domega hold garbage, which is
+		// read before being set and produces undefined, platform/run-dependent
+		// results (issue #37).
+		math::Float time = 0.0;
 		Frame pos, vel, acc;
-		math::Quaternion quat;
-		math::Vector3 omega, domega;
+		math::Quaternion quat = math::Quaternion::Identity();
+		math::Vector3 omega = math::Vector3::Zero(), domega = math::Vector3::Zero();
 
 		static auto dx(const math::Float &t, const Object &x) -> const Object {
 			Object ret;
