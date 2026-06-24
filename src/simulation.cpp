@@ -69,6 +69,8 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 	pos.north(0.0);
 	rocket.vel.vec.setZero();
 	rocket.acc.vec.setZero();
+	rocket.omega.setZero();
+	rocket.domega.setZero();
 
 	rocket.quat = sim.launcher.get_angle();
 
