@@ -24,7 +24,12 @@ add_custom_target(tests)
 
 foreach(test_src ${TEST_SOURCES})
 	get_filename_component(test_name ${test_src} NAME_WE)
-	add_executable(${test_name} ${test_src})
+	# tests named test_sim_* exercise the simulation, so link its source
+	set(srcs ${test_src})
+	if(test_name MATCHES "^test_sim")
+		list(APPEND srcs "${CMAKE_SOURCE_DIR}/src/simulation.cpp")
+	endif()
+	add_executable(${test_name} ${srcs})
 	target_compile_features(${test_name} PRIVATE cxx_std_20)
 	target_include_directories(${test_name} PRIVATE
 		"${CMAKE_SOURCE_DIR}/src" "${EIGEN3_INCLUDE_DIR}")
