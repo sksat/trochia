@@ -39,6 +39,21 @@ $ vim config.toml # write configuration by TOML
 $ trochia
 ```
 
+## Python tooling (uv)
+
+The simulator is C++, but a few helper scripts are written in Python. Their
+dependencies are managed with [uv](https://docs.astral.sh/uv/) (pinned in
+`pyproject.toml` / `uv.lock`).
+
+```sh
+$ uv sync                                  # create .venv from the lockfile
+$ uv run convert-ghp.py output/85/ghp.csv  # ground-hit-point -> lat/lon for view-ghp.html
+```
+
+`convert-ghp.py` converts the simulator's `ghp.csv` output into geographic
+coordinates (writing `ghp-output.js`) so the landing dispersion can be overlaid
+on the map in `view-ghp.html`.
+
 ## Author
 
 GitHub: [sksat](https://github.com/sksat)

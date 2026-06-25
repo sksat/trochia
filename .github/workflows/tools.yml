@@ -1,0 +1,30 @@
+name: Tools
+
+# Verify the Python helper tooling stays reproducible: the uv lockfile must be
+# in sync with pyproject.toml and the environment must resolve.
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  uv:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: install uv
+      # setup-uv publishes no moving `v8` major tag yet, so pin the full version
+      uses: astral-sh/setup-uv@v8.2.0
+      with:
+        enable-cache: true
+
+    - name: sync (locked)
+      run: uv sync --locked
+
+    - name: smoke check
+      run: uv run python -c "import pymap3d; print('pymap3d', pymap3d.__version__)"
