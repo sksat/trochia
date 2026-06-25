@@ -225,7 +225,7 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 
 	// rotation
 	const auto lcp_lcg = rocket.lcp - rocket.lcg();					// length of CG~CP
-	const auto ma_y = lcp_lcg*rocket.N + (Ka+Kj)*rocket.omega.y();	// Aerodynamic moment around Y axis
+	const auto ma_y = -1.0*lcp_lcg*rocket.N + (Ka+Kj)*rocket.omega.y();	// Aerodynamic moment around Y axis
 	const auto ma_z = lcp_lcg*rocket.Y + (Ka+Kj)*rocket.omega.z();	// Aerodynamic moment around Z axis
 
 	const auto I = rocket.inertia();				// Moment of Inertia
