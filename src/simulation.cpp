@@ -241,8 +241,18 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 		//rocket.omega.y() += domg_y * sim.dt;
 		//rocket.omega.z() += domg_z * sim.dt;
 	}else{
+		// On the launch rail (issue #32): the rail constrains the rocket to its
+		// axis, reacting every force perpendicular to it (the rail normal force,
+		// 垂直抗力) and any moment. So zero the rotation and keep only the
+		// along-rail component of the acceleration. Without this, the
+		// perpendicular component of gravity (a tilted rail) and the spurious
+		// low-speed angle of attack push the rocket off the rail.
 		rocket.domega.setZero();
 		rocket.omega.setZero();
+
+		const math::Vector3 rail = coordinate::dcm::body2ned(rocket.quat)
+			* math::Vector3(1.0, 0.0, 0.0);	// rail axis (body +x) in NED
+		rocket.acc.vec = rail * rocket.acc.vec.dot(rail);
 	}
 
 	// update
