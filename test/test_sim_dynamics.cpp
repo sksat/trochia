@@ -58,9 +58,22 @@ TEST(SimDynamics, DoStepStaysFinite) {
 	// a non-trivial upward velocity so the airspeed vector is exercised
 	sim.rocket.vel.vec = math::Vector3(0.0, 0.0, -30.0); // NED: down is +, so up
 
+	const double start_alt = sim.rocket.pos.altitude();
+
 	for (int i = 0; i < 50; ++i) {
 		trochia::simulation::do_step(sim, solve);
 		ASSERT_TRUE(std::isfinite(sim.rocket.pos.altitude())) << "altitude NaN at step " << i;
 		ASSERT_TRUE(std::isfinite(sim.rocket.vel.vec.norm())) << "velocity NaN at step " << i;
+
+		// The launch is wholly in the East-Up plane: azimuth 90 deg, wind along
+		// the E axis (wind_dir -90), initial velocity straight up. Nothing forces
+		// out-of-plane (north) motion, so north must stay zero. Issue #37's
+		// uninitialised state and tumble leaked numerical noise into a growing
+		// out-of-plane drift -- a finiteness check alone would not have caught it.
+		EXPECT_NEAR(sim.rocket.pos.north(), 0.0, 1e-9)
+			<< "out-of-plane (north) drift at step " << i;
 	}
+
+	// 500 N thrust on a 5 kg rocket plus the initial 30 m/s climb: altitude must grow.
+	EXPECT_GT(sim.rocket.pos.altitude(), start_alt) << "rocket did not ascend under thrust";
 }
