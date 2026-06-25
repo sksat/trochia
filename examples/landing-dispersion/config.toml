@@ -1,0 +1,41 @@
+# Landing-dispersion example: sweep wind speed x wind direction at a fixed
+# elevation. Each (speed, dir) is one run; the ground-hit points form the
+# landing dispersion. Run from this directory:
+#   ../fetch-engine.sh           # once, downloads ../20191020_01.eng
+#   ../../build/bin/trochia       # 25 dirs x 7 speeds = 175 runs -> ./output/
+#   gnuplot plot.gp               # -> dispersion.png
+
+[simulation]
+dt			= 0.01
+output.dt	= 0.05
+output.dir	= "output"
+
+[launcher]
+length		= 5
+elevation	= 85
+
+[wind]
+model		= "power"
+# wind direction every 15 deg for smooth dispersion loops. 360 deg repeats the
+# 0 deg point so each per-wind-speed loop closes when plotted.
+ground.dir	= [ 0.0, 15.0, 30.0, 45.0, 60.0, 75.0, 90.0, 105.0, 120.0, 135.0, 150.0, 165.0, 180.0, 195.0, 210.0, 225.0, 240.0, 255.0, 270.0, 285.0, 300.0, 315.0, 330.0, 345.0, 360.0 ]
+ground.speed= [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 ]
+
+[rocket]
+name	= "example rocket"
+type	= "hybrid"
+
+[[rocket.stage]]
+engine	= "../20191020_01.eng"   # fetched by examples/fetch-engine.sh
+length	= 1.1540
+diameter= 0.112
+mass	= 5.035
+I0		= 1.254
+If		= 1.251
+lcg0	= 0.913
+lcgf	= 0.905
+lcgp	= 1.076
+lcp		= 1.141
+Cd		= 0.440
+Cna		= 7.840
+parachute= {condition = "top", delay = 2.5}

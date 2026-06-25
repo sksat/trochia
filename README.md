@@ -39,6 +39,15 @@ $ vim config.toml # write configuration by TOML
 $ trochia
 ```
 
+## Examples
+
+Runnable use cases live in [`examples/`](examples/) (one directory each, with
+config, a gnuplot script and a committed result plot). For example, the
+[landing-dispersion](examples/landing-dispersion/) example sweeps wind speed ×
+direction and plots the ground-hit points:
+
+![landing dispersion](examples/landing-dispersion/dispersion.png)
+
 ## Python tooling (uv)
 
 The simulator is C++, but a few helper scripts are written in Python. Their
