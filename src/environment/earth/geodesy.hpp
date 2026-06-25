@@ -34,7 +34,8 @@ namespace trochia::environment::earth::geodesy {
 		constexpr math::Float r0 = 6356766;
 		constexpr math::Float gamma = 1.0;
 
-		return (r0 * height) / (gamma * r0 - height);
+		// H = r0 * Z / (r0 + Z)  (geometric Z -> geopotential H)
+		return (r0 * height) / (gamma * r0 + height);
 	}
 }
 
