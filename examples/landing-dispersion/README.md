@@ -21,9 +21,23 @@ grows with wind (radius ~134 m at 1 m/s to ~237 m at 7 m/s) while apogee drops
 
 ![landing dispersion](dispersion.png)
 
-To overlay the dispersion on a real map, convert the ground-hit points to
-lat/lon with the Python tool (see the repo README's *Python tooling* section):
+### On a map
+
+`plot-map.py` draws the same dispersion on an OpenStreetMap basemap (the launch
+site is Izu Oshima / Toshiki), so you can see which landing points fall on land
+versus in the sea — the actual range-safety question:
 
 ```sh
-uv run convert-ghp.py examples/landing-dispersion/output/85/ghp.csv   # from the repo root
+uv run plot-map.py            # -> dispersion-map.png  (needs network for the tiles)
+```
+
+![landing dispersion on a map](dispersion-map.png)
+
+For an interactive version, `view-ghp.html` (at the repo root) overlays the same
+points on a Leaflet map. Generate its data **from the repo root** (where
+convert-ghp.py and view-ghp.html live), so `ghp-output.js` is written next to the
+HTML:
+
+```sh
+uv run convert-ghp.py examples/landing-dispersion/output/85/ghp.csv
 ```
