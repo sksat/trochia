@@ -28,6 +28,11 @@ namespace trochia::environment::wind {
 	using math::Float;
 	// 上空風速(べき法則)
 	inline auto speed(const Float n, const Float &z_r, const Float v_r, const Float altitude) -> math::Float {
+		// the power law is undefined at/below ground; wind is calm there.
+		// (avoids pow(negative, fractional) -> NaN, e.g. on the final descent step)
+		if(altitude <= Float(0.0))
+			return Float(0.0);
+
 		const auto tmp = altitude / z_r;
 		return v_r * std::pow(tmp, Float(1.0) / n);
 	}
