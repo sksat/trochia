@@ -48,13 +48,17 @@ namespace trochia::object {
 			ret.omega = x.domega;
 
 			// http://www.mss.co.jp/technology/report/pdf/18-07.pdf 4.3.2
+			// q_dot = 0.5 * Omega(omega) * q for body angular rates.
+			// quat2vec/vec2quat use the scalar-first ordering [w, x, y, z], so
+			// Omega must be the scalar-first form (the scalar-last matrix gives a
+			// wrong attitude derivative -- issue #37).
 			const auto &omg = x.omega;
 			math::Matrix4 mat;
 			mat <<
-				0.0,			omg(2),			-1.0*omg(1),	omg(0),
-				-1.0*omg(2),	0.0,			omg(0),			omg(1),
-				omg(1),			-1.0*omg(0),	0.0,			omg(2),
-				-1.0*omg(0),	-1.0*omg(1),	-1.0*omg(2),	0.0;
+				0.0,			-1.0*omg(0),	-1.0*omg(1),	-1.0*omg(2),
+				omg(0),			0.0,			omg(2),			-1.0*omg(1),
+				omg(1),			-1.0*omg(2),	0.0,			omg(0),
+				omg(2),			omg(1),			-1.0*omg(0),	0.0;
 
 			math::Vector4 dq = 0.5 * mat * math::quat2vec(x.quat);
 
