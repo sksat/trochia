@@ -7,7 +7,7 @@ per wind speed over OSM tiles (staticmap), with a legend.
 
 Run via uv from this directory (after trochia has produced output/):
     uv run plot-map.py                 # -> dispersion-map.png
-    uv run plot-map.py output/85/ghp.csv my-map.png
+    uv run plot-map.py output/72/ghp.csv my-map.png
 """
 import csv
 import sys
@@ -22,7 +22,7 @@ LAUNCH_LAT, LAUNCH_LON, LAUNCH_ALT = 34.679730, 139.438373, 39.4422
 # viridis-ish colours, one per wind speed (m/s)
 COLORS = ["#440154", "#46327e", "#365c8d", "#277f8e", "#1fa187", "#4ac16d", "#fde725"]
 
-GHP = sys.argv[1] if len(sys.argv) > 1 else "output/85/ghp.csv"
+GHP = sys.argv[1] if len(sys.argv) > 1 else "output/72/ghp.csv"
 OUT = sys.argv[2] if len(sys.argv) > 2 else "dispersion-map.png"
 
 
