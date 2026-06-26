@@ -7,7 +7,7 @@ set datafile separator ","
 set terminal pngcairo size 720,680 enhanced font "sans,10"
 set output "dispersion.png"
 
-set title "trochia landing dispersion (GHP)\nelev 85 deg, wind 1-7 m/s x dir every 15 deg"
+set title "trochia landing dispersion (GHP)\nelev 72 deg, wind 1-7 m/s x dir every 15 deg"
 set xlabel "East [m]"
 set ylabel "North [m]"
 set size ratio -1
@@ -21,7 +21,7 @@ $LAUNCH << EOD
 0,0
 EOD
 
-GHP = "output/85/ghp.csv"
+GHP = "output/72/ghp.csv"
 plot for [w in "1 2 3 4 5 6 7"] GHP using (int(column(1))==(w+0) ? column(3) : 1/0):4 \
          skip 1 with lines lw 1.6 title w." m/s", \
      $LAUNCH using 1:2 with points pt 3 ps 2.5 lw 2 lc rgb "red" title "launch"

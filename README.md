@@ -45,7 +45,8 @@ Runnable use cases live in [`examples/`](examples/) (one directory each, with
 config, a plotting script and a committed result plot). For example, the
 [landing-dispersion](examples/landing-dispersion/) example sweeps wind speed ×
 direction and plots the ground-hit points — here overlaid on the launch site
-(Izu Oshima) to show which landings fall on land vs. in the sea:
+(Izu Oshima), with the launcher tilted downrange so the whole dispersion falls
+offshore, clear of land:
 
 ![landing dispersion on a map](examples/landing-dispersion/dispersion-map.png)
 

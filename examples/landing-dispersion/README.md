@@ -3,21 +3,25 @@
 **Use case:** estimate the landing dispersion (落下分散) by sweeping wind speed
 and direction — the spread of ground-hit points used for range-safety planning.
 
-Elevation 85 deg, wind speed 1-7 m/s x direction every 15 deg (0..360) = 175 runs.
+Elevation 72 deg, wind speed 1-7 m/s x direction every 15 deg (0..360) = 175 runs.
+The launcher is tilted downrange (azimuth ~150 deg, toward the open sea) so the
+whole dispersion clears the launch site — see the map below.
 
 ## Run
 
 ```sh
 ../fetch-engine.sh            # once: downloads ../20191020_01.eng
-../../build/bin/trochia        # 32 runs -> output/85/ghp.csv (+ per-case *.dat)
+../../build/bin/trochia        # 175 runs -> output/72/ghp.csv (+ per-case *.dat)
 gnuplot plot.gp                # -> dispersion.png
 ```
 
 ## Result
 
-One smooth closed loop per wind speed (24 directions, 15 deg apart). Dispersion
-grows with wind (radius ~134 m at 1 m/s to ~237 m at 7 m/s) while apogee drops
-(~360 -> ~329 m) as the rocket weathercocks into the wind.
+One smooth closed loop per wind speed (24 directions, 15 deg apart); apogee
+~279-344 m, dropping with wind as the rocket weathercocks. Because the launcher
+is tilted ~18 deg off vertical toward the open sea, every loop — even the 7 m/s
+one — lands offshore, ~300-450 m downrange of the pad. A near-vertical launch
+would instead drop the dispersion onto the launch site (dangerous).
 
 ![landing dispersion](dispersion.png)
 
@@ -39,5 +43,5 @@ convert-ghp.py and view-ghp.html live), so `ghp-output.js` is written next to th
 HTML:
 
 ```sh
-uv run convert-ghp.py examples/landing-dispersion/output/85/ghp.csv
+uv run convert-ghp.py examples/landing-dispersion/output/72/ghp.csv
 ```

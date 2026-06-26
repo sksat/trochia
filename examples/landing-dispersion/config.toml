@@ -12,7 +12,7 @@ output.dir	= "output"
 
 [launcher]
 length		= 5
-elevation	= 85
+elevation	= 72
 
 [wind]
 model		= "power"
