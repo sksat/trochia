@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <fstream>
 #include <vector>
 #include <utility>
@@ -46,8 +47,19 @@ namespace trochia {
 			std::ifstream ifs(fname);
 			if(!ifs) return;
 
+			// RASP .eng files (e.g. every ThrustCurve.org export) begin with
+			// ';' comment lines; strip comment and blank lines before parsing
+			// so the header is read from the first real line.
+			std::stringstream ss;
+			for(std::string line; std::getline(ifs, line); ){
+				const auto p = line.find_first_not_of(" \t\r\n");
+				if(p == std::string::npos || line[p] == ';')
+					continue;
+				ss << line << '\n';
+			}
+
 			std::string delays;
-			ifs >> name >> diameter >> length
+			ss >> name >> diameter >> length
 				>> delays
 				>> weight_prop >> weight_total
 				>> manufacturer;
@@ -69,8 +81,8 @@ namespace trochia {
 			double thrust_max = 0.0;
 
 			// load thrust curve
-			while(ifs){
-				ifs >> t >> th;
+			while(ss){
+				ss >> t >> th;
 				if(t < thrust.first)			// unsorted data
 					break;
 
