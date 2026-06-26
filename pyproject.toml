@@ -1,9 +1,10 @@
 # Python tooling for trochia.
 #
 # trochia itself is C++ (built with CMake). This project only pins the Python
-# dependencies of the helper scripts -- currently convert-ghp.py, which maps the
-# simulator's ground-hit-point output (ghp.csv) onto geographic coordinates for
-# view-ghp.html.
+# dependencies of the helper scripts:
+#   - convert-ghp.py: ghp.csv -> lat/lon (pymap3d) for the view-ghp.html map
+#   - examples/landing-dispersion/plot-map.py: draws the dispersion on an OSM
+#     basemap (staticmap)
 #
 # Reproducible setup:
 #   uv sync                                  # create .venv from uv.lock
@@ -15,6 +16,7 @@ description = "Python helper tooling for the trochia rocket simulator"
 requires-python = ">=3.10"
 dependencies = [
     "pymap3d>=3.0",
+    "staticmap>=0.5.7",
 ]
 
 # These are scripts, not an installable package: tell uv not to build the
