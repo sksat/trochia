@@ -55,7 +55,11 @@ trochia against a real measured flight: its predicted apogee lands within ~1 % o
 the altimeter reading (39.1 m vs 39 m). The
 [psas-launch12](examples/psas-launch12/) example scales that up to a real ~5 km
 high-power flight (validated apogee) and computes the contingency landing zones —
-nominal recovery vs parachute failure vs CATO.
+nominal recovery vs parachute failure vs CATO. The
+[astra](examples/astra/) example validates a real ~3.25 km flight on **both** the
+ascent and the descent (its recovery failed, so the measured fall is near
+ballistic — exactly what trochia can check) and lays out the hazard zone
+(警戒区域) and abort (途中破談) footprints.
 
 ## Python tooling (uv)
 

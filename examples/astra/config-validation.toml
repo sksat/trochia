@@ -1,0 +1,48 @@
+# Astra validation: reconstruct the actual EuRoC'22 flight and compare to the
+# rocket's own measured trajectory (measured.dat, from RocketPy's flight_data).
+#
+# Still air, single flight. The descent uses an *effective* recovery drag
+# calibrated to the measured fall: Astra's recovery did not deploy cleanly, so
+# the rocket came down at ~100 m/s (tumbling / partial deployment) -- far slower
+# than a clean nose-first ballistic fall (~185 m/s) but far faster than a working
+# main. cd*area ~ 0.015 m^2 reproduces the measured altitude history.
+#
+#   ./fetch-engine.sh
+#   ../../build/bin/trochia config-validation.toml
+#   gnuplot validation.gp        # -> validation.png
+
+[simulation]
+dt			= 0.005
+output.dt	= 0.25
+output.dir	= "output-validation"
+timeout		= 120
+
+[launcher]
+length		= 12             # 12 m rail (RocketPy Flight rail_length)
+elevation	= 84             # inclination 84 deg from horizontal
+azimuth		= 133            # heading 133 deg
+
+[wind]
+model		= "power"
+ground.dir	= [ 0.0 ]
+ground.speed= 0.001          # still air (validate the vertical profile)
+
+[rocket]
+name	= "Astra (Faraday Rocketry UPV)"
+type	= "single"
+
+[[rocket.stage]]
+engine	= "Cesaroni_4263L1350-P.eng"   # Cesaroni 4263L1350-P, fetched above
+length	= 2.52               # nose tip (2.5214) to tail (~0), RocketPy geometry
+diameter= 0.094              # radius 0.047 m
+mass	= 9.10               # dry 10.6462 kg (incl. casing) minus casing 1.546 kg
+I0		= 7.15               # loaded pitch inertia (dry 6.70 + propellant, est.)
+If		= 6.70               # empty pitch inertia (RocketPy dry inertia 6.6986)
+lcg0	= 1.21               # loaded CG from nose (est. from RocketPy masses)
+lcgf	= 1.126              # empty CG from nose (CoM-without-motor 1.3957 from tail)
+lcgp	= 1.66               # propellant CG from nose (motor at aft)
+lcp		= 1.60               # CP from nose (near fins, est.)
+Cd		= 0.55               # representative constant Cd (see README; sweep in run.sh)
+Cna		= 14.0               # estimated (4 fins + nose)
+# as-flown effective recovery: ~100 m/s descent (cd*area ~ 0.015 m^2)
+parachute= { condition = "top", delay = 0.0, cd = 1.0, diameter = 0.14 }

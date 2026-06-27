@@ -1,0 +1,62 @@
+# Astra hazard zone (警戒区域 / 落下分散) + abort (途中破談) analysis.
+#
+# The validated ascent model (see config-validation.toml) is flown under a wind
+# direction sweep for several contingency branches, giving one landing footprint
+# per scenario -- the core of a launch-safety / hazard-area analysis.
+#
+#   ./fetch-engine.sh
+#   ../../build/bin/trochia config.toml          # all scenarios x wind dirs
+#   gnuplot footprints.gp                        # -> footprints.png
+#   uv run footprints-map.py                     # -> footprints-map.png
+
+[simulation]
+dt			= 0.005
+output.dt	= 0.5
+output.dir	= "output"
+timeout		= 400          # a dual-deploy descent from ~3.2 km takes minutes
+
+[launcher]
+length		= 12
+elevation	= 84
+azimuth		= 133          # downrange toward heading 133 deg
+
+[wind]
+model		= "power"
+ground.dir	= [ 0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 240.0, 270.0, 300.0, 330.0, 360.0 ]
+ground.speed= 5.0
+
+[rocket]
+name	= "Astra (Faraday Rocketry UPV)"
+type	= "single"
+
+[[rocket.stage]]
+engine	= "Cesaroni_4263L1350-P.eng"
+length	= 2.52
+diameter= 0.094
+mass	= 9.10
+I0		= 7.15
+If		= 6.70
+lcg0	= 1.21
+lcgf	= 1.126
+lcgp	= 1.66
+lcp		= 1.60
+Cd		= 0.55
+Cna		= 14.0
+# intended recovery: dual deploy -- drogue at apogee, main at 450 m AGL.
+parachute= [
+	{ condition = "top",  delay = 0.0, cd = 1.5, diameter = 0.5 },   # drogue (~24 m/s)
+	{ altitude = 450.0,                cd = 1.5, diameter = 1.5 },   # main  (~8 m/s)
+]
+
+# contingency branches -> one landing footprint each
+[[scenario]]
+name = "nominal"                  # dual deploy works
+[[scenario]]
+name = "recovery-failure"         # no recovery -> ballistic (worst case impact)
+recovery = "none"
+[[scenario]]
+name = "motor-cutoff"             # thrust quits mid-burn, airframe intact (recovers)
+motor_cutoff = 1.5
+[[scenario]]
+name = "cato"                     # structural failure: thrust stops + no recovery
+cato = 1.0
