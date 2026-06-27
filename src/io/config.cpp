@@ -28,6 +28,12 @@
 
 namespace trochia::io::config {
 
+// read a TOML number as double whether it was written as 1 or 1.0 (toml11 is
+// strict: as_floating() throws on an integer literal).
+static auto as_number(const toml::value &v) -> double {
+	return v.is_integer() ? static_cast<double>(v.as_integer()) : v.as_floating();
+}
+
 auto load(const std::string &fname, simulation::Simulation &sim) -> Conditions {
 	using namespace toml;
 
@@ -41,6 +47,11 @@ auto load(const std::string &fname, simulation::Simulation &sim) -> Conditions {
 	{
 		const auto &cfg_sim = find(config, "simulation");
 		sim.dt = cfg_sim.at("dt").as_floating();
+
+		// optional: simulation time limit [s] (default 60). A parachute descent
+		// from km altitude takes minutes, so it usually needs raising.
+		if(cfg_sim.contains("timeout"))
+			sim.timeout = as_number(cfg_sim.at("timeout"));
 
 		const auto output = find(cfg_sim, "output");
 		sim.output_dt = output.at("dt").as_floating();
@@ -128,6 +139,19 @@ auto load(const std::string &fname, simulation::Simulation &sim) -> Conditions {
 
 		sim.rocket.Cd = stage[0].at("Cd").as_floating();
 		sim.rocket.Cna= stage[0].at("Cna").as_floating();
+
+		// parachute (optional): cd + diameter -> drag area; deploys at apogee+delay.
+		if(stage[0].contains("parachute")){
+			const auto &para = stage[0].at("parachute");
+			if(para.contains("cd"))
+				sim.rocket.para_cd = as_number(para.at("cd"));
+			if(para.contains("diameter")){
+				const auto d = as_number(para.at("diameter"));
+				sim.rocket.para_area = math::pi * d * d / 4.0;
+			}
+			if(para.contains("delay"))
+				sim.rocket.para_delay = as_number(para.at("delay"));
+		}
 	}
 
 	return {launcher_elevation, wind_speed, wind_dir};

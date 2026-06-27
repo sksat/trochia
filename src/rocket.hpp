@@ -23,6 +23,7 @@
 #define ROCKET_HPP_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include "math.hpp"
 #include "coordinate.hpp"
@@ -56,6 +57,16 @@ namespace trochia::rocket {
 		math::Float D, N, Y;
 
 		math::Float va_max=0.0, N_max=0.0;
+
+		// parachute / recovery. para_cd<=0 or para_area<=0 means no parachute
+		// (the rocket descends ballistically). The chute deploys at apogee plus
+		// para_delay; once open the body aerodynamics/rotation are dropped and
+		// the rocket descends under chute drag, drifting with the wind.
+		math::Float para_cd    = 0.0;	// parachute drag coefficient
+		math::Float para_area  = 0.0;	// parachute reference area [m^2]
+		math::Float para_delay = 0.0;	// deploy delay after apogee [s]
+		bool chute_open = false;	// runtime: is the chute deployed?
+		std::optional<math::Float> apogee_time;	// runtime: set when the climb turns to descent
 
 		static auto dx(const math::Float &t, const Rocket &r) -> const Rocket {
 			return object::Object<LocalFrame>::dx(t, r);

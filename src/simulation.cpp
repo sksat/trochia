@@ -72,6 +72,9 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 	rocket.omega.setZero();
 	rocket.domega.setZero();
 
+	rocket.chute_open = false;	// recovery state, reset per case
+	rocket.apogee_time.reset();
+
 	rocket.quat = sim.launcher.get_angle();
 
 	rocket.Cmq = -1.0*rocket.Cna / 2.0 * std::pow((rocket.lcp-rocket.lcg0)/rocket.length, 2.0);
@@ -182,6 +185,37 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	sim.geo_height = environment::earth::geodesy::potential_height(altitude);
 	sim.temperature = environment::air::temperature(sim.geo_height);
 	sim.rho = environment::air::density(sim.temperature);
+
+	// recovery (issue #6): detect apogee (the climb turning to descent, NED down
+	// velocity going positive after launch clear) and deploy the parachute after
+	// the configured delay.
+	if(!rocket.apogee_time
+			&& is_launch_clear(sim.launcher, sim.rocket) && vel_ned.vec.z() > 0.0)
+		rocket.apogee_time = time;
+	if(!rocket.chute_open && rocket.para_cd > 0.0 && rocket.para_area > 0.0
+			&& rocket.apogee_time && time >= *rocket.apogee_time + rocket.para_delay)
+		rocket.chute_open = true;
+
+	// Under the parachute the rocket hangs from the canopy: drop the body
+	// aerodynamics and rotation, and descend under chute drag (which opposes the
+	// air-relative velocity, so the rocket drifts with the wind). This is what
+	// makes the landing footprint realistic for a recovered flight.
+	if(rocket.chute_open){
+		const math::Vector3 va_c = vel_ned.vec - wind_ned;
+		const math::Float   vmag = va_c.norm();
+		const math::Vector3 drag = -0.5 * sim.rho * vmag
+			* rocket.para_cd * rocket.para_area * va_c;	// = -0.5 rho |v| Cd A v
+		rocket.acc.vec = drag / rocket.weight();
+		if(rocket.pos.altitude() > 0.0)
+			rocket.acc.down(rocket.acc.down() + environment::gravity(rocket.pos.altitude()));
+		rocket.omega.setZero();
+		rocket.domega.setZero();
+		rocket.D = drag.norm();		// report the chute drag; no body aero
+		rocket.N = 0.0;
+		rocket.Y = 0.0;
+		s.step(sim.dt);
+		return;
+	}
 
 	// Air resistance
 	const auto q = 0.5 * sim.rho * va * va;					// dynamic pressure

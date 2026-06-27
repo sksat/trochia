@@ -55,9 +55,12 @@ auto main(int argc, char **argv) -> int {
 
 	trochia::version::version();
 
-	std::cerr << "loading config file ...";
+	// config file path: argv[1] if given, else "config.toml"
+	const std::string config_path = (argc > 1) ? argv[1] : "config.toml";
+
+	std::cerr << "loading config file " << config_path << " ...";
 	const auto [elevation, wind_speed, wind_dir]
-		= trochia::io::config::load("config.toml", sim_base);
+		= trochia::io::config::load(config_path, sim_base);
 	std::cerr << std::endl;
 
 	std::cerr << "start simulation" << std::endl;

@@ -46,3 +46,4 @@ ghp-output.js
 examples/**/*.eng
 examples/*.eng
 examples/**/output/
+examples/**/out-*/
