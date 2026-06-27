@@ -11,8 +11,8 @@ $ ./fetch-engine.sh        # LARKSPUR-XP.300 (20191020_01.eng), used by
                            # single-trajectory, landing-dispersion and parachute
 ```
 
-`validation-estes-viking` fetches the Estes A8 from ThrustCurve.org with its own
-`fetch-engine.sh`.
+`validation-estes-viking` (Estes A8) and `astra` (Cesaroni 4263L1350-P) fetch
+their own motors with their own `fetch-engine.sh`.
 
 You also need the `trochia` binary — build it from the repo root (see the top
 [README](../README.md)); it ends up at `build/bin/trochia`. trochia always reads
@@ -28,5 +28,6 @@ run each example from its own directory.
 | [parachute](parachute/)                   | parachute vs ballistic descent — how recovery changes the landing point |
 | [validation-estes-viking](validation-estes-viking/) | accuracy check: predicted vs **measured** apogee of a real flight |
 | [psas-launch12](psas-launch12/)           | km-scale real flight: apogee validation + contingency landing zones |
+| [astra](astra/)                           | km-scale real flight: ascent **+ descent** validation, hazard zone (警戒区域) & abort (途中破談) |
 
 See each directory's `README.md` for how to run it and the resulting plot.
