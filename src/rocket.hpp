@@ -25,6 +25,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 #include "math.hpp"
 #include "coordinate.hpp"
 #include "engine.hpp"
@@ -33,6 +34,19 @@
 
 namespace trochia::rocket {
 	using LocalFrame = coordinate::local::NED;
+
+	// One recovery stage. Any number of these can be chained (drogue, main, ...).
+	// A stage deploys at apogee+delay (at_apogee) or when descending through
+	// `altitude` (AGL). While any stage is open the rocket descends under the
+	// summed chute drag.
+	struct Parachute {
+		bool at_apogee = false;             // deploy at apogee + delay
+		math::Float delay = 0.0;            // [s] after apogee
+		std::optional<math::Float> altitude;// else deploy at this altitude AGL [m] on descent
+		math::Float cd = 0.0;               // drag coefficient
+		math::Float area = 0.0;             // reference area [m^2]
+		bool open = false;                  // runtime: deployed?
+	};
 
 	class Rocket : public object::Object<LocalFrame> {
 	public:
@@ -58,15 +72,23 @@ namespace trochia::rocket {
 
 		math::Float va_max=0.0, N_max=0.0;
 
-		// parachute / recovery. para_cd<=0 or para_area<=0 means no parachute
-		// (the rocket descends ballistically). The chute deploys at apogee plus
-		// para_delay; once open the body aerodynamics/rotation are dropped and
-		// the rocket descends under chute drag, drifting with the wind.
-		math::Float para_cd    = 0.0;	// parachute drag coefficient
-		math::Float para_area  = 0.0;	// parachute reference area [m^2]
-		math::Float para_delay = 0.0;	// deploy delay after apogee [s]
-		bool chute_open = false;	// runtime: is the chute deployed?
+		// recovery: any number of parachute stages (empty -> ballistic descent).
+		// While any stage is open the body aero/rotation are dropped and the
+		// rocket descends under the summed chute drag, drifting with the wind.
+		std::vector<Parachute> parachutes;
 		std::optional<math::Float> apogee_time;	// runtime: set when the climb turns to descent
+
+		// is any recovery stage deployed?
+		auto chute_open() const -> bool {
+			for(const auto &p : parachutes) if(p.open) return true;
+			return false;
+		}
+		// summed drag area (Cd*A) of the open stages
+		auto chute_cda() const -> math::Float {
+			math::Float s = 0.0;
+			for(const auto &p : parachutes) if(p.open) s += p.cd * p.area;
+			return s;
+		}
 
 		static auto dx(const math::Float &t, const Rocket &r) -> const Rocket {
 			return object::Object<LocalFrame>::dx(t, r);

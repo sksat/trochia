@@ -72,7 +72,8 @@ auto trochia::simulation::exec(simulation::Simulation &sim) -> void {
 	rocket.omega.setZero();
 	rocket.domega.setZero();
 
-	rocket.chute_open = false;	// recovery state, reset per case
+	for(auto &p : rocket.parachutes)	// recovery state, reset per case
+		p.open = false;
 	rocket.apogee_time.reset();
 
 	rocket.quat = sim.launcher.get_angle();
@@ -193,24 +194,35 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 			&& is_launch_clear(sim.launcher, sim.rocket) && vel_ned.vec.z() > 0.0)
 		rocket.apogee_time = time;
 	// recovery fails on a chute-failure scenario, or once a CATO has occurred
-	// (a CATO at/after its time also destroys an already-open chute) -> ballistic
+	// (a CATO at/after its time also destroys any deployed chute) -> ballistic
 	const bool cato_now = sim.scenario.cato && time >= *sim.scenario.cato;
 	if(cato_now)
-		rocket.chute_open = false;
+		for(auto &p : rocket.parachutes) p.open = false;
 	const bool recovery_ok = !sim.scenario.recovery_fail && !cato_now;
-	if(!rocket.chute_open && recovery_ok && rocket.para_cd > 0.0 && rocket.para_area > 0.0
-			&& rocket.apogee_time && time >= *rocket.apogee_time + rocket.para_delay)
-		rocket.chute_open = true;
+	// deploy each recovery stage when its trigger is met: at apogee+delay, or
+	// when descending through its altitude (AGL) -- supports any number of stages
+	// (drogue, main, ...).
+	if(recovery_ok && rocket.apogee_time){
+		for(auto &p : rocket.parachutes){
+			if(p.open)
+				continue;
+			if(p.at_apogee){
+				if(time >= *rocket.apogee_time + p.delay) p.open = true;
+			}else if(p.altitude){
+				if(vel_ned.vec.z() > 0.0 && rocket.pos.altitude() <= *p.altitude) p.open = true;
+			}
+		}
+	}
 
 	// Under the parachute the rocket hangs from the canopy: drop the body
-	// aerodynamics and rotation, and descend under chute drag (which opposes the
-	// air-relative velocity, so the rocket drifts with the wind). This is what
-	// makes the landing footprint realistic for a recovered flight.
-	if(rocket.chute_open){
+	// aerodynamics and rotation, and descend under the summed chute drag (which
+	// opposes the air-relative velocity, so the rocket drifts with the wind).
+	// This is what makes the landing footprint realistic for a recovered flight.
+	if(rocket.chute_open()){
 		const math::Vector3 va_c = vel_ned.vec - wind_ned;
 		const math::Float   vmag = va_c.norm();
 		const math::Vector3 drag = -0.5 * sim.rho * vmag
-			* rocket.para_cd * rocket.para_area * va_c;	// = -0.5 rho |v| Cd A v
+			* rocket.chute_cda() * va_c;	// = -0.5 rho |v| (sum Cd A) v
 		rocket.acc.vec = drag / rocket.weight();
 		if(rocket.pos.altitude() > 0.0)
 			rocket.acc.down(rocket.acc.down() + environment::gravity(rocket.pos.altitude()));

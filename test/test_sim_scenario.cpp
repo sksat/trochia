@@ -29,7 +29,8 @@ namespace {
 		r.I0 = 1.2; r.If = 1.2; r.Cd = 0.44; r.Cna = 7.84;
 		r.engine.load_eng(write_eng());
 		r.Cmq = -1.0 * r.Cna / 2.0 * std::pow((r.lcp - r.lcg0) / r.length, 2.0);
-		r.para_cd = 1.5; r.para_area = math::pi * 1.0 * 1.0 / 4.0; r.para_delay = 0.0;
+		r.parachutes.push_back(rocket::Parachute{
+			.at_apogee = true, .delay = 0.0, .cd = 1.5, .area = math::pi * 1.0 * 1.0 / 4.0});
 		r.time = 0.0;
 		r.pos.vec.setZero(); r.vel.vec.setZero(); r.acc.vec.setZero();
 		r.omega.setZero(); r.domega.setZero();
@@ -50,7 +51,7 @@ namespace {
 			o.apogee = std::max(o.apogee, p.altitude());
 			if (p.vec.norm() > sim.launcher.length && p.altitude() <= 0.0) {
 				o.landing_speed = sim.rocket.vel.vec.norm();
-				o.chute_open = sim.rocket.chute_open;
+				o.chute_open = sim.rocket.chute_open();
 				break;
 			}
 		}
