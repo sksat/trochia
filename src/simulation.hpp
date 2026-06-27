@@ -56,7 +56,11 @@ namespace trochia::simulation {
 
 		// input value
 		environment::Launcher launcher;
-		Float launcher_angle;
+		// launch rail, from the config [launcher] table. Defaults preserve the
+		// historical hardcoded rail (5 m, azimuth 150 deg) when the config omits
+		// them; elevation is swept per run and supplied to make_launcher().
+		Float launcher_length  = 5.0;
+		Float launcher_azimuth = 150.0;
 
 		Float wind_speed, wind_dir;
 
@@ -76,6 +80,12 @@ namespace trochia::simulation {
 			Float max_altitude;
 		};
 		GHP ghp_local;
+
+		// Build the launch rail for a given elevation [deg] from the configured
+		// length and azimuth. main.cpp calls this once per swept elevation.
+		auto make_launcher(const Float &elevation_deg) const -> environment::Launcher {
+			return environment::Launcher(launcher_length, launcher_azimuth, elevation_deg);
+		}
 	};
 
 	auto exec(Simulation &sim) -> void;
