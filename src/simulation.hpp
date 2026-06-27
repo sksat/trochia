@@ -24,6 +24,8 @@
 
 #include <utility>
 #include <string>
+#include <vector>
+#include <optional>
 #include <filesystem>
 #include <fstream>
 #include "math.hpp"
@@ -33,6 +35,15 @@
 
 namespace trochia::simulation {
 	using math::Float;
+
+	// A contingency branch to simulate (failure-mode scenarios). The nominal
+	// flight is the default; the fields override it to model a failure.
+	struct Scenario {
+		std::string name = "nominal";
+		bool recovery_fail = false;        // parachute does not deploy -> ballistic
+		std::optional<Float> motor_cutoff; // thrust = 0 after t [s] (airframe intact)
+		std::optional<Float> cato;         // structural failure at t [s]: thrust=0 + no recovery
+	};
 
 	class Simulation {
 	public:
@@ -48,6 +59,8 @@ namespace trochia::simulation {
 		Float launcher_angle;
 
 		Float wind_speed, wind_dir;
+
+		Scenario scenario;	// active contingency branch (default: nominal)
 
 		rocket::Rocket rocket;
 

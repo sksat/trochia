@@ -30,7 +30,8 @@ namespace trochia::io::config {
 	using cond_elevation= std::vector<double>;
 	using cond_wspeed	= std::vector<double>;
 	using cond_wdir		= std::vector<double>;
-	using Conditions	= std::tuple<cond_elevation, cond_wspeed, cond_wdir>;
+	using cond_scenario	= std::vector<simulation::Scenario>;
+	using Conditions	= std::tuple<cond_elevation, cond_wspeed, cond_wdir, cond_scenario>;
 
 	auto load(const std::string &fname, simulation::Simulation &sim) -> Conditions;
 }

@@ -38,3 +38,21 @@ Cna		= 7.840
 # parachute: deploys at apogee ("top") + delay [s]; cd and diameter [m] set the
 # drag (omit cd/diameter for a ballistic descent with no recovery)
 parachute= {condition = "top", delay = 2.5, cd = 1.5, diameter = 1.5}
+
+# Optional contingency scenarios (failure branches). Each [[scenario]] is run as
+# its own flight; with more than one the output nests under output/<name>/.
+# Without any, a single nominal flight is run.
+#   recovery = "none"   -> parachute does not deploy (recovery failure, ballistic)
+#   motor_cutoff = <s>  -> thrust stops after t (airframe intact, still recovers)
+#   cato = <s>          -> structural failure at t (thrust stops AND no recovery)
+# [[scenario]]
+# name = "nominal"
+# [[scenario]]
+# name = "chute-failure"
+# recovery = "none"
+# [[scenario]]
+# name = "motor-cutoff"
+# motor_cutoff = 3.0
+# [[scenario]]
+# name = "cato"
+# cato = 3.0
