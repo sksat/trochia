@@ -50,6 +50,10 @@ offshore, clear of land:
 
 ![landing dispersion on a map](examples/landing-dispersion/dispersion-map.png)
 
+The [validation-estes-viking](examples/validation-estes-viking/) example checks
+trochia against a real measured flight: its predicted apogee lands within ~1 % of
+the altimeter reading (39.1 m vs 39 m).
+
 ## Python tooling (uv)
 
 The simulator is C++, but a few helper scripts are written in Python. Their

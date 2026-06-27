@@ -1,0 +1,50 @@
+# Validation case: reproduce a real, measured Estes Viking flight and compare
+# trochia's apogee to the published measurement.
+#
+# Reference flight (Jhanjee, "Design Modification and Flight Performance Analysis
+# of the Estes Viking Model Rocket", Georgia Institute of Technology):
+#   modified Estes Viking, Estes A8-3 motor, all-up mass 71.6 g
+#   MEASURED apogee 39 m (PerfectFlite Pnut barometric altimeter)
+#   paper's OpenRocket prediction 34.4 m, max velocity 25.4 m/s, time-to-apogee 2.9 s
+#
+# Run from this directory:
+#   ./fetch-engine.sh            # downloads A8.eng from ThrustCurve.org
+#   ../../build/bin/trochia        # -> output/89/0/0/*.dat, prints "max altitude"
+#
+# Note on inputs: mass, motor, diameter and length are from the paper / kit /
+# ThrustCurve. CG, CP (lcp), Cna and the inertias are estimated (see README) --
+# but at this low, near-vertical, calm flight the apogee is set by impulse, mass
+# and drag and is insensitive to them (and to Cd: see README).
+
+[simulation]
+dt			= 0.001
+output.dt	= 0.01
+output.dir	= "output"
+
+[launcher]
+length		= 5
+elevation	= 89          # near-vertical (Estes rod); calm
+
+[wind]
+model		= "power"
+ground.dir	= 0.0
+ground.speed= 0.0
+
+[rocket]
+name	= "Estes Viking (modified)"
+type	= "single"
+
+[[rocket.stage]]
+engine	= "A8.eng"        # fetched by ./fetch-engine.sh (Estes A8, ThrustCurve.org)
+length	= 0.307           # 12.1 in (stock Viking) -- kit spec
+diameter= 0.0188          # BT-20, 18.8 mm -- kit spec
+mass	= 0.0577          # all-up 71.6 g minus the A8 motor (13.9 g) = dry mass
+I0		= 0.00050         # estimated (rod approximation)
+If		= 0.00045         # estimated
+lcg0	= 0.160           # CG from nose, loaded (paper: ~16 cm measured)
+lcgf	= 0.155           # estimated (CG shifts forward as propellant burns)
+lcgp	= 0.290           # propellant CG (motor at aft) -- estimated
+lcp		= 0.264           # CP from nose -- estimated (CG + 4.52 cal x diameter)
+Cd		= 0.50            # estimated; apogee is insensitive to it here (see README)
+Cna		= 12.0            # estimated (Barrowman, 4 fins)
+parachute= {condition = "top", delay = 0.0}
