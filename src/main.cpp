@@ -59,20 +59,27 @@ auto main(int argc, char **argv) -> int {
 	const std::string config_path = (argc > 1) ? argv[1] : "config.toml";
 
 	std::cerr << "loading config file " << config_path << " ...";
-	const auto [elevation, wind_speed, wind_dir]
+	const auto [elevation, wind_speed, wind_dir, scenarios]
 		= trochia::io::config::load(config_path, sim_base);
 	std::cerr << std::endl;
 
 	std::cerr << "start simulation" << std::endl;
 
 	std::cout << "sim number: "
-		<< elevation.size()*wind_speed.size()*wind_dir.size() << std::endl;
+		<< elevation.size()*wind_speed.size()*wind_dir.size()*scenarios.size() << std::endl;
 
 	const auto output_base_dir = fs::path(sim_base.output_dir_fmt);
 
+	// with multiple contingency scenarios, nest the output under each scenario
+	// name; a single (nominal) scenario keeps the original output layout.
+	const bool multi_scenario = scenarios.size() > 1;
+
+	for(const auto &scenario : scenarios){
+	const auto scenario_base = multi_scenario ? (output_base_dir / scenario.name) : output_base_dir;
+
 	for(const auto &e : elevation){
 		const auto e_str = shrink_str(to_string(e));
-		const auto e_dir = output_base_dir / e_str;
+		const auto e_dir = scenario_base / e_str;
 
 		const auto launcher = trochia::environment::Launcher(5.0, 150.0, e);
 
@@ -94,6 +101,7 @@ auto main(int argc, char **argv) -> int {
 				sim.launcher	= launcher;
 				sim.wind_speed	= ws;
 				sim.wind_dir	= wd;
+				sim.scenario	= scenario;
 
 				trochia::simulation::exec(sim);
 
@@ -110,6 +118,7 @@ auto main(int argc, char **argv) -> int {
 			}
 		}
 	}
+	}	// scenario
 
 	return 0;
 }

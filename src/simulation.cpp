@@ -192,7 +192,13 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	if(!rocket.apogee_time
 			&& is_launch_clear(sim.launcher, sim.rocket) && vel_ned.vec.z() > 0.0)
 		rocket.apogee_time = time;
-	if(!rocket.chute_open && rocket.para_cd > 0.0 && rocket.para_area > 0.0
+	// recovery fails on a chute-failure scenario, or once a CATO has occurred
+	// (a CATO at/after its time also destroys an already-open chute) -> ballistic
+	const bool cato_now = sim.scenario.cato && time >= *sim.scenario.cato;
+	if(cato_now)
+		rocket.chute_open = false;
+	const bool recovery_ok = !sim.scenario.recovery_fail && !cato_now;
+	if(!rocket.chute_open && recovery_ok && rocket.para_cd > 0.0 && rocket.para_area > 0.0
 			&& rocket.apogee_time && time >= *rocket.apogee_time + rocket.para_delay)
 		rocket.chute_open = true;
 
@@ -226,8 +232,9 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	if(rocket.N > rocket.N_max)
 		rocket.N_max	= rocket.N;
 
-	// thrust
-	const auto thrust = rocket.engine.thrust(time); // first stage only
+	// thrust (first stage only); a motor-cutoff or CATO scenario kills it after t
+	const auto cutoff = sim.scenario.cato ? sim.scenario.cato : sim.scenario.motor_cutoff;
+	const auto thrust = (cutoff && time >= *cutoff) ? 0.0 : rocket.engine.thrust(time);
 
 	const auto force = coordinate::body::Body(
 		thrust - rocket.D,

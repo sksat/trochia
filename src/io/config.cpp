@@ -40,6 +40,7 @@ auto load(const std::string &fname, simulation::Simulation &sim) -> Conditions {
 	cond_elevation	launcher_elevation;
 	cond_wspeed		wind_speed;
 	cond_wdir		wind_dir;
+	cond_scenario	scenarios;
 
 	const auto config = parse(fname);
 
@@ -154,7 +155,27 @@ auto load(const std::string &fname, simulation::Simulation &sim) -> Conditions {
 		}
 	}
 
-	return {launcher_elevation, wind_speed, wind_dir};
+	// contingency scenarios (optional). Each [[scenario]] is a failure branch;
+	// without any, a single nominal flight is run.
+	if(config.contains("scenario")){
+		const auto arr = find<std::vector<toml::table>>(config, "scenario");
+		for(const auto &s : arr){
+			simulation::Scenario sc;
+			if(s.count("name"))
+				sc.name = s.at("name").as_string();
+			if(s.count("recovery"))
+				sc.recovery_fail = (s.at("recovery").as_string() == "none");
+			if(s.count("motor_cutoff"))
+				sc.motor_cutoff = as_number(s.at("motor_cutoff"));
+			if(s.count("cato"))
+				sc.cato = as_number(s.at("cato"));
+			scenarios.push_back(sc);
+		}
+	}
+	if(scenarios.empty())
+		scenarios.push_back(simulation::Scenario{});	// nominal
+
+	return {launcher_elevation, wind_speed, wind_dir, scenarios};
 }
 
 }
