@@ -1,0 +1,55 @@
+# High-power validation + contingency landing zones: PSAS "Launch 12" (LV2),
+# Cesaroni N2501, flown 2015-07-19 at Brothers, Oregon.
+# Measured apogee ~4.78 km (baro) / ~4.9 km (GPS); OpenRocket 5046 m.
+# Sources: https://github.com/psas/Launch-12 , https://github.com/open-aerospace/LV2.2
+#
+#   ./fetch-engine.sh            # downloads N2501.eng from ThrustCurve
+#   ../../build/bin/trochia        # runs every scenario x wind direction
+#   gnuplot apogee.gp             # -> apogee.png   (validation)
+#   gnuplot footprints.gp         # -> footprints.png (contingency landing zones)
+
+[simulation]
+dt			= 0.01
+output.dt	= 1.0
+output.dir	= "output"
+timeout		= 900          # a single-main descent from ~5 km takes minutes
+
+[launcher]
+length		= 5
+elevation	= 89            # near-vertical (rail ~vertical at the real launch)
+
+[wind]
+model		= "power"
+ground.dir	= [ 0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 240.0, 270.0, 300.0, 330.0, 360.0 ]
+ground.speed= 5.0
+
+[rocket]
+name	= "PSAS LV2 (Launch 12)"
+type	= "single"
+
+[[rocket.stage]]
+engine	= "N2501.eng"        # Cesaroni N2501, fetched by ./fetch-engine.sh
+length	= 3.53               # .ork component sum
+diameter= 0.1397             # 5.5 in airframe
+mass	= 20.692             # GLOW 34.0 kg minus the loaded motor (13.308 kg)
+I0		= 35.0               # estimated (rod approximation)
+If		= 25.0               # estimated
+lcg0	= 2.51               # CG from nose (OpenRocket/JSBSim)
+lcgf	= 2.35               # estimated (CG moves forward as 8.7 kg propellant burns)
+lcgp	= 3.20               # propellant CG (motor at aft) -- estimated
+lcp		= 2.72               # CP from nose (OpenRocket/JSBSim)
+Cd		= 0.60               # constant-Cd fit (transonic; see README)
+Cna		= 12.0               # estimated (3 fins)
+# main chute at apogee. diameter calibrated so the descent matches the measured
+# flight (~747 s to ground); PSAS's actual canopy size is not published.
+parachute= {condition = "top", delay = 0.0, cd = 1.5, diameter = 3.0}
+
+# contingency branches -> one landing footprint each
+[[scenario]]
+name = "nominal"
+[[scenario]]
+name = "chute-failure"
+recovery = "none"
+[[scenario]]
+name = "cato"
+cato = 3.0
