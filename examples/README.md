@@ -8,7 +8,7 @@ committed — each example fetches its own:
 
 ```sh
 $ ./fetch-engine.sh        # LARKSPUR-XP.300 (20191020_01.eng), used by
-                           # single-trajectory and landing-dispersion
+                           # single-trajectory, landing-dispersion and parachute
 ```
 
 `validation-estes-viking` fetches the Estes A8 from ThrustCurve.org with its own
@@ -25,6 +25,7 @@ run each example from its own directory.
 |---|---|
 | [single-trajectory](single-trajectory/)   | one trajectory for a single launch condition (apogee / downrange / GHP) |
 | [landing-dispersion](landing-dispersion/) | landing dispersion (落下分散) over a wind speed × direction sweep |
+| [parachute](parachute/)                   | parachute vs ballistic descent — how recovery changes the landing point |
 | [validation-estes-viking](validation-estes-viking/) | accuracy check: predicted vs **measured** apogee of a real flight |
 
 See each directory's `README.md` for how to run it and the resulting plot.

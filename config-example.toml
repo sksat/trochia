@@ -2,6 +2,8 @@
 dt			= 0.01
 output.dt	= 0.01
 output.dir	= "output"
+timeout		= 300        # sim time limit [s] (default 60); raised so the
+#                          parachute descent below reaches the ground
 
 [launcher]
 length	= 5
@@ -33,4 +35,6 @@ lcgp	= 1.076
 lcp		= 1.141
 Cd		= 0.440
 Cna		= 7.840
-parachute= {condition = "top", delay = 2.5}
+# parachute: deploys at apogee ("top") + delay [s]; cd and diameter [m] set the
+# drag (omit cd/diameter for a ballistic descent with no recovery)
+parachute= {condition = "top", delay = 2.5, cd = 1.5, diameter = 1.5}
