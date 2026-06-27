@@ -141,17 +141,42 @@ auto load(const std::string &fname, simulation::Simulation &sim) -> Conditions {
 		sim.rocket.Cd = stage[0].at("Cd").as_floating();
 		sim.rocket.Cna= stage[0].at("Cna").as_floating();
 
-		// parachute (optional): cd + diameter -> drag area; deploys at apogee+delay.
+		// recovery: one or more parachute stages. `parachute` may be a single
+		// inline table or an array of tables (drogue, main, ...). A stage with an
+		// `altitude` deploys at that AGL on the way down; otherwise it deploys at
+		// apogee (+ optional `delay`). cd + diameter set its drag.
+		sim.rocket.parachutes.clear();	// overwrite, so load() is idempotent
 		if(stage[0].contains("parachute")){
-			const auto &para = stage[0].at("parachute");
-			if(para.contains("cd"))
-				sim.rocket.para_cd = as_number(para.at("cd"));
-			if(para.contains("diameter")){
-				const auto d = as_number(para.at("diameter"));
-				sim.rocket.para_area = math::pi * d * d / 4.0;
-			}
-			if(para.contains("delay"))
-				sim.rocket.para_delay = as_number(para.at("delay"));
+			const auto parse_chute = [](const toml::value &t) -> rocket::Parachute {
+				rocket::Parachute p;
+				if(t.contains("altitude"))
+					p.altitude = as_number(t.at("altitude"));
+				else {
+					p.at_apogee = true;
+					if(t.contains("delay"))
+						p.delay = as_number(t.at("delay"));
+				}
+				if(t.contains("cd"))
+					p.cd = as_number(t.at("cd"));
+				if(t.contains("diameter")){
+					const auto d = as_number(t.at("diameter"));
+					p.area = math::pi * d * d / 4.0;
+				}
+				return p;
+			};
+			// only keep stages that actually have drag (cd>0 and a diameter);
+			// an incomplete stage means no recovery (ballistic), as before.
+			const auto add_chute = [&](const toml::value &t){
+				const auto p = parse_chute(t);
+				if(p.cd > 0.0 && p.area > 0.0)
+					sim.rocket.parachutes.push_back(p);
+			};
+			const auto &pc = stage[0].at("parachute");
+			if(pc.is_array())
+				for(const auto &t : pc.as_array())
+					add_chute(t);
+			else
+				add_chute(pc);
 		}
 	}
 

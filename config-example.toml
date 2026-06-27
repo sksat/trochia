@@ -35,9 +35,18 @@ lcgp	= 1.076
 lcp		= 1.141
 Cd		= 0.440
 Cna		= 7.840
-# parachute: deploys at apogee ("top") + delay [s]; cd and diameter [m] set the
-# drag (omit cd/diameter for a ballistic descent with no recovery)
-parachute= {condition = "top", delay = 2.5, cd = 1.5, diameter = 1.5}
+# Recovery: one or more parachute stages (omit entirely for a ballistic descent).
+# Each stage has cd and diameter [m]; it deploys either at apogee (+ optional
+# delay [s]) or, if it has an `altitude` [m AGL], when descending through it.
+#
+# single chute at apogee:
+parachute= {delay = 2.5, cd = 1.5, diameter = 1.5}
+#
+# or dual deployment (drogue at apogee, main lower down) -- any number of stages:
+# parachute = [
+#     {delay = 0.0, cd = 1.2, diameter = 0.5},     # drogue at apogee
+#     {altitude = 300, cd = 1.5, diameter = 3.0},  # main at 300 m AGL
+# ]
 
 # Optional contingency scenarios (failure branches). Each [[scenario]] is run as
 # its own flight; with more than one the output nests under output/<name>/.

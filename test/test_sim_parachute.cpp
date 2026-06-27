@@ -42,9 +42,9 @@ namespace {
 		r.engine.load_eng(write_eng());
 		r.Cmq = -1.0 * r.Cna / 2.0 * std::pow((r.lcp - r.lcg0) / r.length, 2.0);
 
-		r.para_cd = 1.5;
-		r.para_area = math::pi * 1.0 * 1.0 / 4.0;   // 1.0 m diameter
-		r.para_delay = 0.0;
+		// single chute at apogee, 1.0 m diameter
+		r.parachutes.push_back(rocket::Parachute{
+			.at_apogee = true, .delay = 0.0, .cd = 1.5, .area = math::pi * 1.0 * 1.0 / 4.0});
 
 		r.time = 0.0;
 		r.pos.vec.setZero();
@@ -62,7 +62,7 @@ namespace {
 		r.pos.vec.setZero();
 		r.pos.up(altitude);
 		r.vel.vec.setZero();
-		r.chute_open = true;
+		r.parachutes[0].open = true;
 		r.apogee_time = 0.0;   // already past apogee
 	}
 }
@@ -79,7 +79,7 @@ TEST(SimParachute, ReachesTerminalVelocity) {
 
 	const double W  = sim.rocket.weight();
 	const double g  = 9.80665;   // gravity at ~km altitude differs <0.1% from g0
-	const double vt = std::sqrt(2.0 * W * g / (sim.rho * sim.rocket.para_cd * sim.rocket.para_area));
+	const double vt = std::sqrt(2.0 * W * g / (sim.rho * sim.rocket.chute_cda()));
 
 	const coordinate::local::NED v = sim.rocket.vel;
 	EXPECT_GT(v.vec.z(), 0.0) << "should be descending (NED down +)";
@@ -106,11 +106,48 @@ TEST(SimParachute, DriftsWithWind) {
 	EXPECT_GT(v.vec.y(), 0.7 * wind) << "horizontal velocity should approach the wind speed";
 }
 
+// Dual deployment: a small drogue at apogee (fast descent) then a large main at
+// a set altitude (slow descent) -- the descent rate drops once the main opens.
+TEST(SimParachute, DualDeployFastUnderDrogueThenSlowUnderMain) {
+	auto sim = make_sim();
+	auto &r = sim.rocket;
+	r.parachutes.clear();
+	r.parachutes.push_back(rocket::Parachute{           // drogue at apogee (small)
+		.at_apogee = true, .delay = 0.0, .cd = 1.2, .area = math::pi * 0.3 * 0.3 / 4.0});
+	r.parachutes.push_back(rocket::Parachute{           // main at 300 m AGL (large)
+		.altitude = 300.0, .cd = 1.5, .area = math::pi * 2.0 * 2.0 / 4.0});
+	r.pos.vec.setZero(); r.pos.up(900.0);
+	r.vel.vec.setZero();
+	r.apogee_time = 0.0;
+	r.parachutes[0].open = true;                        // drogue already out
+
+	auto solve = solver::RK4(sim.rocket, rocket::Rocket::dx);
+	double v_drogue = 0.0, v_main = 0.0;
+	bool main_seen = false;
+	for (int i = 0; i < 200000; ++i) {
+		simulation::do_step(sim, solve);
+		const coordinate::local::NED p = sim.rocket.pos;
+		const double alt = p.altitude(), vz = sim.rocket.vel.vec.z();
+		if (alt > 500.0 && alt < 700.0) v_drogue = vz;  // under drogue only
+		if (sim.rocket.parachutes[1].open) {
+			main_seen = true;
+			if (alt > 100.0 && alt < 250.0) v_main = vz; // under drogue + main
+		}
+		if (p.vec.norm() > sim.launcher.length && alt <= 0.0) break;
+	}
+	EXPECT_TRUE(main_seen) << "the main should deploy below its altitude";
+	EXPECT_GT(v_drogue, 0.0);
+	EXPECT_GT(v_main, 0.0);
+	EXPECT_GT(v_drogue, 1.5 * v_main)
+		<< "drogue descent (" << v_drogue << ") should be faster than under the main ("
+		<< v_main << ")";
+}
+
 // Deploying the chute makes the rocket land far slower than a ballistic fall.
 TEST(SimParachute, DeploymentSlowsDescentVsBallistic) {
 	auto landing_speed = [](bool with_chute) {
 		auto sim = make_sim();
-		if (!with_chute) sim.rocket.para_cd = 0.0;   // ballistic
+		if (!with_chute) sim.rocket.parachutes.clear();   // ballistic
 		auto solve = solver::RK4(sim.rocket, rocket::Rocket::dx);
 		double speed = 0.0;
 		for (int i = 0; i < 100000; ++i) {
@@ -121,7 +158,7 @@ TEST(SimParachute, DeploymentSlowsDescentVsBallistic) {
 				break;
 			}
 		}
-		return std::make_pair(speed, sim.rocket.chute_open);
+		return std::make_pair(speed, sim.rocket.chute_open());
 	};
 
 	const auto [v_chute, opened] = landing_speed(true);
