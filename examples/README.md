@@ -27,5 +27,6 @@ run each example from its own directory.
 | [landing-dispersion](landing-dispersion/) | landing dispersion (落下分散) over a wind speed × direction sweep |
 | [parachute](parachute/)                   | parachute vs ballistic descent — how recovery changes the landing point |
 | [validation-estes-viking](validation-estes-viking/) | accuracy check: predicted vs **measured** apogee of a real flight |
+| [psas-launch12](psas-launch12/)           | km-scale real flight: apogee validation + contingency landing zones |
 
 See each directory's `README.md` for how to run it and the resulting plot.

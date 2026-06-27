@@ -52,7 +52,10 @@ offshore, clear of land:
 
 The [validation-estes-viking](examples/validation-estes-viking/) example checks
 trochia against a real measured flight: its predicted apogee lands within ~1 % of
-the altimeter reading (39.1 m vs 39 m).
+the altimeter reading (39.1 m vs 39 m). The
+[psas-launch12](examples/psas-launch12/) example scales that up to a real ~5 km
+high-power flight (validated apogee) and computes the contingency landing zones —
+nominal recovery vs parachute failure vs CATO.
 
 ## Python tooling (uv)
 
