@@ -84,6 +84,26 @@ after launch (it stuck near the pad; only altitude, not horizontal position, was
 recovered). So there is no measured landing coordinate to compare against; the
 ascent altitude above is the part the telemetry can validate.
 
+## Dual deployment shrinks the recovery zone
+
+A single main from ~5 km drifts ~10 km — across US-20. The standard fix is **dual
+deployment**: a small drogue at apogee (fast descent) and the main only at low
+altitude. `config-dualdeploy.toml` models this (drogue + main at 450 m AGL).
+
+The mechanism is clearest in the descent: under the drogue the dual-deploy flight
+comes down ~2.5x faster, only slowing under the main near the ground, so it is
+aloft for far less time (292 s vs 736 s):
+
+![descent comparison](recovery-descent.png)
+
+Less time aloft means less wind drift, so the nominal landing zone shrinks from
+~10 km to ~3 km and stays local:
+
+![single main vs dual deploy](recovery-map.png)
+
+This is exactly why high-power rockets use dual deployment; `parachute` takes any
+number of stages (see the repo `config-example.toml`).
+
 ## Caveats (what is estimated)
 
 - **Drag**: trochia uses a *constant* Cd, but this flight is transonic (~Mach
@@ -92,8 +112,8 @@ ascent altitude above is the part the telemetry can validate.
   OpenRocket. So unlike the low-speed Estes-Viking case, the apogee here *does*
   depend on the drag model.
 - **CG / CP / Cna / inertia**: from the OpenRocket/JSBSim model or estimated.
-- **Recovery**: a single main deployed at apogee (trochia has no dual-deployment
-  yet); its diameter is calibrated to the measured descent rate since PSAS's
-  canopy size is unpublished. A real drogue + low-main deployment would descend
-  faster up high and so drift less — the ~10 km nominal zone is the
+- **Recovery**: the nominal run uses a single main calibrated to the measured
+  descent (PSAS's canopy size is unpublished). trochia does support multi-stage
+  recovery (the dual-deployment section above); the nominal stays single-main
+  because that matches the measured slow descent, so its ~10 km zone is the
   single-main worst case.
