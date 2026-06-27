@@ -64,6 +64,13 @@ auto load(const std::string &fname, simulation::Simulation &sim) -> Conditions {
 	{
 		const auto &cfg_launcher = find(config, "launcher");
 
+		// optional rail length [m] and azimuth [deg]. Omitted -> historical
+		// hardcoded defaults (5 m, 150 deg); see Simulation::make_launcher.
+		if(cfg_launcher.contains("length"))
+			sim.launcher_length = as_number(cfg_launcher.at("length"));
+		if(cfg_launcher.contains("azimuth"))
+			sim.launcher_azimuth = as_number(cfg_launcher.at("azimuth"));
+
 		// get elevation
 		const auto elevation = find(cfg_launcher, "elevation");
 		if(elevation.is_integer())
