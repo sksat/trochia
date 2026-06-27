@@ -185,7 +185,7 @@ auto trochia::simulation::do_step(Simulation &sim, solver::solver<rocket::Rocket
 	const auto altitude = rocket.pos.altitude();
 	sim.geo_height = environment::earth::geodesy::potential_height(altitude);
 	sim.temperature = environment::air::temperature(sim.geo_height);
-	sim.rho = environment::air::density(sim.temperature);
+	sim.rho = environment::air::density(sim.geo_height);
 
 	// recovery (issue #6): detect apogee (the climb turning to descent, NED down
 	// velocity going positive after launch clear) and deploy the parachute after
