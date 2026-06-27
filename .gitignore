@@ -45,5 +45,5 @@ ghp-output.js
 # regenerable (the plot PNGs are committed on purpose, shown in the READMEs)
 examples/**/*.eng
 examples/*.eng
-examples/**/output/
+examples/**/output*/
 examples/**/out-*/

@@ -1,0 +1,42 @@
+# Same flight as config.toml, but with DUAL DEPLOYMENT (a drogue at apogee, then
+# the main low down) instead of a single main. This is how high-power rockets
+# limit recovery drift -- compare the landing zone with the single-main run.
+# Nominal recovery only (no failure scenarios); wind direction swept for the zone.
+
+[simulation]
+dt			= 0.01
+output.dt	= 1.0
+output.dir	= "output-dualdeploy"
+timeout		= 900
+
+[launcher]
+length		= 5
+elevation	= 89
+
+[wind]
+model		= "power"
+ground.dir	= [ 0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 240.0, 270.0, 300.0, 330.0, 360.0 ]
+ground.speed= 5.0
+
+[rocket]
+name	= "PSAS LV2 (dual deploy)"
+type	= "single"
+
+[[rocket.stage]]
+engine	= "N2501.eng"
+length	= 3.53
+diameter= 0.1397
+mass	= 20.692
+I0		= 35.0
+If		= 25.0
+lcg0	= 2.51
+lcgf	= 2.35
+lcgp	= 3.20
+lcp		= 2.72
+Cd		= 0.60
+Cna		= 12.0
+# drogue at apogee (fast descent) then main at 450 m AGL (slow final descent)
+parachute = [
+	{delay = 0.0, cd = 1.2, diameter = 1.0},     # drogue
+	{altitude = 450, cd = 1.5, diameter = 3.0},  # main
+]
