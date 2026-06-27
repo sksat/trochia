@@ -58,3 +58,26 @@ TEST_F(EngineTest, CopyIsConsistent) {
 	for (double t = 0.0; t <= 3.0; t += 0.13)
 		EXPECT_DOUBLE_EQ(copy.thrust(t), eng.thrust(t)) << "t=" << t;
 }
+
+// Real .eng files (e.g. every ThrustCurve.org export) begin with ';' comment
+// lines. The header must be read from the first non-comment line, not from the
+// ';' line.
+TEST(EngineComments, SkipsRaspCommentLines) {
+	const std::string path = "/tmp/trochia_test_motor_comments.eng";
+	{
+		std::ofstream o(path);
+		o << "; Estes A8 RASP.ENG file made from NAR published data\n"
+		  << "; File produced March 3, 2011\n"
+		  << ";\n"
+		  << "TestMotor 24 70 P 0.1 0.2 Test\n"
+		  << "0.0 0.0\n"
+		  << "1.0 10.0\n"
+		  << "2.0 10.0\n"
+		  << "3.0 0.0\n";
+	}
+	Engine eng;
+	eng.load_eng(path);
+	EXPECT_NEAR(eng.thrust(0.5), 5.0, 1e-9);   // interpolated, proves header parsed
+	EXPECT_NEAR(eng.thrust(1.5), 10.0, 1e-9);
+	EXPECT_NEAR(eng.weight(0.0), 0.2, 1e-9);   // total weight from the header line
+}
