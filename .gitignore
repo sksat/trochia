@@ -47,3 +47,6 @@ examples/**/*.eng
 examples/*.eng
 examples/**/output*/
 examples/**/out-*/
+# ...except MOMO's engine, which is a hand-authored synthetic thrust curve
+# (no real .eng exists for a liquid sounding rocket) -- it is committed.
+!examples/momo/momo.eng

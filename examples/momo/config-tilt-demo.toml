@@ -1,0 +1,29 @@
+[simulation]
+dt = 0.02
+output.dt = 1.0
+output.dir = "output-tilt"
+timeout = 600
+[launcher]
+length = 10.0
+elevation = 89.9
+azimuth = 120.0
+[wind]
+model = "power"
+ground.dir = [ 0.0 ]
+ground.speed = 0.001
+[rocket]
+name = "MOMO v0 (Interstellar Technologies)"
+type = "single"
+[[rocket.stage]]
+engine = "momo.eng"
+length = 9.9
+diameter = 0.5
+mass = 330.0
+I0 = 9000.0
+If = 3000.0
+lcg0 = 5.6
+lcgf = 5.0
+lcgp = 7.2
+lcp = 6.4
+Cd = 0.45
+Cna = 6.0

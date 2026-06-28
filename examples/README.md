@@ -12,7 +12,9 @@ $ ./fetch-engine.sh        # LARKSPUR-XP.300 (20191020_01.eng), used by
 ```
 
 `validation-estes-viking` (Estes A8) and `astra` (Cesaroni 4263L1350-P) fetch
-their own motors with their own `fetch-engine.sh`.
+their own motors with their own `fetch-engine.sh`. `momo` ships its own
+hand-authored synthetic thrust curve (`momo.eng`) — no real `.eng` exists for a
+liquid sounding rocket.
 
 You also need the `trochia` binary — build it from the repo root (see the top
 [README](../README.md)); it ends up at `build/bin/trochia`. trochia always reads
@@ -29,5 +31,6 @@ run each example from its own directory.
 | [validation-estes-viking](validation-estes-viking/) | accuracy check: predicted vs **measured** apogee of a real flight |
 | [psas-launch12](psas-launch12/)           | km-scale real flight: apogee validation + contingency landing zones |
 | [astra](astra/)                           | km-scale real flight: ascent **+ descent** validation, hazard zone (警戒区域) & abort (途中破談) |
+| [momo](momo/)                             | sounding rocket to **~113 km**: effective-thrust calibration, abort energy envelope (cross-validated), and an unguided model's limit |
 
 See each directory's `README.md` for how to run it and the resulting plot.
