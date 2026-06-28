@@ -1,0 +1,7 @@
+# MOMO (Interstellar Technologies) flight outcomes -- the real apogees trochia
+# is validated against. Columns: approx_apogee_time[s]  apogee[km]  label
+# (apogee times are approximate; MOMO-2 barely left the pad)
+4    0.0    MOMO-2
+91   13.3   MOMO-4
+101  20.0   MOMO-1
+240  113.4  MOMO-3

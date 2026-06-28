@@ -1,0 +1,11 @@
+; MOMO v0 (Interstellar Technologies) -- synthetic constant-thrust model.
+; Effective thrust 13.9 kN is calibrated to MOMO-3's measured 113.4 km apogee
+; (sea-level nominal is 12 kN; the ~16% excess is the pressure-fed engine's
+; altitude/vacuum thrust gain -- and brackets the v1 +2 kN/14 kN upgrade).
+; Propellant 820 kg; casing folded into the 330 kg airframe dry mass, so
+; prop weight = total weight = 820 kg.
+MOMO-v0 500 9900 P 820.0 820.0 IST
+   0.0      0.0
+   1.0  13900.0
+ 120.0  13900.0
+ 121.0      0.0

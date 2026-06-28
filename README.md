@@ -59,7 +59,12 @@ nominal recovery vs parachute failure vs CATO. The
 [astra](examples/astra/) example validates a real ~3.25 km flight on **both** the
 ascent and the descent (its recovery failed, so the measured fall is near
 ballistic — exactly what trochia can check) and lays out the hazard zone
-(警戒区域) and abort (途中破談) footprints.
+(警戒区域) and abort (途中破談) footprints. The [momo](examples/momo/) example goes
+all the way to a **~113 km** sounding rocket (Interstellar Technologies' MOMO):
+it calibrates the effective thrust to the 113 km apogee (the published sea-level
+numbers under-predict), cross-validates the abort energy envelope against the real
+MOMO-1…4 flights, and honestly shows where an *unguided* model stops being valid
+for an actively-guided vehicle.
 
 ## Python tooling (uv)
 
